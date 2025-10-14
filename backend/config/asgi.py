@@ -10,10 +10,8 @@ django_asgi_app = get_asgi_application()
 
 # Import after django setup
 from apps.trading.routing import websocket_urlpatterns as trading_ws
-from apps.support.routing import websocket_urlpatterns as support_ws
 
-# Combine all WebSocket routes
-websocket_urlpatterns = trading_ws + support_ws
+websocket_urlpatterns = trading_ws
 
 application = ProtocolTypeRouter({
     "http": django_asgi_app,
