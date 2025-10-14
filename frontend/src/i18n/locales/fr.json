@@ -1,0 +1,413 @@
+{
+  "nav": {
+    "home": "Accueil",
+    "market": "Marché",
+    "balance": "Solde",
+    "support": "Support",
+    "profile": "Profil"
+  },
+  "auth": {
+    "login": "Connexion",
+    "logout": "Déconnexion",
+    "email": "Email",
+    "password": "Mot de passe",
+    "welcome": "Bienvenue",
+    "loginSubtitle": "Entrez vos identifiants pour accéder à votre compte",
+    "loginButton": "Se connecter",
+    "noAccount": "Vous n'avez pas de compte ?",
+    "signUp": "S'inscrire"
+  },
+  "dashboard": {
+    "greeting": "Bienvenue",
+    "greetingName": "Bienvenue, {{name}} !",
+    "portfolioGrowth": "Votre portefeuille est en hausse",
+    "last24h": "au cours des dernières 24 heures",
+    "totalBalance": "Solde total",
+    "pnl24h": "P&L 24h",
+    "assets": "Actifs",
+    "cryptocurrencies": "cryptomonnaies",
+    "income": "Revenu",
+    "monthly": "par mois",
+    "deposit": "Déposer",
+    "trade": "Trader",
+    "marketStats": "Statistiques du marché",
+    "volume24h": "Volume 24h",
+    "avgChange": "Var. moyenne",
+    "activeTraders": "Traders actifs",
+    "fearGreedIndex": "Indice de Peur et d'Avarice",
+    "greed": "Avarice",
+    "topGainers": "Top Gagnants",
+    "viewAll": "Voir tout",
+    "quickActions": "Actions rapides",
+    "withdraw": "Retirer",
+    "trading": "Trading",
+    "gainers": "Gagnants",
+    "losers": "Perdants",
+    "assetsLast24h": "actifs en 24h",
+    "live": "En direct",
+    "offline": "Hors ligne",
+    "topLosers": "Top Perdants",
+    "recentActivity": "Activité Récente",
+    "promoTitle": "Obtenez un Bonus !",
+    "promoSubtitle": "Invitez un ami et recevez 50$ sur votre compte",
+    "promoButton": "Inviter un ami",
+    "mockTime1": "il y a 2 min",
+    "mockTime2": "il y a 15 min",
+    "mockTime3": "il y a 1 heure"
+  },
+  "trading": {
+    "title": "Trading",
+    "search": "Rechercher une cryptomonnaie...",
+    "name": "Nom",
+    "price": "Prix",
+    "change24h": "Var. 24h",
+    "volume": "Volume",
+    "chart": "Graphique",
+    "buy": "Acheter",
+    "sell": "Vendre",
+    "amount": "Montant",
+    "total": "Total",
+    "available": "Disponible",
+    "orderType": "Type d'ordre",
+    "market": "Marché",
+    "limit": "Limite",
+    "stop": "Stop",
+    "placeOrder": "Placer un ordre",
+    "openOrders": "Ordres ouverts",
+    "orderHistory": "Historique des ordres",
+    "noOrders": "Aucun ordre pour le moment"
+  },
+  "balance": {
+    "title": "Solde",
+    "totalBalance": "Solde total",
+    "availableBalance": "Disponible",
+    "lockedBalance": "Bloqué",
+    "deposit": "Déposer",
+    "withdraw": "Retirer",
+    "transfer": "Transférer",
+    "crypto": "Crypto",
+    "fiat": "Fiat",
+    "asset": "Actif",
+    "total": "Total",
+    "available": "Disponible",
+    "locked": "En ordres",
+    "actions": "Actions",
+    "transactionHistory": "Historique des transactions",
+    "type": "Type",
+    "amount": "Montant",
+    "status": "Statut",
+    "date": "Date",
+    "pending": "En attente",
+    "completed": "Terminé",
+    "failed": "Échoué"
+  },
+  "support": {
+    "title": "Support",
+    "subtitle": "Comment pouvons-nous vous aider ?",
+    "searchPlaceholder": "Rechercher de l'aide...",
+    "startChat": "Démarrer le chat",
+    "faq": "Questions fréquentes",
+    "contactUs": "Nous contacter",
+    "email": "Email",
+    "liveChat": "Chat en direct",
+    "phone": "Téléphone",
+    "sendMessage": "Envoyer un message",
+    "yourMessage": "Votre message...",
+    "subject": "Sujet",
+    "description": "Description",
+    "submit": "Envoyer",
+    "howToDeposit": "Comment déposer des fonds ?",
+    "howToWithdraw": "Comment retirer des fonds ?",
+    "tradingFees": "Quels sont les frais de trading ?",
+    "accountSecurity": "Comment sécuriser mon compte ?",
+    "kycVerification": "Vérification KYC",
+    "apiDocumentation": "Documentation de l'API"
+  },
+  "profile": {
+    "title": "Profil",
+    "personalInfo": "Informations personnelles",
+    "security": "Sécurité",
+    "preferences": "Préférences",
+    "fullName": "Nom complet",
+    "email": "Email",
+    "phone": "Numéro de téléphone",
+    "accountType": "Type de compte",
+    "memberSince": "Membre depuis",
+    "verified": "Vérifié",
+    "notVerified": "Non vérifié",
+    "save": "Enregistrer les modifications",
+    "changePassword": "Changer le mot de passe",
+    "currentPassword": "Mot de passe actuel",
+    "newPassword": "Nouveau mot de passe",
+    "confirmPassword": "Confirmer le mot de passe",
+    "twoFactor": "Authentification à deux facteurs",
+    "enable2FA": "Activer l'A2F",
+    "disable2FA": "Désactiver l'A2F",
+    "language": "Langue",
+    "currency": "Devise",
+    "timezone": "Fuseau horaire",
+    "notifications": "Notifications",
+    "emailNotifications": "Notifications par e-mail",
+    "pushNotifications": "Notifications push"
+  },
+  "sidebar": {
+    "accountNumber": "Numéro de compte",
+    "totalBalanceUsd": "SOLDE TOTAL (USD)",
+    "pnlUsd": "P&L (USD)",
+    "history": "Historique",
+    "settings": "Paramètres"
+  },
+  "common": {
+    "loading": "Chargement...",
+    "error": "Erreur",
+    "success": "Succès",
+    "cancel": "Annuler",
+    "confirm": "Confirmer",
+    "close": "Fermer",
+    "save": "Enregistrer",
+    "edit": "Modifier",
+    "delete": "Supprimer",
+    "search": "Rechercher",
+    "filter": "Filtrer",
+    "sort": "Trier",
+    "language": "Langue"
+  },
+  "market": {
+    "title": "Marché",
+    "status": {
+      "realtime": "En temps réel",
+      "disconnected": "Déconnecté"
+    },
+    "availableBalance": "Solde disponible",
+    "tabs": {
+      "crypto": "Cryptomonnaies",
+      "stocks": "Actions",
+      "forex": "Forex",
+      "commodities": "Matières premières"
+    },
+    "searchPlaceholder": "Rechercher par nom ou symbole...",
+    "favorites": "Favoris",
+    "view": {
+      "table": "Tableau",
+      "grid": "Grille"
+    },
+    "assetsCount": "{{count}} actifs",
+    "noAssetsFound": "Aucun actif trouvé",
+    "table": {
+      "asset": "Actif",
+      "price": "Prix",
+      "change24h": "Changement 24h",
+      "chart": "Graphique",
+      "action": "Action"
+    },
+    "buy": "Acheter"
+  },
+  "balance": {
+    "loading": "Chargement des données du solde...",
+    "title": "Solde & Transactions",
+    "subtitle": "Gérez vos dépôts et retraits",
+    "availableBalance": "Solde disponible",
+    "deposit": "Déposer",
+    "withdraw": "Retirer",
+    "totalDeposits": "Total des dépôts",
+    "totalWithdrawals": "Total des retraits",
+    "operations": "Opérations",
+    "transactionHistory": "Historique des transactions",
+    "viewReceipt": "Voir",
+    "table": {
+      "type": "Type",
+      "amount": "Montant",
+      "method": "Méthode",
+      "status": "Statut",
+      "date": "Date",
+      "receipt": "Reçu"
+    },
+    "types": {
+      "deposit": "Dépôt",
+      "withdrawal": "Retrait"
+    },
+    "status": {
+      "completed": "Terminé",
+      "pending": "En attente",
+      "rejected": "Rejeté"
+    },
+    "noTransactions": {
+      "title": "Aucune transaction pour le moment",
+      "subtitle": "Déposez des fonds pour commencer",
+      "button": "Déposer au solde"
+    },
+    "modals": {
+      "depositTitle": "Déposer au solde",
+      "withdrawTitle": "Retirer des fonds",
+      "amountLabel": "Montant du dépôt",
+      "withdrawAmountLabel": "Montant du retrait",
+      "methodLabel": "Moyen de paiement",
+      "withdrawMethodLabel": "Méthode de retrait",
+      "receiptLabel": "Reçu de paiement",
+      "uploadClick": "Cliquez pour télécharger",
+      "uploadHint": "PNG, JPG ou PDF jusqu'à 5Mo",
+      "sending": "Envoi...",
+      "sendButton": "Envoyer pour vérification",
+      "errorReceipt": "Veuillez télécharger un reçu de paiement",
+      "errorDeposit": "Erreur lors de la création du dépôt",
+      "availableToWithdraw": "Disponible pour le retrait",
+      "walletAddressLabel": "Adresse du portefeuille",
+      "requesting": "Envoi de la demande...",
+      "requestButton": "Demander le retrait",
+      "errorInsufficientFunds": "Fonds insuffisants sur le solde",
+      "errorWithdraw": "Erreur lors de la création de la demande de retrait"
+    },
+    "methods": {
+      "card": "Carte bancaire",
+      "crypto": "Cryptomonnaie",
+      "transfer": "Virement bancaire"
+    }
+  },
+  "support": {
+    "loading": "Chargement du chat...",
+    "header": {
+      "title": "Support Bemo Investment",
+      "subtitle": "En ligne • Répond généralement en moins d'une heure"
+    },
+    "emptyChat": {
+      "title": "Commencez une conversation avec le support",
+      "subtitle": "Notre équipe est prête à vous aider pour toute question sur le trading, les dépôts ou les retraits"
+    },
+    "chat": {
+      "supportTeam": "Équipe de support",
+      "attachment": "Pièce jointe"
+    },
+    "input": {
+      "attachTitle": "Joindre un fichier",
+      "placeholder": "Entrez un message...",
+      "footer": "Temps de réponse moyen : 1 heure • Nous travaillons 24/7"
+    },
+    "cards": {
+      "faq": {
+        "title": "Questions fréquentes",
+        "subtitle": "Réponses aux questions populaires sur la plateforme"
+      },
+      "docs": {
+        "title": "Documentation",
+        "subtitle": "Guides sur l'utilisation de toutes les fonctionnalités"
+      },
+      "security": {
+        "title": "Sécurité",
+        "subtitle": "Informations sur la protection de vos fonds"
+      }
+    },
+    "time": {
+      "minutesAgo_one": "il y a {{count}} min",
+      "minutesAgo_other": "il y a {{count}} min"
+    }
+  },
+  "profile": {
+    "defaultUser": "Utilisateur",
+    "verified": "Vérifié",
+    "tabs": {
+      "profile": "Profil",
+      "security": "Sécurité",
+      "activity": "Activité"
+    },
+    "accountInfo": {
+      "title": "Informations du compte",
+      "emailLabel": "Adresse e-mail",
+      "emailHint": "L'e-mail ne peut pas être modifié",
+      "fullNameLabel": "Nom complet",
+      "fullNamePlaceholder": "Jean Dupont",
+      "userIdLabel": "ID utilisateur"
+    },
+    "buttons": {
+      "saving": "Enregistrement...",
+      "save": "Enregistrer les modifications",
+      "changing": "Changement...",
+      "changePassword": "Changer le mot de passe"
+    },
+    "status": {
+      "title": "Statut du compte",
+      "verification": "Vérification",
+      "yes": "Oui",
+      "no": "Non",
+      "botType": "Type de bot",
+      "balance": "Solde"
+    },
+    "dates": {
+      "title": "Dates",
+      "registration": "Date d'inscription",
+      "lastLogin": "Dernière connexion"
+    },
+    "security": {
+      "title": "Changer le mot de passe",
+      "currentPassword": "Mot de passe actuel",
+      "newPassword": "Nouveau mot de passe",
+      "confirmNewPassword": "Confirmer le nouveau mot de passe"
+    },
+    "tips": {
+      "title": "Conseils de sécurité",
+      "tip1": "Utilisez un mot de passe fort",
+      "tip2": "Ne partagez pas votre mot de passe",
+      "tip3": "Changez régulièrement votre mot de passe",
+      "tip4": "Utilisez un mot de passe unique"
+    },
+    "activity": {
+      "title": "Activité du compte",
+      "level": "Niveau du compte",
+      "withUs": "Avec nous",
+      "days": "jours",
+      "verification": "Vérification"
+    },
+    "messages": {
+      "profileUpdateSuccess": "Profil mis à jour avec succès !",
+      "profileUpdateError": "Erreur lors de la mise à jour du profil",
+      "passwordMismatch": "Les nouveaux mots de passe ne correspondent pas",
+      "passwordUpdateSuccess": "Mot de passe changé avec succès !",
+      "passwordUpdateError": "Erreur lors du changement de mot de passe"
+    }
+  },
+  "auth": {
+    "login": "Connexion",
+    "logout": "Déconnexion",
+    "email": "Email",
+    "password": "Mot de passe",
+    "welcome": "Bienvenue",
+    "loginSubtitle": "Entrez vos identifiants pour accéder à votre compte",
+    "loginButton": "Se connecter",
+    "noAccount": "Vous n'avez pas de compte ?",
+    "signUp": "S'inscrire",
+    "platformSlogan": "Plateforme de Trading Professionnelle",
+    "hero": {
+      "title1": "Tradez la cryptomonnaie",
+      "title2": "avec confiance"
+    },
+    "heroSubtitle": "Rejoignez des milliers de traders qui font confiance à notre plateforme",
+    "features": {
+      "security": {
+        "title": "Sécurité",
+        "description": "Protection des fonds utilisant un cryptage de niveau bancaire"
+      },
+      "instantDeals": {
+        "title": "Transactions Instantanées",
+        "description": "Le bot de trading fonctionne 24/7 pour un profit maximal"
+      },
+      "provenPlatform": {
+        "title": "Plateforme Éprouvée",
+        "description": "Plus de 1000 utilisateurs actifs et 2,5M € de volume de trading"
+      }
+    },
+    "stats": {
+      "users": "Utilisateurs",
+      "volume": "Volume de Trading",
+      "support": "Support"
+    },
+    "welcomeTitle": "Bienvenue",
+    "welcomeSubtitle": "Connectez-vous à votre compte pour continuer",
+    "errorTitle": "Erreur de connexion",
+    "emailLabel": "Adresse e-mail",
+    "passwordLabel": "Mot de passe",
+    "loggingIn": "Connexion en cours...",
+    "demo": {
+      "title": "Connexion rapide avec des comptes démo"
+    },
+    "footer": "© 2025 Bemo Investment. Tous droits réservés."
+  }
+}

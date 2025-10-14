@@ -1,0 +1,417 @@
+{
+  "nav": {
+    "home": "الرئيسية",
+    "market": "السوق",
+    "balance": "الرصيد",
+    "support": "الدعم",
+    "profile": "الملف الشخصي"
+  },
+  "auth": {
+    "login": "تسجيل الدخول",
+    "logout": "تسجيل الخروج",
+    "email": "البريد الإلكتروني",
+    "password": "كلمة المرور",
+    "welcome": "مرحباً",
+    "loginSubtitle": "أدخل بياناتك للوصول إلى حسابك",
+    "loginButton": "تسجيل الدخول",
+    "noAccount": "ليس لديك حساب؟",
+    "signUp": "اشتراك"
+  },
+  "dashboard": {
+    "greeting": "أهلاً",
+    "greetingName": "أهلاً، {{name}}!",
+    "portfolioGrowth": "محفظتك ارتفعت",
+    "last24h": "في آخر 24 ساعة",
+    "totalBalance": "الرصيد الإجمالي",
+    "pnl24h": "الربح والخسارة 24 ساعة",
+    "assets": "الأصول",
+    "cryptocurrencies": "العملات المشفرة",
+    "income": "الدخل",
+    "monthly": "شهرياً",
+    "deposit": "إيداع",
+    "trade": "تداول",
+    "marketStats": "إحصائيات السوق",
+    "volume24h": "حجم التداول 24 ساعة",
+    "avgChange": "متوسط التغيير",
+    "activeTraders": "المتداولون النشطون",
+    "fearGreedIndex": "مؤشر الخوف والطمع",
+    "greed": "الطمع",
+    "topGainers": "الأكثر ربحاً",
+    "viewAll": "عرض الكل",
+    "quickActions": "إجراءات سريعة",
+    "withdraw": "سحب",
+    "trading": "التداول",
+    "gainers": "الرابحون",
+    "losers": "الخاسرون",
+    "assetsLast24h": "الأصول في 24 ساعة",
+    "live": "مباشر",
+    "offline": "غير متصل",
+    "topLosers": "الأكثر خسارة",
+    "recentActivity": "النشاط الأخير",
+    "promoTitle": "احصل على مكافأة!",
+    "promoSubtitle": "ادع صديقًا واحصل على 50 دولارًا في حسابك",
+    "promoButton": "دعوة صديق",
+    "mockTime1": "قبل دقيقتين",
+    "mockTime2": "قبل 15 دقيقة",
+    "mockTime3": "قبل ساعة"
+  },
+  "trading": {
+    "title": "التداول",
+    "search": "ابحث عن عملة مشفرة...",
+    "name": "الاسم",
+    "price": "السعر",
+    "change24h": "التغيير 24 ساعة",
+    "volume": "الحجم",
+    "chart": "الرسم البياني",
+    "buy": "شراء",
+    "sell": "بيع",
+    "amount": "المبلغ",
+    "total": "الإجمالي",
+    "available": "متاح",
+    "orderType": "نوع الأمر",
+    "market": "سوق",
+    "limit": "محدد",
+    "stop": "إيقاف",
+    "placeOrder": "تنفيذ الأمر",
+    "openOrders": "الأوامر المفتوحة",
+    "orderHistory": "سجل الأوامر",
+    "noOrders": "لا توجد أوامر بعد"
+  },
+  "balance": {
+    "title": "الرصيد",
+    "totalBalance": "الرصيد الإجمالي",
+    "availableBalance": "متاح",
+    "lockedBalance": "محجوز",
+    "deposit": "إيداع",
+    "withdraw": "سحب",
+    "transfer": "تحويل",
+    "crypto": "عملات مشفرة",
+    "fiat": "عملات ورقية",
+    "asset": "الأصل",
+    "total": "الإجمالي",
+    "available": "متاح",
+    "locked": "في الأوامر",
+    "actions": "الإجراءات",
+    "transactionHistory": "سجل المعاملات",
+    "type": "النوع",
+    "amount": "المبلغ",
+    "status": "الحالة",
+    "date": "التاريخ",
+    "pending": "قيد الانتظار",
+    "completed": "مكتمل",
+    "failed": "فشل"
+  },
+  "support": {
+    "title": "الدعم",
+    "subtitle": "كيف يمكننا مساعدتك؟",
+    "searchPlaceholder": "ابحث عن مساعدة...",
+    "startChat": "بدء الدردشة",
+    "faq": "الأسئلة الشائعة",
+    "contactUs": "اتصل بنا",
+    "email": "البريد الإلكتروني",
+    "liveChat": "دردشة مباشرة",
+    "phone": "الهاتف",
+    "sendMessage": "إرسال رسالة",
+    "yourMessage": "رسالتك...",
+    "subject": "الموضوع",
+    "description": "الوصف",
+    "submit": "إرسال",
+    "howToDeposit": "كيفية إيداع الأموال؟",
+    "howToWithdraw": "كيفية سحب الأموال؟",
+    "tradingFees": "ما هي رسوم التداول؟",
+    "accountSecurity": "كيفية تأمين حسابي؟",
+    "kycVerification": "التحقق من الهوية",
+    "apiDocumentation": "وثائق API"
+  },
+  "profile": {
+    "title": "الملف الشخصي",
+    "personalInfo": "المعلومات الشخصية",
+    "security": "الأمان",
+    "preferences": "التفضيلات",
+    "fullName": "الاسم الكامل",
+    "email": "البريد الإلكتروني",
+    "phone": "رقم الهاتف",
+    "accountType": "نوع الحساب",
+    "memberSince": "عضو منذ",
+    "verified": "تم التحقق",
+    "notVerified": "لم يتم التحقق",
+    "save": "حفظ التغييرات",
+    "changePassword": "تغيير كلمة المرور",
+    "currentPassword": "كلمة المرور الحالية",
+    "newPassword": "كلمة المرور الجديدة",
+    "confirmPassword": "تأكيد كلمة المرور",
+    "twoFactor": "المصادقة الثنائية",
+    "enable2FA": "تفعيل 2FA",
+    "disable2FA": "تعطيل 2FA",
+    "language": "اللغة",
+    "currency": "العملة",
+    "timezone": "المنطقة الزمنية",
+    "notifications": "الإشعارات",
+    "emailNotifications": "إشعارات البريد الإلكتروني",
+    "pushNotifications": "إشعارات الدفع"
+  },
+  "sidebar": {
+    "accountNumber": "رقم الحساب",
+    "totalBalanceUsd": "الرصيد الإجمالي (USD)",
+    "pnlUsd": "الربح والخسارة (USD)",
+    "history": "السجل",
+    "settings": "الإعدادات"
+  },
+  "common": {
+    "loading": "جار التحميل...",
+    "error": "خطأ",
+    "success": "نجاح",
+    "cancel": "إلغاء",
+    "confirm": "تأكيد",
+    "close": "إغلاق",
+    "save": "حفظ",
+    "edit": "تعديل",
+    "delete": "حذف",
+    "search": "بحث",
+    "filter": "تصفية",
+    "sort": "فرز",
+    "language": "اللغة"
+  },
+  "market": {
+    "title": "السوق",
+    "status": {
+      "realtime": "في الوقت الحقيقي",
+      "disconnected": "غير متصل"
+    },
+    "availableBalance": "الرصيد المتاح",
+    "tabs": {
+      "crypto": "العملات المشفرة",
+      "stocks": "الأسهم",
+      "forex": "الفوركس",
+      "commodities": "السلع"
+    },
+    "searchPlaceholder": "البحث بالاسم أو الرمز...",
+    "favorites": "المفضلة",
+    "view": {
+      "table": "جدول",
+      "grid": "شبكة"
+    },
+    "assetsCount": "{{count}} أصول",
+    "noAssetsFound": "لم يتم العثور على أصول",
+    "table": {
+      "asset": "الأصل",
+      "price": "السعر",
+      "change24h": "التغيير 24 ساعة",
+      "chart": "الرسم البياني",
+      "action": "إجراء"
+    },
+    "buy": "شراء"
+  },
+  "balance": {
+    "loading": "جاري تحميل بيانات الرصيد...",
+    "title": "الرصيد والمعاملات",
+    "subtitle": "إدارة عمليات الإيداع والسحب الخاصة بك",
+    "availableBalance": "الرصيد المتاح",
+    "deposit": "إيداع",
+    "withdraw": "سحب",
+    "totalDeposits": "إجمالي الإيداعات",
+    "totalWithdrawals": "إجمالي السحوبات",
+    "operations": "عمليات",
+    "transactionHistory": "سجل المعاملات",
+    "viewReceipt": "عرض",
+    "table": {
+      "type": "النوع",
+      "amount": "المبلغ",
+      "method": "الطريقة",
+      "status": "الحالة",
+      "date": "التاريخ",
+      "receipt": "الإيصال"
+    },
+    "types": {
+      "deposit": "إيداع",
+      "withdrawal": "سحب"
+    },
+    "status": {
+      "completed": "مكتمل",
+      "pending": "قيد الانتظار",
+      "rejected": "مرفوض"
+    },
+    "noTransactions": {
+      "title": "لا توجد معاملات بعد",
+      "subtitle": "قم بإيداع الأموال للبدء",
+      "button": "إيداع في الرصيد"
+    },
+    "modals": {
+      "depositTitle": "إيداع في الرصيد",
+      "withdrawTitle": "سحب الأموال",
+      "amountLabel": "مبلغ الإيداع",
+      "withdrawAmountLabel": "مبلغ السحب",
+      "methodLabel": "طريقة الدفع",
+      "withdrawMethodLabel": "طريقة السحب",
+      "receiptLabel": "إيصال الدفع",
+      "uploadClick": "انقر للتحميل",
+      "uploadHint": "PNG, JPG أو PDF حتى 5 ميجابايت",
+      "sending": "جارٍ الإرسال...",
+      "sendButton": "إرسال للمراجعة",
+      "errorReceipt": "يرجى تحميل إيصال الدفع",
+      "errorDeposit": "خطأ في إنشاء الإيداع",
+      "availableToWithdraw": "متاح للسحب",
+      "walletAddressLabel": "عنوان المحفظة",
+      "requesting": "جارٍ إرسال الطلب...",
+      "requestButton": "طلب السحب",
+      "errorInsufficientFunds": "الأموال غير كافية في الرصيد",
+      "errorWithdraw": "خطأ في إنشاء طلب السحب"
+    },
+    "methods": {
+      "card": "بطاقة بنكية",
+      "crypto": "عملة مشفرة",
+      "transfer": "تحويل بنكي"
+    }
+  },
+  "support": {
+    "loading": "جاري تحميل الدردشة...",
+    "header": {
+      "title": "دعم Bemo Investment",
+      "subtitle": "متصل • عادةً ما يتم الرد في غضون ساعة"
+    },
+    "emptyChat": {
+      "title": "ابدأ محادثة مع الدعم",
+      "subtitle": "فريقنا مستعد لمساعدتك في أي أسئلة حول التداول أو الإيداع أو السحب"
+    },
+    "chat": {
+      "supportTeam": "فريق الدعم",
+      "attachment": "مرفق"
+    },
+    "input": {
+      "attachTitle": "إرفاق ملف",
+      "placeholder": "أدخل رسالة...",
+      "footer": "متوسط وقت الاستجابة: 1 ساعة • نعمل 24/7"
+    },
+    "cards": {
+      "faq": {
+        "title": "الأسئلة الشائعة",
+        "subtitle": "إجابات على الأسئلة الشائعة حول المنصة"
+      },
+      "docs": {
+        "title": "التوثيق",
+        "subtitle": "أدلة حول استخدام جميع الميزات"
+      },
+      "security": {
+        "title": "الأمان",
+        "subtitle": "معلومات حول حماية أموالك"
+      }
+    },
+    "time": {
+      "minutesAgo_zero": "قبل {{count}} دقيقة",
+      "minutesAgo_one": "قبل دقيقة واحدة",
+      "minutesAgo_two": "قبل دقيقتين",
+      "minutesAgo_few": "قبل {{count}} دقائق",
+      "minutesAgo_many": "قبل {{count}} دقيقة",
+      "minutesAgo_other": "قبل {{count}} دقيقة"
+    }
+  },
+  "profile": {
+    "defaultUser": "مستخدم",
+    "verified": "تم التحقق",
+    "tabs": {
+      "profile": "الملف الشخصي",
+      "security": "الأمان",
+      "activity": "النشاط"
+    },
+    "accountInfo": {
+      "title": "معلومات الحساب",
+      "emailLabel": "البريد الإلكتروني",
+      "emailHint": "لا يمكن تغيير البريد الإلكتروني",
+      "fullNameLabel": "الاسم الكامل",
+      "fullNamePlaceholder": "جون دو",
+      "userIdLabel": "معرف المستخدم"
+    },
+    "buttons": {
+      "saving": "جاري الحفظ...",
+      "save": "حفظ التغييرات",
+      "changing": "جاري التغيير...",
+      "changePassword": "تغيير كلمة المرور"
+    },
+    "status": {
+      "title": "حالة الحساب",
+      "verification": "التحقق",
+      "yes": "نعم",
+      "no": "لا",
+      "botType": "نوع البوت",
+      "balance": "الرصيد"
+    },
+    "dates": {
+      "title": "التواريخ",
+      "registration": "تاريخ التسجيل",
+      "lastLogin": "آخر تسجيل دخول"
+    },
+    "security": {
+      "title": "تغيير كلمة المرور",
+      "currentPassword": "كلمة المرور الحالية",
+      "newPassword": "كلمة المرور الجديدة",
+      "confirmNewPassword": "تأكيد كلمة المرور الجديدة"
+    },
+    "tips": {
+      "title": "نصائح الأمان",
+      "tip1": "استخدم كلمة مرور قوية",
+      "tip2": "لا تشارك كلمة مرورك مع الآخرين",
+      "tip3": "قم بتغيير كلمة مرورك بانتظام",
+      "tip4": "استخدم كلمة مرور فريدة"
+    },
+    "activity": {
+      "title": "نشاط الحساب",
+      "level": "مستوى الحساب",
+      "withUs": "معنا",
+      "days": "أيام",
+      "verification": "التحقق"
+    },
+    "messages": {
+      "profileUpdateSuccess": "تم تحديث الملف الشخصي بنجاح!",
+      "profileUpdateError": "خطأ في تحديث الملف الشخصي",
+      "passwordMismatch": "كلمات المرور الجديدة غير متطابقة",
+      "passwordUpdateSuccess": "تم تغيير كلمة المرور بنجاح!",
+      "passwordUpdateError": "خطأ في تغيير كلمة المرور"
+    }
+  },
+  "auth": {
+    "login": "تسجيل الدخول",
+    "logout": "تسجيل الخروج",
+    "email": "البريد الإلكتروني",
+    "password": "كلمة المرور",
+    "welcome": "مرحباً بعودتك",
+    "loginSubtitle": "أدخل بياناتك للوصول إلى حسابك",
+    "loginButton": "تسجيل الدخول",
+    "noAccount": "ليس لديك حساب؟",
+    "signUp": "اشتراك",
+    "platformSlogan": "منصة تداول احترافية",
+    "hero": {
+      "title1": "تداول العملات المشفرة",
+      "title2": "بثقة"
+    },
+    "heroSubtitle": "انضم إلى آلاف المتداولين الذين يثقون في منصتنا",
+    "features": {
+      "security": {
+        "title": "الأمان",
+        "description": "حماية الأموال باستخدام تشفير على مستوى البنوك"
+      },
+      "instantDeals": {
+        "title": "صفقات فورية",
+        "description": "يعمل روبوت التداول على مدار الساعة طوال أيام الأسبوع لتحقيق أقصى ربح"
+      },
+      "provenPlatform": {
+        "title": "منصة موثوقة",
+        "description": "أكثر من 1000 مستخدم نشط وحجم تداول 2.5 مليون يورو"
+      }
+    },
+    "stats": {
+      "users": "المستخدمون",
+      "volume": "حجم التداول",
+      "support": "الدعم"
+    },
+    "welcomeTitle": "مرحباً",
+    "welcomeSubtitle": "سجل الدخول إلى حسابك للمتابعة",
+    "errorTitle": "خطأ في تسجيل الدخول",
+    "emailLabel": "البريد الإلكتروني",
+    "passwordLabel": "كلمة المرور",
+    "loggingIn": "جارٍ تسجيل الدخول...",
+    "demo": {
+      "title": "تسجيل دخول سريع بحسابات تجريبية"
+    },
+    "footer": "© 2025 Bemo Investment. جميع الحقوق محفوظة."
+  }
+}

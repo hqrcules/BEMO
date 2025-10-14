@@ -1,0 +1,413 @@
+{
+  "nav": {
+    "home": "Startseite",
+    "market": "Markt",
+    "balance": "Guthaben",
+    "support": "Support",
+    "profile": "Profil"
+  },
+  "auth": {
+    "login": "Anmelden",
+    "logout": "Abmelden",
+    "email": "E-Mail",
+    "password": "Passwort",
+    "welcome": "Willkommen zurück",
+    "loginSubtitle": "Geben Sie Ihre Anmeldeinformationen ein, um auf Ihr Konto zuzugreifen",
+    "loginButton": "Anmelden",
+    "noAccount": "Haben Sie kein Konto?",
+    "signUp": "Registrieren"
+  },
+  "dashboard": {
+    "greeting": "Willkommen",
+    "greetingName": "Willkommen, {{name}}!",
+    "portfolioGrowth": "Ihr Portfolio ist gestiegen",
+    "last24h": "in den letzten 24 Stunden",
+    "totalBalance": "Gesamtguthaben",
+    "pnl24h": "24h G&V",
+    "assets": "Vermögenswerte",
+    "cryptocurrencies": "Kryptowährungen",
+    "income": "Einkommen",
+    "monthly": "pro Monat",
+    "deposit": "Einzahlen",
+    "trade": "Handeln",
+    "marketStats": "Marktstatistiken",
+    "volume24h": "24h Volumen",
+    "avgChange": "Ø Änderung",
+    "activeTraders": "Aktive Händler",
+    "fearGreedIndex": "Angst & Gier Index",
+    "greed": "Gier",
+    "topGainers": "Top-Gewinner",
+    "viewAll": "Alle ansehen",
+    "quickActions": "Schnellaktionen",
+    "withdraw": "Abheben",
+    "trading": "Handel",
+    "gainers": "Gewinner",
+    "losers": "Verlierer",
+    "assetsLast24h": "Assets in 24h",
+    "live": "Live",
+    "offline": "Offline",
+    "topLosers": "Top-Verlierer",
+    "recentActivity": "Letzte Aktivitäten",
+    "promoTitle": "Holen Sie sich einen Bonus!",
+    "promoSubtitle": "Laden Sie einen Freund ein und erhalten Sie 50 $ auf Ihr Konto",
+    "promoButton": "Einen Freund einladen",
+    "mockTime1": "vor 2 Min",
+    "mockTime2": "vor 15 Min",
+    "mockTime3": "vor 1 Std"
+  },
+  "trading": {
+    "title": "Handel",
+    "search": "Kryptowährung suchen...",
+    "name": "Name",
+    "price": "Preis",
+    "change24h": "24h Änderung",
+    "volume": "Volumen",
+    "chart": "Chart",
+    "buy": "Kaufen",
+    "sell": "Verkaufen",
+    "amount": "Betrag",
+    "total": "Gesamt",
+    "available": "Verfügbar",
+    "orderType": "Auftragstyp",
+    "market": "Markt",
+    "limit": "Limit",
+    "stop": "Stop",
+    "placeOrder": "Auftrag platzieren",
+    "openOrders": "Offene Aufträge",
+    "orderHistory": "Auftragshistorie",
+    "noOrders": "Noch keine Aufträge"
+  },
+  "balance": {
+    "title": "Guthaben",
+    "totalBalance": "Gesamtguthaben",
+    "availableBalance": "Verfügbar",
+    "lockedBalance": "Gesperrt",
+    "deposit": "Einzahlen",
+    "withdraw": "Abheben",
+    "transfer": "Übertragen",
+    "crypto": "Krypto",
+    "fiat": "Fiat",
+    "asset": "Asset",
+    "total": "Gesamt",
+    "available": "Verfügbar",
+    "locked": "In Aufträgen",
+    "actions": "Aktionen",
+    "transactionHistory": "Transaktionsverlauf",
+    "type": "Typ",
+    "amount": "Betrag",
+    "status": "Status",
+    "date": "Datum",
+    "pending": "Ausstehend",
+    "completed": "Abgeschlossen",
+    "failed": "Fehlgeschlagen"
+  },
+  "support": {
+    "title": "Support",
+    "subtitle": "Wie können wir Ihnen helfen?",
+    "searchPlaceholder": "Hilfe suchen...",
+    "startChat": "Chat starten",
+    "faq": "Häufig gestellte Fragen",
+    "contactUs": "Kontaktieren Sie uns",
+    "email": "E-Mail",
+    "liveChat": "Live-Chat",
+    "phone": "Telefon",
+    "sendMessage": "Nachricht senden",
+    "yourMessage": "Ihre Nachricht...",
+    "subject": "Betreff",
+    "description": "Beschreibung",
+    "submit": "Senden",
+    "howToDeposit": "Wie zahlt man Geld ein?",
+    "howToWithdraw": "Wie hebt man Geld ab?",
+    "tradingFees": "Was sind die Handelsgebühren?",
+    "accountSecurity": "Wie sichere ich mein Konto?",
+    "kycVerification": "KYC-Verifizierung",
+    "apiDocumentation": "API-Dokumentation"
+  },
+  "profile": {
+    "title": "Profil",
+    "personalInfo": "Persönliche Informationen",
+    "security": "Sicherheit",
+    "preferences": "Einstellungen",
+    "fullName": "Vollständiger Name",
+    "email": "E-Mail",
+    "phone": "Telefonnummer",
+    "accountType": "Kontotyp",
+    "memberSince": "Mitglied seit",
+    "verified": "Verifiziert",
+    "notVerified": "Nicht verifiziert",
+    "save": "Änderungen speichern",
+    "changePassword": "Passwort ändern",
+    "currentPassword": "Aktuelles Passwort",
+    "newPassword": "Neues Passwort",
+    "confirmPassword": "Passwort bestätigen",
+    "twoFactor": "Zwei-Faktor-Authentifizierung",
+    "enable2FA": "2FA aktivieren",
+    "disable2FA": "2FA deaktivieren",
+    "language": "Sprache",
+    "currency": "Währung",
+    "timezone": "Zeitzone",
+    "notifications": "Benachrichtigungen",
+    "emailNotifications": "E-Mail-Benachrichtigungen",
+    "pushNotifications": "Push-Benachrichtigungen"
+  },
+  "sidebar": {
+    "accountNumber": "Kontonummer",
+    "totalBalanceUsd": "GESAMTGUTHABEN (USD)",
+    "pnlUsd": "G&V (USD)",
+    "history": "Verlauf",
+    "settings": "Einstellungen"
+  },
+  "common": {
+    "loading": "Wird geladen...",
+    "error": "Fehler",
+    "success": "Erfolg",
+    "cancel": "Abbrechen",
+    "confirm": "Bestätigen",
+    "close": "Schließen",
+    "save": "Speichern",
+    "edit": "Bearbeiten",
+    "delete": "Löschen",
+    "search": "Suchen",
+    "filter": "Filter",
+    "sort": "Sortieren",
+    "language": "Sprache"
+  },
+  "market": {
+    "title": "Markt",
+    "status": {
+      "realtime": "Echtzeit",
+      "disconnected": "Getrennt"
+    },
+    "availableBalance": "Verfügbares Guthaben",
+    "tabs": {
+      "crypto": "Kryptowährungen",
+      "stocks": "Aktien",
+      "forex": "Forex",
+      "commodities": "Rohstoffe"
+    },
+    "searchPlaceholder": "Suche nach Name oder Symbol...",
+    "favorites": "Favoriten",
+    "view": {
+      "table": "Tabelle",
+      "grid": "Gitter"
+    },
+    "assetsCount": "{{count}} Assets",
+    "noAssetsFound": "Keine Assets gefunden",
+    "table": {
+      "asset": "Asset",
+      "price": "Preis",
+      "change24h": "24h Änderung",
+      "chart": "Chart",
+      "action": "Aktion"
+    },
+    "buy": "Kaufen"
+  },
+  "balance": {
+    "loading": "Lade Kontostand...",
+    "title": "Guthaben & Transaktionen",
+    "subtitle": "Verwalten Sie Ihre Ein- und Auszahlungen",
+    "availableBalance": "Verfügbares Guthaben",
+    "deposit": "Einzahlen",
+    "withdraw": "Abheben",
+    "totalDeposits": "Gesamteinzahlungen",
+    "totalWithdrawals": "Gesamtabhebungen",
+    "operations": "Operationen",
+    "transactionHistory": "Transaktionsverlauf",
+    "viewReceipt": "Ansehen",
+    "table": {
+      "type": "Typ",
+      "amount": "Betrag",
+      "method": "Methode",
+      "status": "Status",
+      "date": "Datum",
+      "receipt": "Beleg"
+    },
+    "types": {
+      "deposit": "Einzahlung",
+      "withdrawal": "Auszahlung"
+    },
+    "status": {
+      "completed": "Abgeschlossen",
+      "pending": "Ausstehend",
+      "rejected": "Abgelehnt"
+    },
+    "noTransactions": {
+      "title": "Noch keine Transaktionen",
+      "subtitle": "Zahlen Sie Geld ein, um loszulegen",
+      "button": "Guthaben einzahlen"
+    },
+    "modals": {
+      "depositTitle": "Guthaben einzahlen",
+      "withdrawTitle": "Geld abheben",
+      "amountLabel": "Einzahlungsbetrag",
+      "withdrawAmountLabel": "Abhebungsbetrag",
+      "methodLabel": "Zahlungsmethode",
+      "withdrawMethodLabel": "Auszahlungsmethode",
+      "receiptLabel": "Zahlungsbeleg",
+      "uploadClick": "Zum Hochladen klicken",
+      "uploadHint": "PNG, JPG oder PDF bis zu 5MB",
+      "sending": "Senden...",
+      "sendButton": "Zur Überprüfung senden",
+      "errorReceipt": "Bitte laden Sie einen Zahlungsbeleg hoch",
+      "errorDeposit": "Fehler beim Erstellen der Einzahlung",
+      "availableToWithdraw": "Verfügbar zum Abheben",
+      "walletAddressLabel": "Wallet-Adresse",
+      "requesting": "Anfrage wird gesendet...",
+      "requestButton": "Auszahlung anfordern",
+      "errorInsufficientFunds": "Unzureichendes Guthaben",
+      "errorWithdraw": "Fehler beim Erstellen der Auszahlungsanforderung"
+    },
+    "methods": {
+      "card": "Bankkarte",
+      "crypto": "Kryptowährung",
+      "transfer": "Banküberweisung"
+    }
+  },
+  "support": {
+    "loading": "Lade Chat...",
+    "header": {
+      "title": "Bemo Investment Support",
+      "subtitle": "Online • Antwortet normalerweise innerhalb einer Stunde"
+    },
+    "emptyChat": {
+      "title": "Starten Sie ein Gespräch mit dem Support",
+      "subtitle": "Unser Team hilft Ihnen bei Fragen zu Handel, Einzahlungen oder Abhebungen"
+    },
+    "chat": {
+      "supportTeam": "Support-Team",
+      "attachment": "Anhang"
+    },
+    "input": {
+      "attachTitle": "Datei anhängen",
+      "placeholder": "Nachricht eingeben...",
+      "footer": "Durchschnittliche Antwortzeit: 1 Stunde • Wir arbeiten 24/7"
+    },
+    "cards": {
+      "faq": {
+        "title": "Häufig gestellte Fragen",
+        "subtitle": "Antworten auf beliebte Fragen zur Plattform"
+      },
+      "docs": {
+        "title": "Dokumentation",
+        "subtitle": "Anleitungen zur Nutzung aller Funktionen"
+      },
+      "security": {
+        "title": "Sicherheit",
+        "subtitle": "Informationen zum Schutz Ihrer Gelder"
+      }
+    },
+    "time": {
+      "minutesAgo_one": "vor {{count}} Min.",
+      "minutesAgo_other": "vor {{count}} Min."
+    }
+  },
+  "profile": {
+    "defaultUser": "Benutzer",
+    "verified": "Verifiziert",
+    "tabs": {
+      "profile": "Profil",
+      "security": "Sicherheit",
+      "activity": "Aktivität"
+    },
+    "accountInfo": {
+      "title": "Kontoinformationen",
+      "emailLabel": "E-Mail-Adresse",
+      "emailHint": "E-Mail kann nicht geändert werden",
+      "fullNameLabel": "Vollständiger Name",
+      "fullNamePlaceholder": "Max Mustermann",
+      "userIdLabel": "Benutzer-ID"
+    },
+    "buttons": {
+      "saving": "Speichern...",
+      "save": "Änderungen speichern",
+      "changing": "Ändern...",
+      "changePassword": "Passwort ändern"
+    },
+    "status": {
+      "title": "Kontostatus",
+      "verification": "Verifizierung",
+      "yes": "Ja",
+      "no": "Nein",
+      "botType": "Bot-Typ",
+      "balance": "Guthaben"
+    },
+    "dates": {
+      "title": "Daten",
+      "registration": "Registrierungsdatum",
+      "lastLogin": "Letzter Login"
+    },
+    "security": {
+      "title": "Passwort ändern",
+      "currentPassword": "Aktuelles Passwort",
+      "newPassword": "Neues Passwort",
+      "confirmNewPassword": "Neues Passwort bestätigen"
+    },
+    "tips": {
+      "title": "Sicherheitstipps",
+      "tip1": "Verwenden Sie ein starkes Passwort",
+      "tip2": "Teilen Sie Ihr Passwort nicht mit anderen",
+      "tip3": "Ändern Sie Ihr Passwort regelmäßig",
+      "tip4": "Verwenden Sie ein einzigartiges Passwort"
+    },
+    "activity": {
+      "title": "Kontoaktivität",
+      "level": "Kontostufe",
+      "withUs": "Bei uns",
+      "days": "Tage",
+      "verification": "Verifizierung"
+    },
+    "messages": {
+      "profileUpdateSuccess": "Profil erfolgreich aktualisiert!",
+      "profileUpdateError": "Fehler beim Aktualisieren des Profils",
+      "passwordMismatch": "Neue Passwörter stimmen nicht überein",
+      "passwordUpdateSuccess": "Passwort erfolgreich geändert!",
+      "passwordUpdateError": "Fehler beim Ändern des Passworts"
+    }
+  },
+  "auth": {
+    "login": "Anmelden",
+    "logout": "Abmelden",
+    "email": "E-Mail",
+    "password": "Passwort",
+    "welcome": "Willkommen zurück",
+    "loginSubtitle": "Geben Sie Ihre Anmeldeinformationen ein, um auf Ihr Konto zuzugreifen",
+    "loginButton": "Anmelden",
+    "noAccount": "Haben Sie kein Konto?",
+    "signUp": "Registrieren",
+    "platformSlogan": "Professionelle Handelsplattform",
+    "hero": {
+      "title1": "Handeln Sie Kryptowährung",
+      "title2": "mit Zuversicht"
+    },
+    "heroSubtitle": "Schließen Sie sich Tausenden von Händlern an, die unserer Plattform vertrauen",
+    "features": {
+      "security": {
+        "title": "Sicherheit",
+        "description": "Schutz der Gelder durch Verschlüsselung auf Bankenniveau"
+      },
+      "instantDeals": {
+        "title": "Sofortige Geschäfte",
+        "description": "Der Handelsbot arbeitet rund um die Uhr für maximalen Gewinn"
+      },
+      "provenPlatform": {
+        "title": "Bewährte Plattform",
+        "description": "Über 1000+ aktive Benutzer und 2,5 Mio. € Handelsvolumen"
+      }
+    },
+    "stats": {
+      "users": "Benutzer",
+      "volume": "Handelsvolumen",
+      "support": "Support"
+    },
+    "welcomeTitle": "Willkommen",
+    "welcomeSubtitle": "Melden Sie sich bei Ihrem Konto an, um fortzufahren",
+    "errorTitle": "Anmeldefehler",
+    "emailLabel": "E-Mail-Adresse",
+    "passwordLabel": "Passwort",
+    "loggingIn": "Anmelden...",
+    "demo": {
+      "title": "Schnellanmeldung mit Demokonten"
+    },
+    "footer": "© 2025 Bemo Investment. Alle Rechte vorbehalten."
+  }
+}

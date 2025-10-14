@@ -1,0 +1,413 @@
+{
+  "nav": {
+    "home": "Home",
+    "market": "Market",
+    "balance": "Balance",
+    "support": "Support",
+    "profile": "Profile"
+  },
+  "auth": {
+    "login": "Login",
+    "logout": "Logout",
+    "email": "Email",
+    "password": "Password",
+    "welcome": "Welcome back",
+    "loginSubtitle": "Enter your credentials to access your account",
+    "loginButton": "Sign In",
+    "noAccount": "Don't have an account?",
+    "signUp": "Sign up"
+  },
+  "dashboard": {
+    "greeting": "Welcome",
+    "greetingName": "Welcome, {{name}}!",
+    "portfolioGrowth": "Your portfolio is up",
+    "last24h": "in the last 24 hours",
+    "totalBalance": "Total Balance",
+    "pnl24h": "24h PNL",
+    "assets": "Assets",
+    "cryptocurrencies": "cryptocurrencies",
+    "income": "Income",
+    "monthly": "per month",
+    "deposit": "Deposit",
+    "trade": "Trade",
+    "marketStats": "Market Statistics",
+    "volume24h": "24h Volume",
+    "avgChange": "Avg. Change",
+    "activeTraders": "Active Traders",
+    "fearGreedIndex": "Fear & Greed Index",
+    "greed": "Greed",
+    "topGainers": "Top Gainers",
+    "viewAll": "View All",
+    "quickActions": "Quick Actions",
+    "withdraw": "Withdraw",
+    "trading": "Trading",
+    "gainers": "Gainers",
+    "losers": "Losers",
+    "assetsLast24h": "assets in 24h",
+    "live": "Live",
+    "offline": "Offline",
+    "topLosers": "Top Losers",
+    "recentActivity": "Recent Activity",
+    "promoTitle": "Get a Bonus!",
+    "promoSubtitle": "Invite a friend and get $50 to your account",
+    "promoButton": "Invite a Friend",
+    "mockTime1": "2 min ago",
+    "mockTime2": "15 min ago",
+    "mockTime3": "1 hour ago"
+  },
+  "market": {
+    "title": "Market",
+    "status": {
+      "realtime": "Real-time",
+      "disconnected": "Disconnected"
+    },
+    "availableBalance": "Available Balance",
+    "tabs": {
+      "crypto": "Cryptocurrencies",
+      "stocks": "Stocks",
+      "forex": "Forex",
+      "commodities": "Commodities"
+    },
+    "searchPlaceholder": "Search by name or symbol...",
+    "favorites": "Favorites",
+    "view": {
+      "table": "Table",
+      "grid": "Grid"
+    },
+    "assetsCount": "{{count}} assets",
+    "noAssetsFound": "No assets found",
+    "table": {
+      "asset": "Asset",
+      "price": "Price",
+      "change24h": "24h Change",
+      "chart": "Chart",
+      "action": "Action"
+    },
+    "buy": "Buy"
+  },
+  "trading": {
+    "title": "Trading",
+    "search": "Search cryptocurrency...",
+    "name": "Name",
+    "price": "Price",
+    "change24h": "24h Change",
+    "volume": "Volume",
+    "chart": "Chart",
+    "buy": "Buy",
+    "sell": "Sell",
+    "amount": "Amount",
+    "total": "Total",
+    "available": "Available",
+    "orderType": "Order Type",
+    "market": "Market",
+    "limit": "Limit",
+    "stop": "Stop",
+    "placeOrder": "Place Order",
+    "openOrders": "Open Orders",
+    "orderHistory": "Order History",
+    "noOrders": "No orders yet"
+  },
+  "balance": {
+    "title": "Balance",
+    "totalBalance": "Total Balance",
+    "availableBalance": "Available",
+    "lockedBalance": "Locked",
+    "deposit": "Deposit",
+    "withdraw": "Withdraw",
+    "transfer": "Transfer",
+    "crypto": "Crypto",
+    "fiat": "Fiat",
+    "asset": "Asset",
+    "total": "Total",
+    "available": "Available",
+    "locked": "In Orders",
+    "actions": "Actions",
+    "transactionHistory": "Transaction History",
+    "type": "Type",
+    "amount": "Amount",
+    "status": "Status",
+    "date": "Date",
+    "pending": "Pending",
+    "completed": "Completed",
+    "failed": "Failed"
+  },
+  "support": {
+    "title": "Support",
+    "subtitle": "How can we help you?",
+    "searchPlaceholder": "Search for help...",
+    "startChat": "Start Chat",
+    "faq": "Frequently Asked Questions",
+    "contactUs": "Contact Us",
+    "email": "Email",
+    "liveChat": "Live Chat",
+    "phone": "Phone",
+    "sendMessage": "Send Message",
+    "yourMessage": "Your message...",
+    "subject": "Subject",
+    "description": "Description",
+    "submit": "Submit",
+    "howToDeposit": "How to deposit funds?",
+    "howToWithdraw": "How to withdraw?",
+    "tradingFees": "What are the trading fees?",
+    "accountSecurity": "How to secure my account?",
+    "kycVerification": "KYC Verification",
+    "apiDocumentation": "API Documentation"
+  },
+  "profile": {
+    "title": "Profile",
+    "personalInfo": "Personal Information",
+    "security": "Security",
+    "preferences": "Preferences",
+    "fullName": "Full Name",
+    "email": "Email",
+    "phone": "Phone Number",
+    "accountType": "Account Type",
+    "memberSince": "Member Since",
+    "verified": "Verified",
+    "notVerified": "Not Verified",
+    "save": "Save Changes",
+    "changePassword": "Change Password",
+    "currentPassword": "Current Password",
+    "newPassword": "New Password",
+    "confirmPassword": "Confirm Password",
+    "twoFactor": "Two-Factor Authentication",
+    "enable2FA": "Enable 2FA",
+    "disable2FA": "Disable 2FA",
+    "language": "Language",
+    "currency": "Currency",
+    "timezone": "Timezone",
+    "notifications": "Notifications",
+    "emailNotifications": "Email Notifications",
+    "pushNotifications": "Push Notifications"
+  },
+  "sidebar": {
+    "accountNumber": "Account Number",
+    "totalBalanceUsd": "TOTAL BALANCE (USD)",
+    "pnlUsd": "PNL (USD)",
+    "history": "History",
+    "settings": "Settings"
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "close": "Close",
+    "save": "Save",
+    "edit": "Edit",
+    "delete": "Delete",
+    "search": "Search",
+    "filter": "Filter",
+    "sort": "Sort",
+    "language": "Language"
+  },
+  "balance": {
+    "loading": "Loading balance data...",
+    "title": "Balance & Transactions",
+    "subtitle": "Manage your deposits and withdrawals",
+    "availableBalance": "Available Balance",
+    "deposit": "Deposit",
+    "withdraw": "Withdraw",
+    "totalDeposits": "Total Deposits",
+    "totalWithdrawals": "Total Withdrawals",
+    "operations": "Operations",
+    "transactionHistory": "Transaction History",
+    "viewReceipt": "View",
+    "table": {
+      "type": "Type",
+      "amount": "Amount",
+      "method": "Method",
+      "status": "Status",
+      "date": "Date",
+      "receipt": "Receipt"
+    },
+    "types": {
+      "deposit": "Deposit",
+      "withdrawal": "Withdrawal"
+    },
+    "status": {
+      "completed": "Completed",
+      "pending": "Pending",
+      "rejected": "Rejected"
+    },
+    "noTransactions": {
+      "title": "No transactions yet",
+      "subtitle": "Deposit funds to get started",
+      "button": "Deposit Balance"
+    },
+    "modals": {
+      "depositTitle": "Deposit Balance",
+      "withdrawTitle": "Withdraw Funds",
+      "amountLabel": "Deposit Amount",
+      "withdrawAmountLabel": "Withdrawal Amount",
+      "methodLabel": "Payment Method",
+      "withdrawMethodLabel": "Withdrawal Method",
+      "receiptLabel": "Payment Receipt",
+      "uploadClick": "Click to upload",
+      "uploadHint": "PNG, JPG or PDF up to 5MB",
+      "sending": "Sending...",
+      "sendButton": "Send for review",
+      "errorReceipt": "Please upload a payment receipt",
+      "errorDeposit": "Error creating deposit",
+      "availableToWithdraw": "Available for withdrawal",
+      "walletAddressLabel": "Wallet Address",
+      "requesting": "Sending request...",
+      "requestButton": "Request Withdrawal",
+      "errorInsufficientFunds": "Insufficient funds in the balance",
+      "errorWithdraw": "Error creating withdrawal request"
+    },
+    "methods": {
+      "card": "Bank Card",
+      "crypto": "Cryptocurrency",
+      "transfer": "Bank Transfer"
+    }
+  },
+  "support": {
+    "loading": "Loading chat...",
+    "header": {
+      "title": "Bemo Investment Support",
+      "subtitle": "Online • Usually replies within an hour"
+    },
+    "emptyChat": {
+      "title": "Start a conversation with support",
+      "subtitle": "Our team is ready to help you with any questions about trading, deposits, or withdrawals"
+    },
+    "chat": {
+      "supportTeam": "Support Team",
+      "attachment": "Attachment"
+    },
+    "input": {
+      "attachTitle": "Attach file",
+      "placeholder": "Enter a message...",
+      "footer": "Average response time: 1 hour • We work 24/7"
+    },
+    "cards": {
+      "faq": {
+        "title": "Frequently Asked Questions",
+        "subtitle": "Answers to popular questions about the platform"
+      },
+      "docs": {
+        "title": "Documentation",
+        "subtitle": "Guides on using all features"
+      },
+      "security": {
+        "title": "Security",
+        "subtitle": "Information on protecting your funds"
+      }
+    },
+    "time": {
+      "minutesAgo_one": "{{count}} min ago",
+      "minutesAgo_other": "{{count}} mins ago"
+    }
+  },
+  "profile": {
+    "defaultUser": "User",
+    "verified": "Verified",
+    "tabs": {
+      "profile": "Profile",
+      "security": "Security",
+      "activity": "Activity"
+    },
+    "accountInfo": {
+      "title": "Account Information",
+      "emailLabel": "Email address",
+      "emailHint": "Email cannot be changed",
+      "fullNameLabel": "Full Name",
+      "fullNamePlaceholder": "John Doe",
+      "userIdLabel": "User ID"
+    },
+    "buttons": {
+      "saving": "Saving...",
+      "save": "Save Changes",
+      "changing": "Changing...",
+      "changePassword": "Change Password"
+    },
+    "status": {
+      "title": "Account Status",
+      "verification": "Verification",
+      "yes": "Yes",
+      "no": "No",
+      "botType": "Bot Type",
+      "balance": "Balance"
+    },
+    "dates": {
+      "title": "Dates",
+      "registration": "Registration Date",
+      "lastLogin": "Last Login"
+    },
+    "security": {
+      "title": "Change Password",
+      "currentPassword": "Current Password",
+      "newPassword": "New Password",
+      "confirmNewPassword": "Confirm new password"
+    },
+    "tips": {
+      "title": "Security Tips",
+      "tip1": "Use a strong password",
+      "tip2": "Do not share your password with others",
+      "tip3": "Change your password regularly",
+      "tip4": "Use a unique password"
+    },
+    "activity": {
+      "title": "Account Activity",
+      "level": "Account Level",
+      "withUs": "With us",
+      "days": "days",
+      "verification": "Verification"
+    },
+    "messages": {
+      "profileUpdateSuccess": "Profile updated successfully!",
+      "profileUpdateError": "Error updating profile",
+      "passwordMismatch": "New passwords do not match",
+      "passwordUpdateSuccess": "Password changed successfully!",
+      "passwordUpdateError": "Error changing password"
+    }
+  },
+  "auth": {
+    "login": "Login",
+    "logout": "Logout",
+    "email": "Email",
+    "password": "Password",
+    "welcome": "Welcome back",
+    "loginSubtitle": "Enter your credentials to access your account",
+    "loginButton": "Sign In",
+    "noAccount": "Don't have an account?",
+    "signUp": "Sign up",
+    "platformSlogan": "Professional Trading Platform",
+    "hero": {
+      "title1": "Trade cryptocurrency",
+      "title2": "with confidence"
+    },
+    "heroSubtitle": "Join thousands of traders who trust our platform",
+    "features": {
+      "security": {
+        "title": "Security",
+        "description": "Protection of funds using bank-level encryption"
+      },
+      "instantDeals": {
+        "title": "Instant Deals",
+        "description": "The trading bot works 24/7 for maximum profit"
+      },
+      "provenPlatform": {
+        "title": "Proven Platform",
+        "description": "Over 1000+ active users and €2.5M trading volume"
+      }
+    },
+    "stats": {
+      "users": "Users",
+      "volume": "Trading Volume",
+      "support": "Support"
+    },
+    "welcomeTitle": "Welcome",
+    "welcomeSubtitle": "Log in to your account to continue",
+    "errorTitle": "Login Error",
+    "emailLabel": "Email address",
+    "passwordLabel": "Password",
+    "loggingIn": "Logging in...",
+    "demo": {
+      "title": "Quick login with demo accounts"
+    },
+    "footer": "© 2025 Bemo Investment. All rights reserved."
+  }
+}

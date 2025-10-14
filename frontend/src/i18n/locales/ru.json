@@ -1,0 +1,289 @@
+{
+  "nav": {
+    "home": "Главная",
+    "market": "Рынок",
+    "balance": "Баланс",
+    "support": "Поддержка",
+    "profile": "Профиль"
+  },
+  "market": {
+    "title": "Маркет",
+    "status": {
+      "realtime": "В реальном времени",
+      "disconnected": "Отключено"
+    },
+    "availableBalance": "Доступный баланс",
+    "tabs": {
+      "crypto": "Криптовалюты",
+      "stocks": "Акции",
+      "forex": "Форекс",
+      "commodities": "Товары"
+    },
+    "searchPlaceholder": "Поиск по названию или символу...",
+    "favorites": "Избранное",
+    "view": {
+      "table": "Таблица",
+      "grid": "Сетка"
+    },
+    "assetsCount": "{{count}} активов",
+    "noAssetsFound": "Активы не найдены",
+    "table": {
+      "asset": "Актив",
+      "price": "Цена",
+      "change24h": "Изменение 24ч",
+      "chart": "График",
+      "action": "Действие"
+    },
+    "buy": "Купить"
+  },
+  "dashboard": {
+    "greetingName": "Добро пожаловать, {{name}}!",
+    "portfolioGrowth": "Ваш портфель растёт на",
+    "last24h": "за последние 24 часа",
+    "totalBalance": "Общий баланс",
+    "pnl24h": "24ч PNL",
+    "assets": "Активы",
+    "cryptocurrencies": "криптовалют",
+    "income": "Доход",
+    "monthly": "за месяц",
+    "deposit": "Пополнить",
+    "trade": "Торговать",
+    "marketStats": "Статистика рынка",
+    "volume24h": "Объём 24ч",
+    "avgChange": "Сред. изменение",
+    "activeTraders": "Активных трейдеров",
+    "fearGreedIndex": "Индекс страха и жадности",
+    "greed": "Жадность",
+    "topGainers": "Лидеры роста",
+    "viewAll": "Смотреть всё",
+    "quickActions": "Быстрые действия",
+    "withdraw": "Вывести",
+    "trading": "Торговля",
+    "gainers": "Растут",
+    "losers": "Падают",
+    "assetsLast24h": "активов за 24ч",
+    "live": "Live",
+    "offline": "Offline",
+    "topLosers": "Лидеры падения",
+    "recentActivity": "Последние операции",
+    "promoTitle": "Получи бонус!",
+    "promoSubtitle": "Пригласи друга и получи 50$ на счёт",
+    "promoButton": "Пригласить друга",
+    "mockTime1": "2 мин назад",
+    "mockTime2": "15 мин назад",
+    "mockTime3": "1 час назад"
+  },
+  "trading": {
+    "buy": "Покупка",
+    "sell": "Продажа"
+  },
+  "balance": {
+    "loading": "Загрузка данных баланса...",
+    "title": "Баланс и транзакции",
+    "subtitle": "Управление депозитами и выводом средств",
+    "availableBalance": "Доступный баланс",
+    "deposit": "Пополнить",
+    "withdraw": "Вывести",
+    "totalDeposits": "Всего пополнений",
+    "totalWithdrawals": "Всего выведено",
+    "operations": "Операций",
+    "transactionHistory": "История транзакций",
+    "viewReceipt": "Просмотр",
+    "table": {
+      "type": "Тип",
+      "amount": "Сумма",
+      "method": "Метод",
+      "status": "Статус",
+      "date": "Дата",
+      "receipt": "Чек"
+    },
+    "types": {
+      "deposit": "Пополнение",
+      "withdrawal": "Вывод"
+    },
+    "status": {
+      "completed": "Завершено",
+      "pending": "Ожидание",
+      "rejected": "Отклонено"
+    },
+    "noTransactions": {
+      "title": "Транзакций пока нет",
+      "subtitle": "Пополните баланс для начала работы",
+      "button": "Пополнить баланс"
+    },
+    "modals": {
+      "depositTitle": "Пополнение баланса",
+      "withdrawTitle": "Вывод средств",
+      "amountLabel": "Сумма пополнения",
+      "withdrawAmountLabel": "Сумма вывода",
+      "methodLabel": "Способ оплаты",
+      "withdrawMethodLabel": "Способ вывода",
+      "receiptLabel": "Чек об оплате",
+      "uploadClick": "Нажмите для загрузки",
+      "uploadHint": "PNG, JPG или PDF до 5MB",
+      "sending": "Отправка...",
+      "sendButton": "Отправить на проверку",
+      "errorReceipt": "Пожалуйста, загрузите чек об оплате",
+      "errorDeposit": "Ошибка создания депозита",
+      "availableToWithdraw": "Доступно для вывода",
+      "walletAddressLabel": "Адрес кошелька",
+      "requesting": "Отправка запроса...",
+      "requestButton": "Запросить вывод",
+      "errorInsufficientFunds": "Недостаточно средств на балансе",
+      "errorWithdraw": "Ошибка создания запроса на вывод"
+    },
+    "methods": {
+      "card": "Банковская карта",
+      "crypto": "Криптовалюта",
+      "transfer": "Банковский перевод"
+    }
+  },
+  "support": {
+    "loading": "Загрузка чата...",
+    "header": {
+      "title": "Поддержка Bemo Investment",
+      "subtitle": "Онлайн • Обычно отвечает в течение часа"
+    },
+    "emptyChat": {
+      "title": "Начните диалог с поддержкой",
+      "subtitle": "Наша команда готова помочь вам с любыми вопросами о торговле, пополнении или выводе средств"
+    },
+    "chat": {
+      "supportTeam": "Команда поддержки",
+      "attachment": "Вложение"
+    },
+    "input": {
+      "attachTitle": "Прикрепить файл",
+      "placeholder": "Введите сообщение...",
+      "footer": "Среднее время ответа: 1 час • Работаем 24/7"
+    },
+    "cards": {
+      "faq": {
+        "title": "Частые вопросы",
+        "subtitle": "Ответы на популярные вопросы о платформе"
+      },
+      "docs": {
+        "title": "Документация",
+        "subtitle": "Руководства по использованию всех функций"
+      },
+      "security": {
+        "title": "Безопасность",
+        "subtitle": "Информация о защите ваших средств"
+      }
+    },
+    "time": {
+      "minutesAgo_one": "{{count}} минуту назад",
+      "minutesAgo_few": "{{count}} минуты назад",
+      "minutesAgo_many": "{{count}} минут назад"
+    }
+  },
+  "profile": {
+    "defaultUser": "Пользователь",
+    "verified": "Верифицирован",
+    "tabs": {
+      "profile": "Профиль",
+      "security": "Безопасность",
+      "activity": "Активность"
+    },
+    "accountInfo": {
+      "title": "Информация об аккаунте",
+      "emailLabel": "Email адрес",
+      "emailHint": "Email нельзя изменить",
+      "fullNameLabel": "Полное имя",
+      "fullNamePlaceholder": "Иван Иванов",
+      "userIdLabel": "ID пользователя"
+    },
+    "buttons": {
+      "saving": "Сохранение...",
+      "save": "Сохранить изменения",
+      "changing": "Изменение...",
+      "changePassword": "Изменить пароль"
+    },
+    "status": {
+      "title": "Статус аккаунта",
+      "verification": "Верификация",
+      "yes": "Да",
+      "no": "Нет",
+      "botType": "Тип бота",
+      "balance": "Баланс"
+    },
+    "dates": {
+      "title": "Даты",
+      "registration": "Дата регистрации",
+      "lastLogin": "Последний вход"
+    },
+    "security": {
+      "title": "Изменить пароль",
+      "currentPassword": "Текущий пароль",
+      "newPassword": "Новый пароль",
+      "confirmNewPassword": "Подтвердите новый пароль"
+    },
+    "tips": {
+      "title": "Советы по безопасности",
+      "tip1": "Используйте сложный пароль",
+      "tip2": "Не делитесь паролем с другими",
+      "tip3": "Регулярно меняйте пароль",
+      "tip4": "Используйте уникальный пароль"
+    },
+    "activity": {
+      "title": "Активность аккаунта",
+      "level": "Уровень аккаунта",
+      "withUs": "С нами",
+      "days": "дней",
+      "verification": "Верификация"
+    },
+    "messages": {
+      "profileUpdateSuccess": "Профиль успешно обновлен!",
+      "profileUpdateError": "Ошибка обновления профиля",
+      "passwordMismatch": "Новые пароли не совпадают",
+      "passwordUpdateSuccess": "Пароль успешно изменен!",
+      "passwordUpdateError": "Ошибка изменения пароля"
+    }
+  },
+  "auth": {
+    "login": "Вход",
+    "logout": "Выход",
+    "email": "Email",
+    "password": "Пароль",
+    "welcome": "С возвращением",
+    "loginSubtitle": "Введите свои данные для доступа к аккаунту",
+    "loginButton": "Войти",
+    "noAccount": "Нет аккаунта?",
+    "signUp": "Зарегистрироваться",
+    "platformSlogan": "Профессиональная торговая платформа",
+    "hero": {
+      "title1": "Торгуйте криптовалютой",
+      "title2": "с уверенностью"
+    },
+    "heroSubtitle": "Присоединяйтесь к тысячам трейдеров, которые доверяют нашей платформе",
+    "features": {
+      "security": {
+        "title": "Безопасность",
+        "description": "Защита средств с использованием банковского уровня шифрования"
+      },
+      "instantDeals": {
+        "title": "Мгновенные сделки",
+        "description": "Торговый бот работает 24/7 для максимальной прибыли"
+      },
+      "provenPlatform": {
+        "title": "Проверенная платформа",
+        "description": "Более 1000+ активных пользователей и €2.5M торгового объема"
+      }
+    },
+    "stats": {
+      "users": "Пользователей",
+      "volume": "Объем торгов",
+      "support": "Поддержка"
+    },
+    "welcomeTitle": "Добро пожаловать",
+    "welcomeSubtitle": "Войдите в свой аккаунт для продолжения",
+    "errorTitle": "Ошибка входа",
+    "emailLabel": "Email адрес",
+    "passwordLabel": "Пароль",
+    "loggingIn": "Вход в систему...",
+    "demo": {
+      "title": "Быстрый вход с демо-аккаунтами"
+    },
+    "footer": "© 2025 Bemo Investment. Все права защищены."
+  }
+}
