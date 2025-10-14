@@ -16,4 +16,3 @@ router.register(r'transactions', AdminTransactionViewSet, basename='admin-transa
 urlpatterns = [
     path('', include(router.urls)),
 ]
-

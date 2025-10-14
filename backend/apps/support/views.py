@@ -1,82 +1,66 @@
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from django.utils import timezone
-from .models import SupportMessage
-from .serializers import SupportMessageSerializer, SendMessageSerializer
+from .models import SupportChat
+from .serializers import SupportChatSerializer, SendMessageSerializer
 
-
-class SupportMessageViewSet(viewsets.ModelViewSet):
+class SupportChatViewSet(viewsets.ModelViewSet):
     """
-    ViewSet for support chat messages
-    GET /api/support/messages/ - list all user messages
-    POST /api/support/messages/ - send new message
-    GET /api/support/messages/{id}/ - retrieve single message
+    ViewSet for support chat sessions.
+    Admins can list/retrieve all chats.
+    Users can only access their own chat via the /my-chat/ action.
     """
     permission_classes = [IsAuthenticated]
+    serializer_class = SupportChatSerializer
 
-    def get_serializer_class(self):
-        if self.action == 'create':
-            return SendMessageSerializer
-        return SupportMessageSerializer
+    def get_serializer_context(self):
+        """Pass request to serializer."""
+        return {'request': self.request}
 
     def get_queryset(self):
-        return SupportMessage.objects.filter(user=self.request.user)
+        """Admins see all chats, users see none from the main endpoint."""
+        if self.request.user.is_staff:
+            return SupportChat.objects.prefetch_related('messages', 'user').order_by('-updated_at')
+        # Regular users access their chat via a dedicated action.
+        return SupportChat.objects.none()
 
-    def list(self, request, *args, **kwargs):
-        """Get all messages for current user"""
-        queryset = self.get_queryset()
-        serializer = self.get_serializer(queryset, many=True)
+    def destroy(self, request, *args, **kwargs):
+        """Allow only admins to delete a chat."""
+        if not request.user.is_staff:
+            return Response(status=status.HTTP_403_FORBIDDEN)
+        return super().destroy(request, *args, **kwargs)
 
-        # Mark all unread messages as read
-        queryset.filter(is_read=False, is_from_admin=True).update(
-            is_read=True,
-            read_at=timezone.now()
-        )
-
+    @action(detail=False, methods=['get'], url_path='my-chat')
+    def my_chat(self, request):
+        """Get or create a chat for the current user."""
+        chat, _ = SupportChat.objects.get_or_create(user=request.user)
+        serializer = self.get_serializer(chat)
         return Response(serializer.data)
 
-    def create(self, request, *args, **kwargs):
-        """Send new message"""
-        serializer = self.get_serializer(data=request.data)
-
+    @action(detail=False, methods=['post'], url_path='my-chat/send-message')
+    def send_user_message(self, request):
+        """Create a new message from a user in their chat."""
+        chat, _ = SupportChat.objects.get_or_create(user=request.user)
+        serializer = SendMessageSerializer(data=request.data, context=self.get_serializer_context())
         if serializer.is_valid():
-            message = serializer.save()
-            return Response(
-                SupportMessageSerializer(message).data,
-                status=status.HTTP_201_CREATED
-            )
-
+            serializer.save(chat=chat, user=request.user, is_from_admin=False)
+            chat.updated_at = timezone.now()
+            chat.status = 'open'
+            chat.save()
+            return Response(self.get_serializer(chat).data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    @action(detail=False, methods=['get'])
-    def unread_count(self, request):
-        """
-        Get count of unread messages from admin
-        GET /api/support/messages/unread_count/
-        """
-        count = self.get_queryset().filter(
-            is_from_admin=True,
-            is_read=False
-        ).count()
-
-        return Response({'unread_count': count})
-
-    @action(detail=True, methods=['post'])
-    def mark_read(self, request, pk=None):
-        """
-        Mark message as read
-        POST /api/support/messages/{id}/mark_read/
-        """
-        message = self.get_object()
-
-        if not message.is_read:
-            message.is_read = True
-            message.read_at = timezone.now()
-            message.save()
-
-        return Response({
-            'message': 'Marked as read',
-            'data': self.get_serializer(message).data
-        })
+    @action(detail=True, methods=['post'], url_path='send-admin-message', permission_classes=[IsAdminUser])
+    def send_admin_message(self, request, pk=None):
+        """Create a new message from an admin in a specific chat."""
+        chat = self.get_object()
+        serializer = SendMessageSerializer(data=request.data, context=self.get_serializer_context())
+        if serializer.is_valid():
+            serializer.save(chat=chat, user=request.user, is_from_admin=True)
+            chat.status = 'in_progress'
+            chat.updated_at = timezone.now()
+            chat.save()
+            return Response(self.get_serializer(chat).data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

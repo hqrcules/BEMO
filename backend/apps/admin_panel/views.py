@@ -11,6 +11,8 @@ from .serializers import (
 )
 from apps.accounts.models import User
 from apps.transactions.models import Transaction
+from apps.support.models import SupportChat
+from apps.support.serializers import SupportChatSerializer
 
 
 class PaymentDetailsViewSet(viewsets.ModelViewSet):
@@ -190,3 +192,28 @@ class AdminTransactionViewSet(viewsets.ModelViewSet):
             'message': 'Transaction rejected',
             'transaction': self.get_serializer(transaction).data
         })
+
+
+class AdminSupportChatViewSet(viewsets.ReadOnlyModelViewSet):
+    """
+    ViewSet for admin to view and respond to support chats.
+    """
+    queryset = SupportChat.objects.all()
+    serializer_class = SupportChatSerializer
+    permission_classes = [IsAdminUser]
+
+    @action(detail=True, methods=['post'])
+    def send_message(self, request, pk=None):
+        chat = self.get_object()
+        serializer = SendMessageSerializer(data=request.data)
+        if serializer.is_valid():
+            SupportMessage.objects.create(
+                chat=chat,
+                user=request.user, # The admin user
+                message=serializer.validated_data['message'],
+                is_from_admin=True
+            )
+            chat.status = 'in_progress'
+            chat.save()
+            return Response(SupportChatSerializer(chat).data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

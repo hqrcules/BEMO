@@ -23,6 +23,8 @@ const AdminDashboard = lazy(() => import('./features/admin/AdminDashboard'));
 const AdminUsers = lazy(() => import('./features/admin/AdminUsers'));
 const AdminTransactions = lazy(() => import('./features/admin/AdminTransactions'));
 const AdminTrades = lazy(() => import('./features/admin/AdminTrades'));
+const AdminSupportPage = lazy(() => import('./features/admin/AdminSupportPage'));
+
 
 const LoadingFallback = () => (
   <div className="min-h-screen flex items-center justify-center bg-gray-900">
@@ -44,20 +46,24 @@ function AppContent() {
   const location = useLocation();
 
   useEffect(() => {
-    const isLoginPage = location.pathname === '/login';
-    const isAdminRoute = location.pathname.startsWith('/admin');
-
-    if (!isLoginPage && !isAdminRoute) {
-      dispatch(fetchUserProfile());
+    const publicPages = ['/login', '/admin/login'];
+    if (publicPages.includes(location.pathname)) {
+      return;
     }
-  }, [dispatch]);
+    dispatch(fetchUserProfile());
+  }, [dispatch, location.pathname]);
 
   const isLoginPage = location.pathname === '/login';
   const isAdminRoute = location.pathname.startsWith('/admin');
 
-  if (isLoading && !isAdminRoute && !isLoginPage) {
-    return <LoadingFallback />;
+  // Initial load check for non-public pages
+  if (isLoading && !isLoginPage && !isAdminRoute) {
+    const publicPages = ['/login', '/admin/login'];
+    if (!publicPages.includes(location.pathname)) {
+      return <LoadingFallback />;
+    }
   }
+
 
   return (
     <div className="min-h-screen bg-gray-900">
@@ -86,6 +92,7 @@ function AppContent() {
               <Route path="users" element={<AdminUsers />} />
               <Route path="transactions" element={<AdminTransactions />} />
               <Route path="trades" element={<AdminTrades />} />
+              <Route path="support" element={<AdminSupportPage />} />
             </Route>
           </Route>
 

@@ -1,59 +1,57 @@
 from rest_framework import serializers
-from drf_spectacular.utils import extend_schema_field
-from .models import SupportMessage
-
+from .models import SupportChat, SupportMessage
 
 class SupportMessageSerializer(serializers.ModelSerializer):
-    """Serializer for SupportMessage model"""
-
+    """Serializer for a single message."""
     user_email = serializers.EmailField(source='user.email', read_only=True)
     sender_name = serializers.SerializerMethodField()
+    attachment_url = serializers.SerializerMethodField()
 
     class Meta:
         model = SupportMessage
         fields = [
-            'id',
-            'user',
-            'user_email',
-            'message',
-            'attachment',
-            'is_from_admin',
-            'is_read',
-            'sender_name',
-            'created_at',
-            'read_at',
+            'id', 'chat', 'user', 'user_email', 'message', 'attachment',
+            'attachment_url', 'is_from_admin', 'is_read', 'sender_name',
+            'created_at', 'read_at',
         ]
-        read_only_fields = [
-            'id',
-            'user',
-            'is_from_admin',
-            'is_read',
-            'created_at',
-            'read_at',
-        ]
+        read_only_fields = ['id', 'user', 'chat', 'is_from_admin', 'created_at', 'read_at']
 
-    @extend_schema_field(serializers.CharField)
     def get_sender_name(self, obj):
         if obj.is_from_admin:
-            return 'Support Team'
+            return 'Команда поддержки'
         return obj.user.full_name or obj.user.email
 
+    def get_attachment_url(self, obj):
+        request = self.context.get('request')
+        if obj.attachment and request:
+            return request.build_absolute_uri(obj.attachment.url)
+        return None
+
+class SupportChatSerializer(serializers.ModelSerializer):
+    """Serializer for a chat session, including its messages."""
+    user_email = serializers.EmailField(source='user.email', read_only=True)
+    user_full_name = serializers.CharField(source='user.get_full_name', read_only=True)
+    messages = SupportMessageSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = SupportChat
+        fields = [
+            'id', 'user', 'user_email', 'user_full_name', 'status', 'subject',
+            'created_at', 'updated_at', 'messages'
+        ]
+
+    def get_fields(self):
+        fields = super().get_fields()
+        # Pass context to nested serializer
+        fields['messages'].context.update(self.context)
+        return fields
 
 class SendMessageSerializer(serializers.ModelSerializer):
-    """Serializer for sending messages"""
-
+    """Serializer for creating a new message."""
     class Meta:
         model = SupportMessage
         fields = ['message', 'attachment']
 
-    def create(self, validated_data):
-        user = self.context['request'].user
-
-        message = SupportMessage.objects.create(
-            user=user,
-            message=validated_data['message'],
-            attachment=validated_data.get('attachment'),
-            is_from_admin=False
-        )
-
-        return message
+    def save(self, **kwargs):
+        # The view will pass 'chat', 'user', and 'is_from_admin'
+        return super().save(**kwargs)

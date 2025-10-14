@@ -1,4 +1,5 @@
 import api from '@/shared/config/axios';
+import { SupportChat } from '@/shared/types/support';
 
 export interface AdminUser {
   id: string;
@@ -84,4 +85,25 @@ export const adminService = {
     const response = await api.post(`/api/admin/users/${userId}/create-trade/`, data);
     return response.data;
   },
+
+  // Get all support chats
+  async getSupportChats(): Promise<SupportChat[]> {
+    const response = await api.get('/api/support/chats/');
+    return response.data;
+  },
+
+  // Send admin message to a chat
+  async sendAdminSupportMessage(chatId: string, data: FormData): Promise<SupportChat> {
+    const response = await api.post(`/api/support/chats/${chatId}/send_admin_message/`, data, {
+        headers: {
+            'Content-Type': 'multipart/form-data',
+        },
+    });
+    return response.data;
+  },
+
+  // Delete a support chat
+  async deleteSupportChat(chatId: string): Promise<void> {
+    await api.delete(`/api/support/chats/${chatId}/`);
+  }
 };

@@ -5,7 +5,8 @@ import {
   Clock,
   TrendingUp,
   LogOut,
-  Shield
+  Shield,
+  MessageSquare
 } from 'lucide-react';
 
 export default function AdminLayout() {
@@ -22,6 +23,7 @@ export default function AdminLayout() {
     { name: 'Пользователи', path: '/admin/users', icon: Users },
     { name: 'Транзакции', path: '/admin/transactions', icon: Clock },
     { name: 'Создать сделки', path: '/admin/trades', icon: TrendingUp },
+    { name: 'Поддержка', path: '/admin/support', icon: MessageSquare },
   ];
 
   return (

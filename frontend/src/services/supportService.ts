@@ -1,25 +1,16 @@
 import api from '@/shared/config/axios';
-
-export interface SupportMessage {
-  id: string;
-  user: string;
-  user_email: string;
-  message: string;
-  is_admin: boolean;
-  attachment?: string;
-  created_at: string;
-}
+import { SupportChat, SupportMessage } from '@/shared/types/support';
 
 export const supportService = {
-  // Get all messages
-  async getMessages(): Promise<{ results: SupportMessage[] }> {
-    const response = await api.get('/api/support/messages/');
+  // Get all messages for the user's chat
+  async getMessages(): Promise<SupportChat> {
+    const response = await api.get('/api/support/chats/my-chat/');
     return response.data;
   },
 
-  // Send message
+  // Send a message
   async sendMessage(data: FormData): Promise<SupportMessage> {
-    const response = await api.post('/api/support/messages/', data, {
+    const response = await api.post('/api/support/chats/my-chat/send_message/', data, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },

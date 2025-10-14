@@ -1,12 +1,12 @@
 import { useEffect, useState, useRef } from 'react';
 import { useAppSelector } from '@/store/hooks';
-import { supportService, SupportMessage } from '@/services/supportService';
+import { supportService } from '@/services/supportService';
+import { SupportChat } from '@/shared/types/support';
 import { useTranslation } from 'react-i18next';
 import {
   MessageSquare,
   Send,
   Paperclip,
-  Image as ImageIcon,
   FileText,
   X,
   Shield,
@@ -17,7 +17,7 @@ import {
 export default function SupportPage() {
   const { t, i18n } = useTranslation();
   const { user } = useAppSelector((state) => state.auth);
-  const [messages, setMessages] = useState<SupportMessage[]>([]);
+  const [chat, setChat] = useState<SupportChat | null>(null);
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState('');
   const [attachment, setAttachment] = useState<File | null>(null);
@@ -33,12 +33,12 @@ export default function SupportPage() {
 
   useEffect(() => {
     scrollToBottom();
-  }, [messages]);
+  }, [chat?.messages]);
 
   const loadMessages = async () => {
     try {
       const data = await supportService.getMessages();
-      setMessages(data.results || []);
+      setChat(data);
     } catch (error) {
       console.error('Error loading messages:', error);
     } finally {
@@ -131,7 +131,7 @@ export default function SupportPage() {
       <div className="glass-card flex flex-col h-[600px]">
         {/* Messages Area */}
         <div className="flex-1 overflow-y-auto p-6 space-y-4">
-          {messages.length === 0 ? (
+          {!chat || chat.messages.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-full text-center">
               <MessageSquare className="w-16 h-16 text-dark-text-tertiary mb-4 opacity-50" />
               <p className="text-dark-text-secondary text-lg font-medium mb-2">
@@ -143,11 +143,11 @@ export default function SupportPage() {
             </div>
           ) : (
             <>
-              {messages.map((msg, index) => {
-                const isUser = !msg.is_admin;
+              {chat.messages.map((msg, index) => {
+                const isUser = !msg.is_from_admin;
                 const showDate =
                   index === 0 ||
-                  new Date(msg.created_at).toDateString() !== new Date(messages[index - 1].created_at).toDateString();
+                  new Date(msg.created_at).toDateString() !== new Date(chat.messages[index - 1].created_at).toDateString();
 
                 return (
                   <div key={msg.id}>
@@ -171,12 +171,10 @@ export default function SupportPage() {
                           <div className={`rounded-2xl px-5 py-3 ${isUser ? 'bg-gradient-to-br from-primary-500 to-primary-600 text-white shadow-lg' : 'bg-dark-card border border-dark-border'}`}>
                             {!isUser && <p className="text-xs text-primary-500 font-semibold mb-1">{t('support.chat.supportTeam')}</p>}
                             <p className={`text-sm ${isUser ? 'text-white' : 'text-dark-text-primary'}`}>{msg.message}</p>
-                            {msg.attachment && (
-                              <a href={msg.attachment} target="_blank" rel="noopener noreferrer" className="mt-2 flex items-center gap-2 p-2 bg-black/10 rounded-lg hover:bg-black/20 transition-colors">
-                                {msg.attachment.match(/\.(jpg|jpeg|png|gif)$/i) ? <ImageIcon className="w-4 h-4" /> : <FileText className="w-4 h-4" />}
-                                <span className="text-xs">{t('support.chat.attachment')}</span>
-                              </a>
-                            )}
+                            {msg.attachment_url && msg.attachment_url.match(/\.(jpeg|jpg|gif|png)$/) != null ?
+                              (<img src={msg.attachment_url} alt="attachment" className="mt-2 rounded-lg max-w-xs" />) :
+                              (msg.attachment_url && <a href={msg.attachment_url} target="_blank" rel="noopener noreferrer" className="text-cyan-400 underline mt-2 block">Attachment</a>)
+                            }
                           </div>
                           <div className={`flex items-center gap-1 mt-1 px-2 ${isUser ? 'justify-end' : 'justify-start'}`}>
                             <Clock className="w-3 h-3 text-dark-text-tertiary" />
