@@ -1,7 +1,8 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef, useCallback } from 'react';
 import { useAppSelector } from '@/store/hooks';
 import { supportService } from '@/services/supportService';
 import { SupportChat, SupportMessage } from '@/shared/types/support';
+import { usePolling } from '@/shared/hooks/usePolling';
 import { useTranslation } from 'react-i18next';
 import {
   MessageSquare,
@@ -23,59 +24,88 @@ export default function SupportPage() {
   const [sending, setSending] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const ws = useRef<WebSocket | null>(null);
+  const lastMessageTimestamp = useRef<string | null>(null);
 
-  useEffect(() => {
-    // Initial load via HTTP
-    supportService.getMessages().then(data => {
-      setChat(data);
-      setLoading(false);
-    }).catch(error => {
-      console.error('Error loading initial messages:', error);
-      setLoading(false);
-    });
-
-    // --- WebSocket Connection ---
-    const connect = () => {
-      const wsUrl = `ws://${window.location.host}/ws/support/`;
-      ws.current = new WebSocket(wsUrl);
-
-      ws.current.onopen = () => console.log("Support WebSocket connected");
-
-      ws.current.onmessage = (event) => {
-        const data = JSON.parse(event.data);
-        if (data.type === 'new_message') {
-          const newMessage: SupportMessage = data.message;
-          setChat(prevChat => {
-            if (prevChat && prevChat.id === newMessage.chat) {
-              const messageExists = prevChat.messages.some(m => m.id === newMessage.id);
-              if (!messageExists) {
-                return { ...prevChat, messages: [...prevChat.messages, newMessage] };
-              }
-            }
-            return prevChat;
-          });
+  // Polling function to get new messages
+  const pollForMessages = useCallback(async () => {
+    try {
+      const response = await supportService.pollMessages(lastMessageTimestamp.current || undefined);
+      
+      if (response.messages.length > 0) {
+        setChat(prevChat => {
+          if (!prevChat) {
+            // If no chat exists, create one with the new messages
+            return {
+              id: '', // Will be set properly from the first message
+              messages: response.messages,
+              status: response.chat_status,
+              user: user?.id || '',
+              user_email: user?.email || '',
+              user_full_name: user?.full_name || '',
+              subject: '',
+              created_at: response.messages[0]?.created_at || new Date().toISOString(),
+              updated_at: response.last_updated
+            };
+          }
+          
+          // Add new messages to existing chat
+          const existingMessageIds = new Set(prevChat.messages.map(m => m.id));
+          const newMessages = response.messages.filter(m => !existingMessageIds.has(m.id));
+          
+          if (newMessages.length > 0) {
+            return {
+              ...prevChat,
+              messages: [...prevChat.messages, ...newMessages],
+              status: response.chat_status,
+              updated_at: response.last_updated
+            };
+          }
+          
+          return prevChat;
+        });
+        
+        // Update timestamp for next poll
+        const latestMessage = response.messages[response.messages.length - 1];
+        if (latestMessage) {
+          lastMessageTimestamp.current = latestMessage.created_at;
         }
-      };
+      }
+    } catch (error) {
+      console.error('Error polling messages:', error);
+    }
+  }, [user]);
 
-      ws.current.onclose = () => {
-        console.log("Support WebSocket disconnected. Reconnecting...");
-        setTimeout(connect, 3000);
-      };
+  // Initialize polling
+  usePolling(pollForMessages, {
+    interval: 3000, // Poll every 3 seconds
+    enabled: !loading && !!user
+  });
 
-      ws.current.onerror = (err) => {
-        console.error("Support WebSocket error:", err);
-        ws.current?.close();
-      };
+  // Initial load
+  useEffect(() => {
+    const loadInitialData = async () => {
+      try {
+        const chatData = await supportService.getMessages();
+        setChat(chatData);
+        
+        // Set initial timestamp for polling
+        if (chatData.messages.length > 0) {
+          const latestMessage = chatData.messages[chatData.messages.length - 1];
+          lastMessageTimestamp.current = latestMessage.created_at;
+        }
+      } catch (error) {
+        console.error('Error loading initial messages:', error);
+      } finally {
+        setLoading(false);
+      }
     };
 
-    connect();
+    if (user) {
+      loadInitialData();
+    }
+  }, [user]);
 
-    return () => {
-      ws.current?.close();
-    };
-  }, []);
-
+  // Auto-scroll to bottom when new messages arrive
   useEffect(() => {
     scrollToBottom();
   }, [chat?.messages]);
@@ -96,7 +126,15 @@ export default function SupportPage() {
         formData.append('attachment', attachment);
       }
 
-      await supportService.sendMessage(formData);
+      const updatedChat = await supportService.sendMessage(formData);
+      setChat(updatedChat);
+      
+      // Update timestamp after sending message
+      if (updatedChat.messages.length > 0) {
+        const latestMessage = updatedChat.messages[updatedChat.messages.length - 1];
+        lastMessageTimestamp.current = latestMessage.created_at;
+      }
+      
       setMessage('');
       setAttachment(null);
       if (fileInputRef.current) {
@@ -127,7 +165,7 @@ export default function SupportPage() {
 
   return (
     <div className="space-y-6">
-      {/* Header and other components remain the same */}
+      {/* Header */}
       <div className="glass-card p-6">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
@@ -147,6 +185,7 @@ export default function SupportPage() {
         </div>
       </div>
 
+      {/* Chat Container */}
       <div className="glass-card flex flex-col h-[600px]">
         <div className="flex-1 overflow-y-auto p-6 space-y-4">
           {!chat || chat.messages.length === 0 ? (
@@ -199,6 +238,7 @@ export default function SupportPage() {
           )}
         </div>
 
+        {/* Message Input */}
         <div className="border-t border-dark-border p-4">
           {attachment && (
             <div className="mb-3 flex items-center gap-2 p-3 bg-dark-hover rounded-lg">
