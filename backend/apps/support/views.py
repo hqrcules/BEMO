@@ -3,8 +3,9 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from django.utils import timezone
+from django.utils.dateparse import parse_datetime
 from .models import SupportChat, SupportMessage
-from .serializers import SupportChatSerializer, SendMessageSerializer
+from .serializers import SupportChatSerializer, SendMessageSerializer, SupportMessageSerializer
 
 
 class SupportChatViewSet(viewsets.ModelViewSet):
@@ -39,6 +40,62 @@ class SupportChatViewSet(viewsets.ModelViewSet):
         chat, _ = SupportChat.objects.get_or_create(user=request.user)
         serializer = self.get_serializer(chat)
         return Response(serializer.data)
+
+    @action(detail=False, methods=['get'], url_path='my-chat/messages')
+    def poll_messages(self, request):
+        """Polling endpoint for getting new messages in user's chat."""
+        try:
+            chat = SupportChat.objects.get(user=request.user)
+        except SupportChat.DoesNotExist:
+            return Response({'messages': []})
+
+        # Get timestamp from query params (optional)
+        since = request.query_params.get('since')
+        messages_queryset = chat.messages.all()
+        
+        if since:
+            try:
+                since_datetime = parse_datetime(since)
+                if since_datetime:
+                    messages_queryset = messages_queryset.filter(created_at__gt=since_datetime)
+            except (ValueError, TypeError):
+                pass  # If parsing fails, return all messages
+
+        messages = messages_queryset.order_by('created_at')
+        serializer = SupportMessageSerializer(messages, many=True)
+        
+        return Response({
+            'messages': serializer.data,
+            'chat_status': chat.status,
+            'last_updated': timezone.now().isoformat()
+        })
+
+    @action(detail=True, methods=['get'], url_path='messages', permission_classes=[IsAdminUser])
+    def poll_admin_messages(self, request, pk=None):
+        """Polling endpoint for admins to get messages from specific chat."""
+        chat = self.get_object()
+        
+        # Get timestamp from query params (optional)
+        since = request.query_params.get('since')
+        messages_queryset = chat.messages.all()
+        
+        if since:
+            try:
+                since_datetime = parse_datetime(since)
+                if since_datetime:
+                    messages_queryset = messages_queryset.filter(created_at__gt=since_datetime)
+            except (ValueError, TypeError):
+                pass
+
+        messages = messages_queryset.order_by('created_at')
+        serializer = SupportMessageSerializer(messages, many=True)
+        
+        return Response({
+            'messages': serializer.data,
+            'chat_status': chat.status,
+            'chat_id': str(chat.id),
+            'last_updated': timezone.now().isoformat()
+        })
 
     @action(detail=False, methods=['post'], url_path='my-chat/send_message')
     def send_user_message(self, request):
