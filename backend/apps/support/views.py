@@ -3,8 +3,11 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from django.utils import timezone
-from .models import SupportChat
-from .serializers import SupportChatSerializer, SendMessageSerializer
+from .models import SupportChat, SupportMessage
+from .serializers import SupportChatSerializer, SendMessageSerializer, SupportMessageSerializer
+from channels.layers import get_channel_layer
+from asgiref.sync import async_to_sync
+
 
 class SupportChatViewSet(viewsets.ModelViewSet):
     """
@@ -32,6 +35,26 @@ class SupportChatViewSet(viewsets.ModelViewSet):
             return Response(status=status.HTTP_403_FORBIDDEN)
         return super().destroy(request, *args, **kwargs)
 
+    def _broadcast_message(self, chat, message_instance):
+        """Helper to send message via WebSocket to user and admins."""
+        channel_layer = get_channel_layer()
+        message_serializer = SupportMessageSerializer(message_instance, context=self.get_serializer_context())
+
+        async_to_sync(channel_layer.group_send)(
+            f'support_chat_{chat.id}',
+            {
+                'type': 'chat.message',
+                'message': message_serializer.data,
+            }
+        )
+        async_to_sync(channel_layer.group_send)(
+            'support_admin',
+            {
+                'type': 'chat.message',
+                'message': message_serializer.data,
+            }
+        )
+
     @action(detail=False, methods=['get'], url_path='my-chat')
     def my_chat(self, request):
         """Get or create a chat for the current user."""
@@ -39,28 +62,35 @@ class SupportChatViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(chat)
         return Response(serializer.data)
 
-    @action(detail=False, methods=['post'], url_path='my-chat/send-message')
+    @action(detail=False, methods=['post'], url_path='my-chat/send_message')
     def send_user_message(self, request):
-        """Create a new message from a user in their chat."""
+        """Create a new message from a user and broadcast it."""
         chat, _ = SupportChat.objects.get_or_create(user=request.user)
         serializer = SendMessageSerializer(data=request.data, context=self.get_serializer_context())
         if serializer.is_valid():
-            serializer.save(chat=chat, user=request.user, is_from_admin=False)
+            message = serializer.save(chat=chat, user=request.user, is_from_admin=False)
             chat.updated_at = timezone.now()
             chat.status = 'open'
             chat.save()
+
+            self._broadcast_message(chat, message)
+
             return Response(self.get_serializer(chat).data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    @action(detail=True, methods=['post'], url_path='send-admin-message', permission_classes=[IsAdminUser])
+    @action(detail=True, methods=['post'], url_path='send_admin_message', permission_classes=[IsAdminUser])
     def send_admin_message(self, request, pk=None):
-        """Create a new message from an admin in a specific chat."""
+        """Create a new message from an admin and broadcast it."""
         chat = self.get_object()
         serializer = SendMessageSerializer(data=request.data, context=self.get_serializer_context())
         if serializer.is_valid():
-            serializer.save(chat=chat, user=request.user, is_from_admin=True)
+            message = serializer.save(chat=chat, user=request.user, is_from_admin=True)
             chat.status = 'in_progress'
             chat.updated_at = timezone.now()
             chat.save()
+
+            # Транслюємо повідомлення через WebSocket
+            self._broadcast_message(chat, message)
+
             return Response(self.get_serializer(chat).data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

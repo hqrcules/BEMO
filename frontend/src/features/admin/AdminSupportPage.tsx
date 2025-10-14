@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef } from 'react';
 import { adminService } from '@/services/adminService';
-import { SupportChat } from '@/shared/types/support';
-import { MessageSquare, Send, Paperclip, Trash2 } from 'lucide-react';
+import { SupportChat, SupportMessage } from '@/shared/types/support';
+import { MessageSquare, Send, Paperclip, Trash2, Clock } from 'lucide-react';
 
 export default function AdminSupportPage() {
   const [chats, setChats] = useState<SupportChat[]>([]);
@@ -10,10 +10,67 @@ export default function AdminSupportPage() {
   const [attachment, setAttachment] = useState<File | null>(null);
   const [loading, setLoading] = useState(true);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const ws = useRef<WebSocket | null>(null);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     loadChats();
+
+    const connectWebSocket = () => {
+      const wsUrl = `ws://${window.location.host}/ws/support/`;
+      ws.current = new WebSocket(wsUrl);
+
+      ws.current.onopen = () => console.log("Admin WebSocket connected");
+
+      ws.current.onmessage = (event) => {
+          const data = JSON.parse(event.data);
+          if (data.type === 'new_message') {
+              const newMessage: SupportMessage = data.message;
+              setChats(prevChats =>
+                  prevChats.map(chat => {
+                      if (chat.id === newMessage.chat) {
+                          const messageExists = chat.messages.some(m => m.id === newMessage.id);
+                          if (!messageExists) {
+                              return { ...chat, messages: [...chat.messages, newMessage] };
+                          }
+                      }
+                      return chat;
+                  })
+              );
+          }
+      };
+
+      ws.current.onclose = () => {
+          console.log("Admin WebSocket disconnected. Reconnecting...");
+          setTimeout(connectWebSocket, 3000);
+      };
+
+      ws.current.onerror = (err) => {
+          console.error("Admin WebSocket error:", err);
+          ws.current?.close();
+      };
+    };
+
+    connectWebSocket();
+
+    return () => {
+        ws.current?.close();
+    };
   }, []);
+
+  useEffect(() => {
+    if (selectedChat) {
+      const updatedSelectedChat = chats.find(c => c.id === selectedChat.id);
+      if (updatedSelectedChat) {
+        setSelectedChat(updatedSelectedChat);
+      }
+    }
+    scrollToBottom();
+  }, [chats, selectedChat]);
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
 
   const loadChats = async () => {
     setLoading(true);
@@ -51,16 +108,18 @@ export default function AdminSupportPage() {
     }
 
     try {
-      const updatedChat = await adminService.sendAdminSupportMessage(selectedChat.id, formData);
-      setSelectedChat(updatedChat);
+      await adminService.sendAdminSupportMessage(selectedChat.id, formData);
       setMessage('');
       setAttachment(null);
       if(fileInputRef.current) fileInputRef.current.value = '';
-      const newChats = chats.map(chat => chat.id === updatedChat.id ? updatedChat : chat);
-      setChats(newChats);
     } catch (error) {
       console.error("Failed to send message", error);
     }
+  };
+
+  const formatTime = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
   };
 
   if (loading) {
@@ -69,7 +128,6 @@ export default function AdminSupportPage() {
 
   return (
     <div className="flex h-[calc(100vh-120px)] text-white">
-      {/* Chat List */}
       <div className="w-1/3 border-r border-gray-700 overflow-y-auto">
         {chats.map(chat => (
           <div
@@ -87,24 +145,24 @@ export default function AdminSupportPage() {
           </div>
         ))}
       </div>
-
-      {/* Message View */}
       <div className="w-2/3 flex flex-col">
         {selectedChat ? (
           <>
             <div className="flex-1 p-4 overflow-y-auto">
               {selectedChat.messages.map(msg => (
-                <div key={msg.id} className={`mb-4 flex ${msg.is_from_admin ? 'justify-end' : 'justify-start'}`}>
+                <div key={msg.id} className={`mb-4 flex flex-col ${msg.is_from_admin ? 'items-end' : 'items-start'}`}>
                   <div className={`rounded-lg p-3 max-w-lg ${msg.is_from_admin ? 'bg-blue-600 text-white' : 'bg-gray-700'}`}>
                     <p className="font-bold text-sm">{msg.sender_name}</p>
                     <p>{msg.message}</p>
-                    {msg.attachment_url && msg.attachment_url.match(/\.(jpeg|jpg|gif|png)$/) != null ?
-                      (<img src={msg.attachment_url} alt="attachment" className="mt-2 rounded-lg max-w-xs" />) :
-                      (msg.attachment_url && <a href={msg.attachment_url} target="_blank" rel="noopener noreferrer" className="text-cyan-400 underline mt-2 block">Attachment</a>)
-                    }
+                    {msg.attachment_url && <a href={msg.attachment_url} target="_blank" rel="noopener noreferrer" className="text-cyan-400 underline mt-2 block">Attachment</a>}
                   </div>
+                   <div className="flex items-center gap-1 mt-1 text-xs text-gray-400">
+                      <Clock className="w-3 h-3" />
+                      <span>{formatTime(msg.created_at)}</span>
+                    </div>
                 </div>
               ))}
+              <div ref={messagesEndRef} />
             </div>
             <div className="p-4 border-t border-gray-700">
                 <div className="flex items-center">
@@ -114,6 +172,7 @@ export default function AdminSupportPage() {
                         onChange={(e) => setMessage(e.target.value)}
                         className="flex-1 p-2 bg-gray-800 rounded-l-lg outline-none"
                         placeholder="Type a message..."
+                        onKeyDown={(e) => { if (e.key === 'Enter') handleSendMessage() }}
                     />
                      <input type="file" ref={fileInputRef} onChange={(e) => setAttachment(e.target.files?.[0] || null)} className="hidden" />
                     <button onClick={() => fileInputRef.current?.click()} className="p-3 bg-gray-800 hover:bg-gray-700">

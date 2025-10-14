@@ -1,13 +1,12 @@
 import { useEffect, useState, useRef } from 'react';
 import { useAppSelector } from '@/store/hooks';
 import { supportService } from '@/services/supportService';
-import { SupportChat } from '@/shared/types/support';
+import { SupportChat, SupportMessage } from '@/shared/types/support';
 import { useTranslation } from 'react-i18next';
 import {
   MessageSquare,
   Send,
   Paperclip,
-  FileText,
   X,
   Shield,
   Clock,
@@ -24,27 +23,62 @@ export default function SupportPage() {
   const [sending, setSending] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const ws = useRef<WebSocket | null>(null);
 
   useEffect(() => {
-    loadMessages();
-    const interval = setInterval(loadMessages, 5000);
-    return () => clearInterval(interval);
+    // Initial load via HTTP
+    supportService.getMessages().then(data => {
+      setChat(data);
+      setLoading(false);
+    }).catch(error => {
+      console.error('Error loading initial messages:', error);
+      setLoading(false);
+    });
+
+    // --- WebSocket Connection ---
+    const connect = () => {
+      const wsUrl = `ws://${window.location.host}/ws/support/`;
+      ws.current = new WebSocket(wsUrl);
+
+      ws.current.onopen = () => console.log("Support WebSocket connected");
+
+      ws.current.onmessage = (event) => {
+        const data = JSON.parse(event.data);
+        if (data.type === 'new_message') {
+          const newMessage: SupportMessage = data.message;
+          setChat(prevChat => {
+            if (prevChat && prevChat.id === newMessage.chat) {
+              const messageExists = prevChat.messages.some(m => m.id === newMessage.id);
+              if (!messageExists) {
+                return { ...prevChat, messages: [...prevChat.messages, newMessage] };
+              }
+            }
+            return prevChat;
+          });
+        }
+      };
+
+      ws.current.onclose = () => {
+        console.log("Support WebSocket disconnected. Reconnecting...");
+        setTimeout(connect, 3000);
+      };
+
+      ws.current.onerror = (err) => {
+        console.error("Support WebSocket error:", err);
+        ws.current?.close();
+      };
+    };
+
+    connect();
+
+    return () => {
+      ws.current?.close();
+    };
   }, []);
 
   useEffect(() => {
     scrollToBottom();
   }, [chat?.messages]);
-
-  const loadMessages = async () => {
-    try {
-      const data = await supportService.getMessages();
-      setChat(data);
-    } catch (error) {
-      console.error('Error loading messages:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -65,7 +99,9 @@ export default function SupportPage() {
       await supportService.sendMessage(formData);
       setMessage('');
       setAttachment(null);
-      loadMessages();
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
     } catch (error) {
       console.error('Error sending message:', error);
     } finally {
@@ -75,23 +111,7 @@ export default function SupportPage() {
 
   const formatTime = (dateString: string) => {
     const date = new Date(dateString);
-    const now = new Date();
-    const diff = now.getTime() - date.getTime();
-    const hours = Math.floor(diff / (1000 * 60 * 60));
-
-    if (hours < 1) {
-      const minutes = Math.floor(diff / (1000 * 60));
-      return t('support.time.minutesAgo', { count: minutes });
-    } else if (hours < 24) {
-      return date.toLocaleTimeString(i18n.language, { hour: '2-digit', minute: '2-digit' });
-    } else {
-      return date.toLocaleDateString(i18n.language, {
-        day: '2-digit',
-        month: 'short',
-        hour: '2-digit',
-        minute: '2-digit',
-      });
-    }
+    return date.toLocaleTimeString(i18n.language, { hour: '2-digit', minute: '2-digit' });
   };
 
   if (loading) {
@@ -107,7 +127,7 @@ export default function SupportPage() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
+      {/* Header and other components remain the same */}
       <div className="glass-card p-6">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
@@ -127,9 +147,7 @@ export default function SupportPage() {
         </div>
       </div>
 
-      {/* Chat Container */}
       <div className="glass-card flex flex-col h-[600px]">
-        {/* Messages Area */}
         <div className="flex-1 overflow-y-auto p-6 space-y-4">
           {!chat || chat.messages.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-full text-center">
@@ -145,21 +163,8 @@ export default function SupportPage() {
             <>
               {chat.messages.map((msg, index) => {
                 const isUser = !msg.is_from_admin;
-                const showDate =
-                  index === 0 ||
-                  new Date(msg.created_at).toDateString() !== new Date(chat.messages[index - 1].created_at).toDateString();
-
                 return (
                   <div key={msg.id}>
-                    {showDate && (
-                      <div className="flex items-center justify-center my-6">
-                        <div className="px-4 py-2 bg-dark-hover rounded-full">
-                          <p className="text-xs text-dark-text-tertiary font-medium">
-                            {new Date(msg.created_at).toLocaleDateString(i18n.language, { day: 'numeric', month: 'long', year: 'numeric' })}
-                          </p>
-                        </div>
-                      </div>
-                    )}
                     <div className={`flex ${isUser ? 'justify-end' : 'justify-start'} animate-fade-in`} style={{ animationDelay: `${index * 50}ms` }}>
                       <div className={`flex gap-3 max-w-[70%] ${isUser ? 'flex-row-reverse' : 'flex-row'}`}>
                         {!isUser && (
@@ -171,10 +176,7 @@ export default function SupportPage() {
                           <div className={`rounded-2xl px-5 py-3 ${isUser ? 'bg-gradient-to-br from-primary-500 to-primary-600 text-white shadow-lg' : 'bg-dark-card border border-dark-border'}`}>
                             {!isUser && <p className="text-xs text-primary-500 font-semibold mb-1">{t('support.chat.supportTeam')}</p>}
                             <p className={`text-sm ${isUser ? 'text-white' : 'text-dark-text-primary'}`}>{msg.message}</p>
-                            {msg.attachment_url && msg.attachment_url.match(/\.(jpeg|jpg|gif|png)$/) != null ?
-                              (<img src={msg.attachment_url} alt="attachment" className="mt-2 rounded-lg max-w-xs" />) :
-                              (msg.attachment_url && <a href={msg.attachment_url} target="_blank" rel="noopener noreferrer" className="text-cyan-400 underline mt-2 block">Attachment</a>)
-                            }
+                            {msg.attachment_url && <a href={msg.attachment_url} target="_blank" rel="noopener noreferrer" className="text-cyan-400 underline mt-2 block">Attachment</a>}
                           </div>
                           <div className={`flex items-center gap-1 mt-1 px-2 ${isUser ? 'justify-end' : 'justify-start'}`}>
                             <Clock className="w-3 h-3 text-dark-text-tertiary" />
@@ -197,7 +199,6 @@ export default function SupportPage() {
           )}
         </div>
 
-        {/* Input Area */}
         <div className="border-t border-dark-border p-4">
           {attachment && (
             <div className="mb-3 flex items-center gap-2 p-3 bg-dark-hover rounded-lg">
@@ -234,31 +235,6 @@ export default function SupportPage() {
             </button>
           </form>
           <p className="text-xs text-dark-text-tertiary mt-3 text-center">{t('support.input.footer')}</p>
-        </div>
-      </div>
-
-      {/* Help Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="glass-card p-4 hover:border-primary-500/50 transition-all cursor-pointer">
-          <h4 className="font-semibold text-dark-text-primary mb-2 flex items-center gap-2">
-            <MessageSquare className="w-4 h-4 text-primary-500" />
-            {t('support.cards.faq.title')}
-          </h4>
-          <p className="text-sm text-dark-text-secondary">{t('support.cards.faq.subtitle')}</p>
-        </div>
-        <div className="glass-card p-4 hover:border-success-500/50 transition-all cursor-pointer">
-          <h4 className="font-semibold text-dark-text-primary mb-2 flex items-center gap-2">
-            <FileText className="w-4 h-4 text-success-500" />
-            {t('support.cards.docs.title')}
-          </h4>
-          <p className="text-sm text-dark-text-secondary">{t('support.cards.docs.subtitle')}</p>
-        </div>
-        <div className="glass-card p-4 hover:border-warning-500/50 transition-all cursor-pointer">
-          <h4 className="font-semibold text-dark-text-primary mb-2 flex items-center gap-2">
-            <Shield className="w-4 h-4 text-warning-500" />
-            {t('support.cards.security.title')}
-          </h4>
-          <p className="text-sm text-dark-text-secondary">{t('support.cards.security.subtitle')}</p>
         </div>
       </div>
     </div>
