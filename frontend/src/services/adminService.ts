@@ -1,5 +1,6 @@
 import api from '@/shared/config/axios';
-import { SupportChat } from '@/shared/types/support';
+import { SupportChat, SupportMessage } from '@/shared/types/support';
+import { PollingResponse } from './supportService';
 
 export interface AdminUser {
   id: string;
@@ -89,6 +90,13 @@ export const adminService = {
   // Get all support chats
   async getSupportChats(): Promise<SupportChat[]> {
     const response = await api.get('/api/support/chats/');
+    return response.data;
+  },
+
+  // Poll for messages in a specific chat (admin version)
+  async pollChatMessages(chatId: string, since?: string): Promise<PollingResponse> {
+    const params = since ? { since } : {};
+    const response = await api.get(`/api/support/chats/${chatId}/messages/`, { params });
     return response.data;
   },
 
