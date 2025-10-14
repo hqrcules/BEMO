@@ -23,7 +23,7 @@ export function usePolling(
 
   const startPolling = useCallback(async () => {
     if (isRunningRef.current || !enabled) return;
-    
+
     isRunningRef.current = true;
 
     const poll = async () => {

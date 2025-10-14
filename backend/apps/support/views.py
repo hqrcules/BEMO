@@ -52,7 +52,7 @@ class SupportChatViewSet(viewsets.ModelViewSet):
         # Get timestamp from query params (optional)
         since = request.query_params.get('since')
         messages_queryset = chat.messages.all()
-        
+
         if since:
             try:
                 since_datetime = parse_datetime(since)
@@ -63,7 +63,7 @@ class SupportChatViewSet(viewsets.ModelViewSet):
 
         messages = messages_queryset.order_by('created_at')
         serializer = SupportMessageSerializer(messages, many=True)
-        
+
         return Response({
             'messages': serializer.data,
             'chat_status': chat.status,
@@ -74,11 +74,11 @@ class SupportChatViewSet(viewsets.ModelViewSet):
     def poll_admin_messages(self, request, pk=None):
         """Polling endpoint for admins to get messages from specific chat."""
         chat = self.get_object()
-        
+
         # Get timestamp from query params (optional)
         since = request.query_params.get('since')
         messages_queryset = chat.messages.all()
-        
+
         if since:
             try:
                 since_datetime = parse_datetime(since)
@@ -89,7 +89,7 @@ class SupportChatViewSet(viewsets.ModelViewSet):
 
         messages = messages_queryset.order_by('created_at')
         serializer = SupportMessageSerializer(messages, many=True)
-        
+
         return Response({
             'messages': serializer.data,
             'chat_status': chat.status,
