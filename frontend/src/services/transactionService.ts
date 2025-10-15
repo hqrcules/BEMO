@@ -2,15 +2,17 @@ import api from '@/shared/config/axios';
 
 export interface Transaction {
   id: string;
-  user: string;
-  transaction_type: 'deposit' | 'withdrawal';
+  user_email?: string;
+  transaction_type: 'deposit' | 'withdrawal' | 'commission' | 'bot_profit';
   amount: string;
+  commission?: string;
+  total_amount?: string;
+  status: 'pending' | 'completed' | 'rejected' | 'processing';
   payment_method: string;
-  status: 'pending' | 'completed' | 'rejected';
-  receipt_file?: string;
-  admin_comment?: string;
+  payment_receipt?: string;
+  admin_notes?: string;
   created_at: string;
-  updated_at: string;
+  processed_at?: string;
 }
 
 export interface TransactionStats {
@@ -22,35 +24,28 @@ export interface TransactionStats {
 }
 
 export const transactionService = {
-  // Get all transactions
-  async getTransactions(): Promise<{ results: Transaction[] }> {
-    const response = await api.get('/api/transactions/');
-    return response.data;
+  async getTransactions(): Promise<{ results: Transaction[]; count: number }> {
+    const res = await api.get('/api/transactions/');
+    return res.data;
   },
-
-  // Get transaction stats
   async getStats(): Promise<TransactionStats> {
-    const response = await api.get('/api/transactions/stats/');
-    return response.data;
+    const res = await api.get('/api/transactions/stats/');
+    return res.data;
   },
-
-  // Create deposit
-  async createDeposit(data: FormData): Promise<Transaction> {
-    const response = await api.post('/api/transactions/deposit/', data, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    });
-    return response.data;
+  async createDeposit(data: { amount: number; payment_method: string; payment_receipt: File; }): Promise<{
+    transaction: Transaction; message: string; user_balance: string;
+  }> {
+    const fd = new FormData();
+    fd.append('amount', data.amount.toString());
+    fd.append('payment_method', data.payment_method);
+    fd.append('payment_receipt', data.payment_receipt);
+    const res = await api.post('/api/transactions/deposit/', fd, { headers: { 'Content-Type': 'multipart/form-data' } });
+    return res.data;
   },
-
-  // Request withdrawal
-  async requestWithdrawal(data: {
-    amount: number;
-    payment_method: string;
-    wallet_address?: string;
-  }): Promise<Transaction> {
-    const response = await api.post('/api/transactions/withdraw/', data);
-    return response.data;
+  async requestWithdrawal(data: { amount: number; }): Promise<{
+    transaction: Transaction; message: string; user_balance: string;
+  }> {
+    const res = await api.post('/api/transactions/withdraw/', data);
+    return res.data;
   },
 };

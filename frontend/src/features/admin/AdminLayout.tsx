@@ -6,7 +6,8 @@ import {
   TrendingUp,
   LogOut,
   Shield,
-  MessageSquare
+  MessageSquare,
+  CreditCard
 } from 'lucide-react';
 
 export default function AdminLayout() {
@@ -24,6 +25,7 @@ export default function AdminLayout() {
     { name: 'Транзакции', path: '/admin/transactions', icon: Clock },
     { name: 'Создать сделки', path: '/admin/trades', icon: TrendingUp },
     { name: 'Поддержка', path: '/admin/support', icon: MessageSquare },
+    { name: 'Реквизиты', path: '/admin/payment-details', icon: CreditCard },
   ];
 
   return (

@@ -138,14 +138,14 @@ export default function DashboardHome() {
                 </div>
 
                 <div className="mt-6 flex gap-3">
+                <button
+                  onClick={() => navigate('/balance', { state: { openDepositModal: true } })}
+                  className="flex-1 bg-white text-blue-600 py-3 rounded-xl font-semibold hover:bg-gray-100 transition-colors"
+                >
+                  {t('dashboard.deposit')}
+                </button>
                   <button
-                    onClick={() => navigate('/dashboard/balance')}
-                    className="flex-1 bg-white text-blue-600 py-3 rounded-xl font-semibold hover:bg-gray-100 transition-colors"
-                  >
-                    {t('dashboard.deposit')}
-                  </button>
-                  <button
-                    onClick={() => navigate('/dashboard/trading')}
+                    onClick={() => navigate('/trading')}
                     className="flex-1 bg-white/20 text-white py-3 rounded-xl font-semibold hover:bg-white/30 transition-colors backdrop-blur-sm"
                   >
                     {t('dashboard.trade')}
@@ -246,7 +246,7 @@ export default function DashboardHome() {
                   {t('dashboard.topGainers')}
                 </h2>
                 <button
-                  onClick={() => navigate('/dashboard/trading')}
+                  onClick={() => navigate('/trading')}
                   className="text-sm text-gray-400 hover:text-white transition-colors flex items-center gap-1"
                 >
                   {t('dashboard.viewAll')}
@@ -259,7 +259,7 @@ export default function DashboardHome() {
                   <div
                     key={crypto.id}
                     className="flex items-center justify-between p-4 bg-[#0B0E11] rounded-xl hover:bg-gray-800/50 transition-colors cursor-pointer"
-                    onClick={() => navigate('/dashboard/trading')}
+                    onClick={() => navigate('/trading')}
                   >
                     <div className="flex items-center gap-4">
                       <span className="text-gray-600 font-mono text-sm w-6">{index + 1}</span>
@@ -291,7 +291,7 @@ export default function DashboardHome() {
                   {t('dashboard.topLosers')}
                 </h2>
                 <button
-                  onClick={() => navigate('/dashboard/trading')}
+                  onClick={() => navigate('/trading')}
                   className="text-sm text-gray-400 hover:text-white transition-colors flex items-center gap-1"
                 >
                   {t('dashboard.viewAll')}
@@ -304,7 +304,7 @@ export default function DashboardHome() {
                   <div
                     key={crypto.id}
                     className="flex items-center justify-between p-4 bg-[#0B0E11] rounded-xl hover:bg-gray-800/50 transition-colors cursor-pointer"
-                    onClick={() => navigate('/dashboard/trading')}
+                    onClick={() => navigate('/trading')}
                   >
                     <div className="flex items-center gap-4">
                       <span className="text-gray-600 font-mono text-sm w-6">{index + 1}</span>
@@ -335,7 +335,7 @@ export default function DashboardHome() {
               <h3 className="text-lg font-semibold mb-4">{t('dashboard.quickActions')}</h3>
               <div className="grid grid-cols-2 gap-3">
                 <button
-                  onClick={() => navigate('/dashboard/balance')}
+                  onClick={() => navigate('/balance')}
                   className="p-4 bg-green-500/10 border border-green-500/30 rounded-xl hover:bg-green-500/20 transition-colors text-center"
                 >
                   <DollarSign className="w-6 h-6 text-green-400 mx-auto mb-2" />
@@ -343,7 +343,7 @@ export default function DashboardHome() {
                 </button>
 
                 <button
-                  onClick={() => navigate('/dashboard/balance')}
+                  onClick={() => navigate('/balance')}
                   className="p-4 bg-blue-500/10 border border-blue-500/30 rounded-xl hover:bg-blue-500/20 transition-colors text-center"
                 >
                   <ArrowUpRight className="w-6 h-6 text-blue-400 mx-auto mb-2" />
@@ -351,7 +351,7 @@ export default function DashboardHome() {
                 </button>
 
                 <button
-                  onClick={() => navigate('/dashboard/trading')}
+                  onClick={() => navigate('/trading')}
                   className="p-4 bg-purple-500/10 border border-purple-500/30 rounded-xl hover:bg-purple-500/20 transition-colors text-center"
                 >
                   <Activity className="w-6 h-6 text-purple-400 mx-auto mb-2" />
@@ -359,7 +359,7 @@ export default function DashboardHome() {
                 </button>
 
                 <button
-                  onClick={() => navigate('/dashboard/support')}
+                  onClick={() => navigate('/support')}
                   className="p-4 bg-orange-500/10 border border-orange-500/30 rounded-xl hover:bg-orange-500/20 transition-colors text-center"
                 >
                   <Users className="w-6 h-6 text-orange-400 mx-auto mb-2" />

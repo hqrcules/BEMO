@@ -24,6 +24,7 @@ const AdminUsers = lazy(() => import('./features/admin/AdminUsers'));
 const AdminTransactions = lazy(() => import('./features/admin/AdminTransactions'));
 const AdminTrades = lazy(() => import('./features/admin/AdminTrades'));
 const AdminSupportPage = lazy(() => import('./features/admin/AdminSupportPage'));
+const AdminPaymentDetails = lazy(() => import('./features/admin/AdminPaymentDetails'));
 
 
 const LoadingFallback = () => (
@@ -93,6 +94,7 @@ function AppContent() {
               <Route path="transactions" element={<AdminTransactions />} />
               <Route path="trades" element={<AdminTrades />} />
               <Route path="support" element={<AdminSupportPage />} />
+              <Route path="payment-details" element={<AdminPaymentDetails />} />
             </Route>
           </Route>
 
