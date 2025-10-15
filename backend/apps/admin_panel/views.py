@@ -3,6 +3,7 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.permissions import IsAdminUser
 from django.utils import timezone
+from django.db import transaction, models
 from decimal import Decimal
 from .models import PaymentDetails
 from .serializers import (
@@ -12,15 +13,10 @@ from .serializers import (
 )
 from apps.accounts.models import User
 from apps.transactions.models import Transaction
-from apps.support.models import SupportChat
-from apps.support.serializers import SupportChatSerializer
 
 
 class PaymentDetailsViewSet(viewsets.ModelViewSet):
-    """
-    ViewSet for managing payment details (реквізити)
-    Only accessible by admin users
-    """
+    """ViewSet for managing payment details"""
     queryset = PaymentDetails.objects.all()
     serializer_class = PaymentDetailsSerializer
     permission_classes = [IsAdminUser]
@@ -40,21 +36,56 @@ class PaymentDetailsViewSet(viewsets.ModelViewSet):
 
 
 class AdminUserViewSet(viewsets.ModelViewSet):
-    """
-    ViewSet for user management
-    Only accessible by admin users
-    """
-    queryset = User.objects.all()
+    """ViewSet for user management"""
     serializer_class = AdminUserSerializer
     permission_classes = [IsAdminUser]
 
+    def get_queryset(self):
+        """Improved queryset with proper ordering and filtering"""
+        queryset = User.objects.all().order_by('-created_at')
+
+        # Search functionality
+        search = self.request.query_params.get('search', None)
+        if search:
+            queryset = queryset.filter(
+                models.Q(email__icontains=search) |
+                models.Q(full_name__icontains=search)
+            )
+
+        # Status filter
+        is_active = self.request.query_params.get('is_active', None)
+        if is_active is not None:
+            queryset = queryset.filter(is_active=is_active.lower() == 'true')
+
+        return queryset
+
+    def list(self, request, *args, **kwargs):
+        """Enhanced list with statistics"""
+        queryset = self.get_queryset()
+        serializer = self.get_serializer(queryset, many=True)
+
+        return Response({
+            'results': serializer.data,
+            'count': queryset.count(),
+            'stats': self._get_user_stats()
+        })
+
+    def _get_user_stats(self):
+        """Get user statistics for admin dashboard"""
+        total_users = User.objects.count()
+        active_users = User.objects.filter(is_active=True).count()
+        verified_users = User.objects.filter(is_verified=True).count()
+
+        return {
+            'total_users': total_users,
+            'active_users': active_users,
+            'verified_users': verified_users,
+            'inactive_users': total_users - active_users
+        }
+
     @action(detail=True, methods=['patch'])
     def update_balance(self, request, pk=None):
-        """
-        Update user balance
-        PATCH /api/admin/users/{id}/update_balance/
-        Body: {"balance": 1000.00}
-        """
+        """Update user balance"""
         user = self.get_object()
         balance = request.data.get('balance')
 
@@ -65,8 +96,11 @@ class AdminUserViewSet(viewsets.ModelViewSet):
             )
 
         try:
-            user.balance = Decimal(str(balance))
-            user.save()
+            with transaction.atomic():
+                old_balance = user.balance
+                user.balance = Decimal(str(balance))
+                user.save()
+
         except Exception as e:
             return Response(
                 {'error': f'Invalid balance value: {e}'},
@@ -75,11 +109,13 @@ class AdminUserViewSet(viewsets.ModelViewSet):
 
         return Response({
             'message': 'Balance updated successfully',
-            'new_balance': user.balance
+            'old_balance': str(old_balance),
+            'new_balance': str(user.balance)
         })
 
     @action(detail=True, methods=['patch'])
     def update_bot(self, request, pk=None):
+        """Update user bot type"""
         user = self.get_object()
         bot_type = request.data.get('bot_type')
 
@@ -99,10 +135,7 @@ class AdminUserViewSet(viewsets.ModelViewSet):
 
     @action(detail=True, methods=['post'])
     def verify(self, request, pk=None):
-        """
-        Verify user (KYC)
-        POST /api/admin/users/{id}/verify/
-        """
+        """Verify user (KYC)"""
         user = self.get_object()
         user.is_verified = True
         user.save()
@@ -113,115 +146,141 @@ class AdminUserViewSet(viewsets.ModelViewSet):
 
 
 class AdminTransactionViewSet(viewsets.ModelViewSet):
-    """
-    ViewSet for transaction management
-    Only accessible by admin users
-    """
-    queryset = Transaction.objects.all()
+    """ViewSet for transaction management"""
     serializer_class = AdminTransactionSerializer
     permission_classes = [IsAdminUser]
 
+    def get_queryset(self):
+        """Enhanced queryset with proper relations"""
+        queryset = Transaction.objects.all().select_related(
+            'user', 'processed_by'
+        ).order_by('-created_at')
+
+        # Filters
+        status_filter = self.request.query_params.get('status')
+        transaction_type = self.request.query_params.get('type')
+        user_email = self.request.query_params.get('user_email')
+
+        if status_filter:
+            queryset = queryset.filter(status=status_filter)
+        if transaction_type:
+            queryset = queryset.filter(transaction_type=transaction_type)
+        if user_email:
+            queryset = queryset.filter(user__email__icontains=user_email)
+
+        return queryset
+
+    def list(self, request, *args, **kwargs):
+        """Enhanced list with statistics"""
+        queryset = self.get_queryset()
+        serializer = self.get_serializer(queryset, many=True)
+
+        return Response({
+            'results': serializer.data,
+            'count': queryset.count(),
+            'stats': self._get_transaction_stats()
+        })
+
+    def _get_transaction_stats(self):
+        """Get transaction statistics"""
+        stats = Transaction.objects.aggregate(
+            total_count=models.Count('id'),
+            pending_count=models.Count('id', filter=models.Q(status='pending')),
+            completed_count=models.Count('id', filter=models.Q(status='completed')),
+            total_deposits=models.Sum('amount', filter=models.Q(
+                transaction_type='deposit', status='completed'
+            )),
+            total_withdrawals=models.Sum('amount', filter=models.Q(
+                transaction_type='withdrawal', status='completed'
+            ))
+        )
+
+        return {
+            'total_transactions': stats['total_count'] or 0,
+            'pending_transactions': stats['pending_count'] or 0,
+            'completed_transactions': stats['completed_count'] or 0,
+            'total_deposits': float(stats['total_deposits'] or 0),
+            'total_withdrawals': float(stats['total_withdrawals'] or 0)
+        }
+
     @action(detail=False, methods=['get'])
     def pending(self, request):
-        """Get all pending transactions"""
-        pending = self.queryset.filter(status='pending')
+        """Get all pending transactions with enhanced data"""
+        pending = self.get_queryset().filter(status='pending')
         serializer = self.get_serializer(pending, many=True)
-        return Response(serializer.data)
+        return Response({
+            'results': serializer.data,
+            'count': pending.count()
+        })
 
     @action(detail=True, methods=['post'])
     def approve(self, request, pk=None):
-        """
-        Approve transaction
-        POST /api/admin/transactions/{id}/approve/
-        """
-        transaction = self.get_object()
+        """Approve transaction with real-time updates"""
+        with transaction.atomic():
+            transaction_obj = self.get_object()
 
-        if transaction.status != 'pending':
-            return Response(
-                {'error': 'Only pending transactions can be approved'},
-                status=status.HTTP_400_BAD_REQUEST
-            )
+            if transaction_obj.status != 'pending':
+                return Response(
+                    {'error': 'Only pending transactions can be approved'},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
 
-        # Update transaction
-        transaction.status = 'completed'
-        transaction.processed_at = timezone.now()
-        transaction.processed_by = request.user
+            # Update transaction
+            transaction_obj.status = 'completed'
+            transaction_obj.processed_at = timezone.now()
+            transaction_obj.processed_by = request.user
 
-        # Update user balance
-        user = transaction.user
+            # Update user balance for deposits
+            user = transaction_obj.user
 
-        if transaction.transaction_type == 'deposit':
-            user.balance += transaction.amount
+            if transaction_obj.transaction_type == 'deposit':
+                user.balance += transaction_obj.amount
 
-            # Update bot type based on deposit amount
-            if transaction.amount >= 1000:
-                user.bot_type = 'specialist'
-            elif transaction.amount >= 500:
-                user.bot_type = 'premium'
-            elif transaction.amount >= 250:
-                user.bot_type = 'basic'
+                # Update bot type based on deposit amount
+                if transaction_obj.amount >= 1000:
+                    user.bot_type = 'specialist'
+                elif transaction_obj.amount >= 500:
+                    user.bot_type = 'premium'
+                elif transaction_obj.amount >= 250:
+                    user.bot_type = 'basic'
 
-        elif transaction.transaction_type == 'withdrawal':
-            # Balance already deducted, just mark as completed
-            pass
+            user.save()
+            transaction_obj.save()
 
-        user.save()
-        transaction.save()
-
-        return Response({
-            'message': 'Transaction approved successfully',
-            'transaction': self.get_serializer(transaction).data
-        })
+            return Response({
+                'message': 'Transaction approved successfully',
+                'transaction': self.get_serializer(transaction_obj).data,
+                'user_balance': str(user.balance)
+            })
 
     @action(detail=True, methods=['post'])
     def reject(self, request, pk=None):
-        """
-        Reject transaction
-        POST /api/admin/transactions/{id}/reject/
-        Body: {"reason": "Reason for rejection"}
-        """
-        transaction = self.get_object()
+        """Reject transaction with balance restoration if needed"""
+        with transaction.atomic():
+            transaction_obj = self.get_object()
 
-        if transaction.status != 'pending':
-            return Response(
-                {'error': 'Only pending transactions can be rejected'},
-                status=status.HTTP_400_BAD_REQUEST
-            )
+            if transaction_obj.status != 'pending':
+                return Response(
+                    {'error': 'Only pending transactions can be rejected'},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
 
-        reason = request.data.get('reason', '')
+            reason = request.data.get('reason', '')
+            user = transaction_obj.user
 
-        transaction.status = 'rejected'
-        transaction.processed_at = timezone.now()
-        transaction.processed_by = request.user
-        transaction.admin_notes = reason
-        transaction.save()
+            # Restore balance for rejected withdrawals
+            if transaction_obj.transaction_type == 'withdrawal':
+                user.balance += transaction_obj.total_amount()
+                user.save()
 
-        return Response({
-            'message': 'Transaction rejected',
-            'transaction': self.get_serializer(transaction).data
-        })
+            transaction_obj.status = 'rejected'
+            transaction_obj.processed_at = timezone.now()
+            transaction_obj.processed_by = request.user
+            transaction_obj.admin_notes = reason
+            transaction_obj.save()
 
-
-class AdminSupportChatViewSet(viewsets.ReadOnlyModelViewSet):
-    """
-    ViewSet for admin to view and respond to support chats.
-    """
-    queryset = SupportChat.objects.all()
-    serializer_class = SupportChatSerializer
-    permission_classes = [IsAdminUser]
-
-    @action(detail=True, methods=['post'])
-    def send_message(self, request, pk=None):
-        chat = self.get_object()
-        serializer = SendMessageSerializer(data=request.data)
-        if serializer.is_valid():
-            SupportMessage.objects.create(
-                chat=chat,
-                user=request.user,  # The admin user
-                message=serializer.validated_data['message'],
-                is_from_admin=True
-            )
-            chat.status = 'in_progress'
-            chat.save()
-            return Response(SupportChatSerializer(chat).data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            return Response({
+                'message': 'Transaction rejected successfully',
+                'transaction': self.get_serializer(transaction_obj).data,
+                'user_balance': str(user.balance)
+            })
