@@ -1,5 +1,5 @@
 import api from '@/shared/config/axios';
-import { SupportChat, SupportMessage } from '@/shared/types/support';
+import { SupportChat } from '@/shared/types/support';
 import { PollingResponse } from './supportService';
 
 export interface AdminUser {
@@ -115,4 +115,3 @@ export const adminService = {
     await api.delete(`/api/support/chats/${chatId}/`);
   }
 };
-

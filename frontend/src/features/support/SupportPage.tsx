@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef, useCallback } from 'react';
 import { useAppSelector } from '@/store/hooks';
 import { supportService } from '@/services/supportService';
-import { SupportChat, SupportMessage } from '@/shared/types/support';
+import { SupportChat } from '@/shared/types/support';
 import { usePolling } from '@/shared/hooks/usePolling';
 import { useTranslation } from 'react-i18next';
 import {
@@ -13,6 +13,10 @@ import {
   Clock,
   CheckCheck,
 } from 'lucide-react';
+
+const isImageUrl = (url: string) => {
+    return /\.(jpeg|jpg|gif|png)$/.test(url.toLowerCase());
+};
 
 export default function SupportPage() {
   const { t, i18n } = useTranslation();
@@ -30,7 +34,7 @@ export default function SupportPage() {
   const pollForMessages = useCallback(async () => {
     try {
       const response = await supportService.pollMessages(lastMessageTimestamp.current || undefined);
-      
+
       if (response.messages.length > 0) {
         setChat(prevChat => {
           if (!prevChat) {
@@ -38,32 +42,38 @@ export default function SupportPage() {
             return {
               id: '', // Will be set properly from the first message
               messages: response.messages,
-              status: response.chat_status,
+              status: response.chat_status as 'open' | 'in_progress' | 'closed',
               user: user?.id || '',
               user_email: user?.email || '',
               user_full_name: user?.full_name || '',
               subject: '',
               created_at: response.messages[0]?.created_at || new Date().toISOString(),
-              updated_at: response.last_updated
+              updated_at: response.last_updated,
+              assigned_admin: null,
+              assigned_admin_email: null,
+              closed_at: null,
+              last_message: null,
+              unread_count_for_user: 0,
+              unread_count_for_admin: 0,
             };
           }
-          
+
           // Add new messages to existing chat
           const existingMessageIds = new Set(prevChat.messages.map(m => m.id));
           const newMessages = response.messages.filter(m => !existingMessageIds.has(m.id));
-          
+
           if (newMessages.length > 0) {
             return {
               ...prevChat,
               messages: [...prevChat.messages, ...newMessages],
-              status: response.chat_status,
+              status: response.chat_status as 'open' | 'in_progress' | 'closed',
               updated_at: response.last_updated
             };
           }
-          
+
           return prevChat;
         });
-        
+
         // Update timestamp for next poll
         const latestMessage = response.messages[response.messages.length - 1];
         if (latestMessage) {
@@ -87,7 +97,7 @@ export default function SupportPage() {
       try {
         const chatData = await supportService.getMessages();
         setChat(chatData);
-        
+
         // Set initial timestamp for polling
         if (chatData.messages.length > 0) {
           const latestMessage = chatData.messages[chatData.messages.length - 1];
@@ -128,13 +138,13 @@ export default function SupportPage() {
 
       const updatedChat = await supportService.sendMessage(formData);
       setChat(updatedChat);
-      
+
       // Update timestamp after sending message
       if (updatedChat.messages.length > 0) {
         const latestMessage = updatedChat.messages[updatedChat.messages.length - 1];
         lastMessageTimestamp.current = latestMessage.created_at;
       }
-      
+
       setMessage('');
       setAttachment(null);
       if (fileInputRef.current) {
@@ -215,7 +225,17 @@ export default function SupportPage() {
                           <div className={`rounded-2xl px-5 py-3 ${isUser ? 'bg-gradient-to-br from-primary-500 to-primary-600 text-white shadow-lg' : 'bg-dark-card border border-dark-border'}`}>
                             {!isUser && <p className="text-xs text-primary-500 font-semibold mb-1">{t('support.chat.supportTeam')}</p>}
                             <p className={`text-sm ${isUser ? 'text-white' : 'text-dark-text-primary'}`}>{msg.message}</p>
-                            {msg.attachment_url && <a href={msg.attachment_url} target="_blank" rel="noopener noreferrer" className="text-cyan-400 underline mt-2 block">Attachment</a>}
+                            {msg.attachment_url && (
+                                isImageUrl(msg.attachment_url) ? (
+                                    <a href={msg.attachment_url} target="_blank" rel="noopener noreferrer">
+                                        <img src={msg.attachment_url} alt="Attachment" className="mt-2 rounded-lg max-w-xs" />
+                                    </a>
+                                ) : (
+                                    <a href={msg.attachment_url} target="_blank" rel="noopener noreferrer" className="text-cyan-400 underline mt-2 block">
+                                        Attachment
+                                    </a>
+                                )
+                            )}
                           </div>
                           <div className={`flex items-center gap-1 mt-1 px-2 ${isUser ? 'justify-end' : 'justify-start'}`}>
                             <Clock className="w-3 h-3 text-dark-text-tertiary" />
