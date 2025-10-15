@@ -7,7 +7,11 @@ class PaymentDetails(models.Model):
     """Model for admin-managed payment details (реквізити)"""
 
     CURRENCY_CHOICES = [
-        ('BANK_CARD', 'Bank Card'),
+        ('USDT_TRC20', 'USDT (TRC20)'),
+        ('USDT_ERC20', 'USDT (ERC20)'),
+        ('BTC', 'Bitcoin'),
+        ('ETH', 'Ethereum'),
+        ('BANK_TRANSFER', 'Bank Transfer'),
     ]
 
     id = models.UUIDField(
