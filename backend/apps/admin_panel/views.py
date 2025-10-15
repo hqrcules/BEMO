@@ -3,6 +3,7 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.permissions import IsAdminUser
 from django.utils import timezone
+from decimal import Decimal
 from .models import PaymentDetails
 from .serializers import (
     PaymentDetailsSerializer,
@@ -47,46 +48,53 @@ class AdminUserViewSet(viewsets.ModelViewSet):
     serializer_class = AdminUserSerializer
     permission_classes = [IsAdminUser]
 
-    @action(detail=True, methods=['post'])
+    @action(detail=True, methods=['patch'])
     def update_balance(self, request, pk=None):
         """
         Update user balance
-        POST /api/admin/users/{id}/update_balance/
-        Body: {"amount": 1000.00, "action": "add" or "subtract"}
+        PATCH /api/admin/users/{id}/update_balance/
+        Body: {"balance": 1000.00}
         """
         user = self.get_object()
-        amount = request.data.get('amount')
-        action = request.data.get('action', 'add')
+        balance = request.data.get('balance')
 
-        if not amount:
+        if balance is None:
             return Response(
-                {'error': 'Amount is required'},
+                {'error': 'Balance is required'},
                 status=status.HTTP_400_BAD_REQUEST
             )
 
         try:
-            amount = float(amount)
-        except ValueError:
+            user.balance = Decimal(str(balance))
+            user.save()
+        except Exception as e:
             return Response(
-                {'error': 'Invalid amount'},
+                {'error': f'Invalid balance value: {e}'},
                 status=status.HTTP_400_BAD_REQUEST
             )
-
-        if action == 'add':
-            user.balance += amount
-        elif action == 'subtract':
-            user.balance -= amount
-        else:
-            return Response(
-                {'error': 'Action must be "add" or "subtract"'},
-                status=status.HTTP_400_BAD_REQUEST
-            )
-
-        user.save()
 
         return Response({
             'message': 'Balance updated successfully',
             'new_balance': user.balance
+        })
+
+    @action(detail=True, methods=['patch'])
+    def update_bot(self, request, pk=None):
+        user = self.get_object()
+        bot_type = request.data.get('bot_type')
+
+        if not bot_type:
+            return Response(
+                {'error': 'Bot type is required'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        user.bot_type = bot_type
+        user.save()
+
+        return Response({
+            'message': 'Bot type updated successfully',
+            'new_bot_type': user.bot_type
         })
 
     @action(detail=True, methods=['post'])
@@ -209,7 +217,7 @@ class AdminSupportChatViewSet(viewsets.ReadOnlyModelViewSet):
         if serializer.is_valid():
             SupportMessage.objects.create(
                 chat=chat,
-                user=request.user, # The admin user
+                user=request.user,  # The admin user
                 message=serializer.validated_data['message'],
                 is_from_admin=True
             )

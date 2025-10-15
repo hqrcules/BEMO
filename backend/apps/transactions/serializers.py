@@ -21,6 +21,7 @@ class TransactionSerializer(serializers.ModelSerializer):
             'commission',
             'total_amount',
             'status',
+            'payment_method',
             'payment_receipt',
             'admin_notes',
             'created_at',
@@ -46,12 +47,13 @@ class DepositSerializer(serializers.ModelSerializer):
     amount = serializers.DecimalField(
         max_digits=15,
         decimal_places=2,
-        min_value=Decimal('250.00')  # ← Використовуємо Decimal
+        min_value=Decimal('250.00')
     )
+    payment_method = serializers.CharField(max_length=50)
 
     class Meta:
         model = Transaction
-        fields = ['amount', 'payment_receipt']
+        fields = ['amount', 'payment_receipt', 'payment_method']
 
     def validate_amount(self, value):
         if value < Decimal(str(settings.MIN_DEPOSIT_AMOUNT)):
@@ -67,6 +69,7 @@ class DepositSerializer(serializers.ModelSerializer):
             user=user,
             transaction_type='deposit',
             amount=validated_data['amount'],
+            payment_method=validated_data['payment_method'],
             payment_receipt=validated_data.get('payment_receipt'),
             status='pending'
         )
