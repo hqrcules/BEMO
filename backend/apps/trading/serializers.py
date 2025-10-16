@@ -1,11 +1,10 @@
 from rest_framework import serializers
 from drf_spectacular.utils import extend_schema_field
 from .models import BotTrade, TradingSession
+from decimal import Decimal
 
 
 class BotTradeSerializer(serializers.ModelSerializer):
-    """Serializer for BotTrade model"""
-
     user_email = serializers.EmailField(source='user.email', read_only=True)
     duration = serializers.SerializerMethodField()
 
@@ -38,7 +37,6 @@ class BotTradeSerializer(serializers.ModelSerializer):
 
     @extend_schema_field(serializers.IntegerField)
     def get_duration(self, obj):
-        """Calculate trade duration in seconds"""
         if obj.closed_at:
             delta = obj.closed_at - obj.opened_at
             return int(delta.total_seconds())
@@ -46,8 +44,6 @@ class BotTradeSerializer(serializers.ModelSerializer):
 
 
 class TradingSessionSerializer(serializers.ModelSerializer):
-    """Serializer for TradingSession model"""
-
     user_email = serializers.EmailField(source='user.email', read_only=True)
     win_rate = serializers.SerializerMethodField()
     profit_percent = serializers.SerializerMethodField()
@@ -92,13 +88,11 @@ class TradingSessionSerializer(serializers.ModelSerializer):
     @extend_schema_field(serializers.FloatField)
     def get_profit_percent(self, obj):
         if obj.starting_balance > 0:
-            return round((obj.total_profit / obj.starting_balance) * 100, 2)
-        return 0.0
+            return round((Decimal(obj.total_profit) / Decimal(obj.starting_balance)) * Decimal('100'), 2)
+        return Decimal('0.0')
 
 
 class TradingStatsSerializer(serializers.Serializer):
-    """Serializer for trading statistics"""
-
     total_trades = serializers.IntegerField()
     open_trades = serializers.IntegerField()
     closed_trades = serializers.IntegerField()
