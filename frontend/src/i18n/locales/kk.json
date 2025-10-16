@@ -135,6 +135,8 @@
     "operations": "Операциялар",
     "transactionHistory": "Транзакциялар тарихы",
     "viewReceipt": "Көру",
+    "refreshing": "Жаңартылуда...",
+    "refresh": "Жаңарту",
     "table": {
       "type": "Түрі",
       "amount": "Сомасы",
@@ -145,7 +147,9 @@
     },
     "types": {
       "deposit": "Толықтыру",
-      "withdrawal": "Шығару"
+      "withdrawal": "Шығару",
+      "bot_profit": "Боттан түскен пайда",
+      "commission": "Комиссия"
     },
     "status": {
       "completed": "Аяқталды",
@@ -158,9 +162,14 @@
       "button": "Балансты толтыру"
     },
     "modals": {
+      "selectPackage": "Толықтыру пакетін таңдаңыз",
+      "fromAmount": "250 € бастап",
       "depositTitle": "Балансты толтыру",
+      "errorMinAmount": "Ең аз толықтыру сомасы {{amount}} €",
       "withdrawTitle": "Қаражатты шығару",
       "amountLabel": "Толықтыру сомасы",
+      "minAmount": "Ең аз сома",
+      "transferAmount": "Аударым сомасы",
       "withdrawAmountLabel": "Шығару сомасы",
       "methodLabel": "Төлем әдісі",
       "withdrawMethodLabel": "Шығару әдісі",
@@ -168,6 +177,10 @@
       "uploadClick": "Жүктеу үшін басыңыз",
       "uploadHint": "PNG, JPG немесе PDF, 5 МБ дейін",
       "sending": "Жіберілуде...",
+      "processing": "Өңделуде...",
+      "confirmDeposit": "Толықтыруды растау",
+      "back": "Артқа",
+      "depositSuccess": "Толықтыру сұранысы сәтті жасалды және әкімшінің қарауына жіберілді.",
       "sendButton": "Тексеруге жіберу",
       "errorReceipt": "Төлем чегін жүктеңіз",
       "errorDeposit": "Депозит жасау қатесі",
@@ -176,12 +189,39 @@
       "requesting": "Сұрау жіберу...",
       "requestButton": "Шығаруды сұрау",
       "errorInsufficientFunds": "Баланста қаражат жеткіліксіз",
-      "errorWithdraw": "Шығару сұрауын жасау қатесі"
+      "errorWithdraw": "Шығару сұрауын жасау қатесі",
+      "withdrawMinimum": "Ең аз",
+      "commission": "комиссия"
     },
     "methods": {
       "card": "Банк картасы",
       "crypto": "Криптовалюта",
       "transfer": "Банктік аударым"
+    },
+    "depositOptions": {
+      "basic": {
+        "title": "Негізгі пакет",
+        "description": "Жаңадан бастаушылар үшін өте қолайлы"
+      },
+      "premium": {
+        "title": "Премиум пакет",
+        "description": "Кеңейтілген сауда мүмкіндіктері"
+      },
+      "trader": {
+        "title": "Трейдермен сауда",
+        "description": "Барлық құралдарға толық қол жетімділік"
+      },
+      "custom": {
+        "title": "Өз сомаңыз",
+        "description": "Ең азы 250 еуро"
+      }
+    },
+    "payment": {
+      "cardNumberLabel": "Төлем үшін карта нөмірі",
+      "noCardNumber": "Төлем үшін карта нөмірі көрсетілмеген. Қолдау қызметіне хабарласыңыз.",
+      "attached": "Тіркелген: ",
+      "replyPlaceholder": "Пайдаланушыға жауап беру...",
+      "downloadAttachment": "Тіркемені жүктеп алу"
     }
   },
   "support": {

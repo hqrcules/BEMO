@@ -15,7 +15,42 @@
     "loginSubtitle": "Geben Sie Ihre Anmeldeinformationen ein, um auf Ihr Konto zuzugreifen",
     "loginButton": "Anmelden",
     "noAccount": "Haben Sie kein Konto?",
-    "signUp": "Registrieren"
+    "signUp": "Registrieren",
+    "platformSlogan": "Professionelle Handelsplattform",
+    "hero": {
+      "title1": "Handeln Sie Kryptowährung",
+      "title2": "mit Zuversicht"
+    },
+    "heroSubtitle": "Schließen Sie sich Tausenden von Händlern an, die unserer Plattform vertrauen",
+    "features": {
+      "security": {
+        "title": "Sicherheit",
+        "description": "Schutz der Gelder durch Verschlüsselung auf Bankenniveau"
+      },
+      "instantDeals": {
+        "title": "Sofortige Geschäfte",
+        "description": "Der Handelsbot arbeitet rund um die Uhr für maximalen Gewinn"
+      },
+      "provenPlatform": {
+        "title": "Bewährte Plattform",
+        "description": "Über 1000+ aktive Benutzer und 2,5 Mio. € Handelsvolumen"
+      }
+    },
+    "stats": {
+      "users": "Benutzer",
+      "volume": "Handelsvolumen",
+      "support": "Support"
+    },
+    "welcomeTitle": "Willkommen",
+    "welcomeSubtitle": "Melden Sie sich bei Ihrem Konto an, um fortzufahren",
+    "errorTitle": "Anmeldefehler",
+    "emailLabel": "E-Mail-Adresse",
+    "passwordLabel": "Passwort",
+    "loggingIn": "Anmelden...",
+    "demo": {
+      "title": "Schnellanmeldung mit Demokonten"
+    },
+    "footer": "© 2025 Bemo Investment. Alle Rechte vorbehalten."
   },
   "dashboard": {
     "greeting": "Willkommen",
@@ -55,123 +90,6 @@
     "mockTime2": "vor 15 Min",
     "mockTime3": "vor 1 Std"
   },
-  "trading": {
-    "title": "Handel",
-    "search": "Kryptowährung suchen...",
-    "name": "Name",
-    "price": "Preis",
-    "change24h": "24h Änderung",
-    "volume": "Volumen",
-    "chart": "Chart",
-    "buy": "Kaufen",
-    "sell": "Verkaufen",
-    "amount": "Betrag",
-    "total": "Gesamt",
-    "available": "Verfügbar",
-    "orderType": "Auftragstyp",
-    "market": "Markt",
-    "limit": "Limit",
-    "stop": "Stop",
-    "placeOrder": "Auftrag platzieren",
-    "openOrders": "Offene Aufträge",
-    "orderHistory": "Auftragshistorie",
-    "noOrders": "Noch keine Aufträge"
-  },
-  "balance": {
-    "title": "Guthaben",
-    "totalBalance": "Gesamtguthaben",
-    "availableBalance": "Verfügbar",
-    "lockedBalance": "Gesperrt",
-    "deposit": "Einzahlen",
-    "withdraw": "Abheben",
-    "transfer": "Übertragen",
-    "crypto": "Krypto",
-    "fiat": "Fiat",
-    "asset": "Asset",
-    "total": "Gesamt",
-    "available": "Verfügbar",
-    "locked": "In Aufträgen",
-    "actions": "Aktionen",
-    "transactionHistory": "Transaktionsverlauf",
-    "type": "Typ",
-    "amount": "Betrag",
-    "status": "Status",
-    "date": "Datum",
-    "pending": "Ausstehend",
-    "completed": "Abgeschlossen",
-    "failed": "Fehlgeschlagen"
-  },
-  "support": {
-    "title": "Support",
-    "subtitle": "Wie können wir Ihnen helfen?",
-    "searchPlaceholder": "Hilfe suchen...",
-    "startChat": "Chat starten",
-    "faq": "Häufig gestellte Fragen",
-    "contactUs": "Kontaktieren Sie uns",
-    "email": "E-Mail",
-    "liveChat": "Live-Chat",
-    "phone": "Telefon",
-    "sendMessage": "Nachricht senden",
-    "yourMessage": "Ihre Nachricht...",
-    "subject": "Betreff",
-    "description": "Beschreibung",
-    "submit": "Senden",
-    "howToDeposit": "Wie zahlt man Geld ein?",
-    "howToWithdraw": "Wie hebt man Geld ab?",
-    "tradingFees": "Was sind die Handelsgebühren?",
-    "accountSecurity": "Wie sichere ich mein Konto?",
-    "kycVerification": "KYC-Verifizierung",
-    "apiDocumentation": "API-Dokumentation"
-  },
-  "profile": {
-    "title": "Profil",
-    "personalInfo": "Persönliche Informationen",
-    "security": "Sicherheit",
-    "preferences": "Einstellungen",
-    "fullName": "Vollständiger Name",
-    "email": "E-Mail",
-    "phone": "Telefonnummer",
-    "accountType": "Kontotyp",
-    "memberSince": "Mitglied seit",
-    "verified": "Verifiziert",
-    "notVerified": "Nicht verifiziert",
-    "save": "Änderungen speichern",
-    "changePassword": "Passwort ändern",
-    "currentPassword": "Aktuelles Passwort",
-    "newPassword": "Neues Passwort",
-    "confirmPassword": "Passwort bestätigen",
-    "twoFactor": "Zwei-Faktor-Authentifizierung",
-    "enable2FA": "2FA aktivieren",
-    "disable2FA": "2FA deaktivieren",
-    "language": "Sprache",
-    "currency": "Währung",
-    "timezone": "Zeitzone",
-    "notifications": "Benachrichtigungen",
-    "emailNotifications": "E-Mail-Benachrichtigungen",
-    "pushNotifications": "Push-Benachrichtigungen"
-  },
-  "sidebar": {
-    "accountNumber": "Kontonummer",
-    "totalBalanceUsd": "GESAMTGUTHABEN (USD)",
-    "pnlUsd": "G&V (USD)",
-    "history": "Verlauf",
-    "settings": "Einstellungen"
-  },
-  "common": {
-    "loading": "Wird geladen...",
-    "error": "Fehler",
-    "success": "Erfolg",
-    "cancel": "Abbrechen",
-    "confirm": "Bestätigen",
-    "close": "Schließen",
-    "save": "Speichern",
-    "edit": "Bearbeiten",
-    "delete": "Löschen",
-    "search": "Suchen",
-    "filter": "Filter",
-    "sort": "Sortieren",
-    "language": "Sprache"
-  },
   "market": {
     "title": "Markt",
     "status": {
@@ -202,6 +120,28 @@
     },
     "buy": "Kaufen"
   },
+  "trading": {
+    "title": "Handel",
+    "search": "Kryptowährung suchen...",
+    "name": "Name",
+    "price": "Preis",
+    "change24h": "24h Änderung",
+    "volume": "Volumen",
+    "chart": "Chart",
+    "buy": "Kaufen",
+    "sell": "Verkaufen",
+    "amount": "Betrag",
+    "total": "Gesamt",
+    "available": "Verfügbar",
+    "orderType": "Auftragstyp",
+    "market": "Markt",
+    "limit": "Limit",
+    "stop": "Stop",
+    "placeOrder": "Auftrag platzieren",
+    "openOrders": "Offene Aufträge",
+    "orderHistory": "Auftragshistorie",
+    "noOrders": "Noch keine Aufträge"
+  },
   "balance": {
     "loading": "Lade Kontostand...",
     "title": "Guthaben & Transaktionen",
@@ -214,6 +154,8 @@
     "operations": "Operationen",
     "transactionHistory": "Transaktionsverlauf",
     "viewReceipt": "Ansehen",
+    "refreshing": "Wird aktualisiert...",
+    "refresh": "Aktualisieren",
     "table": {
       "type": "Typ",
       "amount": "Betrag",
@@ -224,7 +166,9 @@
     },
     "types": {
       "deposit": "Einzahlung",
-      "withdrawal": "Auszahlung"
+      "withdrawal": "Auszahlung",
+      "bot_profit": "Bot-Gewinn",
+      "commission": "Provision"
     },
     "status": {
       "completed": "Abgeschlossen",
@@ -237,9 +181,14 @@
       "button": "Guthaben einzahlen"
     },
     "modals": {
+      "selectPackage": "Wählen Sie ein Einzahlungspaket",
+      "fromAmount": "ab 250 €",
       "depositTitle": "Guthaben einzahlen",
+      "errorMinAmount": "Der Mindesteinzahlungsbetrag beträgt {{amount}} €",
       "withdrawTitle": "Geld abheben",
       "amountLabel": "Einzahlungsbetrag",
+      "minAmount": "Mindestbetrag",
+      "transferAmount": "Zu überweisender Betrag",
       "withdrawAmountLabel": "Abhebungsbetrag",
       "methodLabel": "Zahlungsmethode",
       "withdrawMethodLabel": "Auszahlungsmethode",
@@ -247,6 +196,10 @@
       "uploadClick": "Zum Hochladen klicken",
       "uploadHint": "PNG, JPG oder PDF bis zu 5MB",
       "sending": "Senden...",
+      "processing": "Verarbeitung...",
+      "confirmDeposit": "Einzahlung bestätigen",
+      "back": "Zurück",
+      "depositSuccess": "Die Einzahlungsanforderung wurde erfolgreich erstellt und zur Überprüfung an den Administrator gesendet.",
       "sendButton": "Zur Überprüfung senden",
       "errorReceipt": "Bitte laden Sie einen Zahlungsbeleg hoch",
       "errorDeposit": "Fehler beim Erstellen der Einzahlung",
@@ -255,12 +208,39 @@
       "requesting": "Anfrage wird gesendet...",
       "requestButton": "Auszahlung anfordern",
       "errorInsufficientFunds": "Unzureichendes Guthaben",
-      "errorWithdraw": "Fehler beim Erstellen der Auszahlungsanforderung"
+      "errorWithdraw": "Fehler beim Erstellen der Auszahlungsanforderung",
+      "withdrawMinimum": "Minimum",
+      "commission": "Provision"
     },
     "methods": {
       "card": "Bankkarte",
       "crypto": "Kryptowährung",
       "transfer": "Banküberweisung"
+    },
+    "depositOptions": {
+      "basic": {
+        "title": "Basispaket",
+        "description": "Ideal für Anfänger"
+      },
+      "premium": {
+        "title": "Premium-Paket",
+        "description": "Erweiterte Handelsmöglichkeiten"
+      },
+      "trader": {
+        "title": "Handeln mit einem Händler",
+        "description": "Voller Zugriff auf alle Werkzeuge"
+      },
+      "custom": {
+        "title": "Benutzerdefinierter Betrag",
+        "description": "Mindestens 250 €"
+      }
+    },
+    "payment": {
+      "cardNumberLabel": "Kartennummer für die Zahlung",
+      "noCardNumber": "Die Kartennummer für die Zahlung ist nicht angegeben. Bitte wenden Sie sich an den Support.",
+      "attached": "Angehängt: ",
+      "replyPlaceholder": "Benutzer antworten...",
+      "downloadAttachment": "Anhang herunterladen"
     }
   },
   "support": {
@@ -364,50 +344,19 @@
       "passwordUpdateError": "Fehler beim Ändern des Passworts"
     }
   },
-  "auth": {
-    "login": "Anmelden",
-    "logout": "Abmelden",
-    "email": "E-Mail",
-    "password": "Passwort",
-    "welcome": "Willkommen zurück",
-    "loginSubtitle": "Geben Sie Ihre Anmeldeinformationen ein, um auf Ihr Konto zuzugreifen",
-    "loginButton": "Anmelden",
-    "noAccount": "Haben Sie kein Konto?",
-    "signUp": "Registrieren",
-    "platformSlogan": "Professionelle Handelsplattform",
-    "hero": {
-      "title1": "Handeln Sie Kryptowährung",
-      "title2": "mit Zuversicht"
-    },
-    "heroSubtitle": "Schließen Sie sich Tausenden von Händlern an, die unserer Plattform vertrauen",
-    "features": {
-      "security": {
-        "title": "Sicherheit",
-        "description": "Schutz der Gelder durch Verschlüsselung auf Bankenniveau"
-      },
-      "instantDeals": {
-        "title": "Sofortige Geschäfte",
-        "description": "Der Handelsbot arbeitet rund um die Uhr für maximalen Gewinn"
-      },
-      "provenPlatform": {
-        "title": "Bewährte Plattform",
-        "description": "Über 1000+ aktive Benutzer und 2,5 Mio. € Handelsvolumen"
-      }
-    },
-    "stats": {
-      "users": "Benutzer",
-      "volume": "Handelsvolumen",
-      "support": "Support"
-    },
-    "welcomeTitle": "Willkommen",
-    "welcomeSubtitle": "Melden Sie sich bei Ihrem Konto an, um fortzufahren",
-    "errorTitle": "Anmeldefehler",
-    "emailLabel": "E-Mail-Adresse",
-    "passwordLabel": "Passwort",
-    "loggingIn": "Anmelden...",
-    "demo": {
-      "title": "Schnellanmeldung mit Demokonten"
-    },
-    "footer": "© 2025 Bemo Investment. Alle Rechte vorbehalten."
+  "common": {
+    "loading": "Wird geladen...",
+    "error": "Fehler",
+    "success": "Erfolg",
+    "cancel": "Abbrechen",
+    "confirm": "Bestätigen",
+    "close": "Schließen",
+    "save": "Speichern",
+    "edit": "Bearbeiten",
+    "delete": "Löschen",
+    "search": "Suchen",
+    "filter": "Filter",
+    "sort": "Sortieren",
+    "language": "Sprache"
   }
 }

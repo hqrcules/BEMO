@@ -15,7 +15,42 @@
     "loginSubtitle": "アカウントにアクセスするために資格情報を入力してください",
     "loginButton": "サインイン",
     "noAccount": "アカウントをお持ちではありませんか？",
-    "signUp": "サインアップ"
+    "signUp": "サインアップ",
+    "platformSlogan": "プロフェッショナル取引プラットフォーム",
+    "hero": {
+      "title1": "暗号通貨を取引する",
+      "title2": "自信を持って"
+    },
+    "heroSubtitle": "私たちのプラットフォームを信頼する何千ものトレーダーに参加しましょう",
+    "features": {
+      "security": {
+        "title": "セキュリティ",
+        "description": "銀行レベルの暗号化を使用した資金保護"
+      },
+      "instantDeals": {
+        "title": "即時取引",
+        "description": "取引ボットは最大の利益のために24時間年中無休で動作します"
+      },
+      "provenPlatform": {
+        "title": "実績のあるプラットフォーム",
+        "description": "1000人以上のアクティブユーザーと250万ユーロの取引量"
+      }
+    },
+    "stats": {
+      "users": "ユーザー",
+      "volume": "取引量",
+      "support": "サポート"
+    },
+    "welcomeTitle": "ようこそ",
+    "welcomeSubtitle": "続行するにはアカウントにログインしてください",
+    "errorTitle": "ログインエラー",
+    "emailLabel": "メールアドレス",
+    "passwordLabel": "パスワード",
+    "loggingIn": "ログインしています...",
+    "demo": {
+      "title": "デモアカウントでクイックログイン"
+    },
+    "footer": "© Bemo Investment. 全著作権所有。"
   },
   "dashboard": {
     "greeting": "ようこそ",
@@ -55,123 +90,6 @@
     "mockTime2": "15分前",
     "mockTime3": "1時間前"
   },
-  "trading": {
-    "title": "取引",
-    "search": "暗号通貨を検索...",
-    "name": "名前",
-    "price": "価格",
-    "change24h": "24時間変動",
-    "volume": "取引高",
-    "chart": "チャート",
-    "buy": "購入",
-    "sell": "売却",
-    "amount": "数量",
-    "total": "合計",
-    "available": "利用可能",
-    "orderType": "注文タイプ",
-    "market": "成行",
-    "limit": "指値",
-    "stop": "ストップ",
-    "placeOrder": "注文する",
-    "openOrders": "未約定の注文",
-    "orderHistory": "注文履歴",
-    "noOrders": "まだ注文はありません"
-  },
-  "balance": {
-    "title": "残高",
-    "totalBalance": "総残高",
-    "availableBalance": "利用可能",
-    "lockedBalance": "ロック中",
-    "deposit": "入金",
-    "withdraw": "出金",
-    "transfer": "振替",
-    "crypto": "暗号資産",
-    "fiat": "法定通貨",
-    "asset": "資産",
-    "total": "合計",
-    "available": "利用可能",
-    "locked": "注文中",
-    "actions": "アクション",
-    "transactionHistory": "取引履歴",
-    "type": "タイプ",
-    "amount": "数量",
-    "status": "ステータス",
-    "date": "日付",
-    "pending": "保留中",
-    "completed": "完了",
-    "failed": "失敗"
-  },
-  "support": {
-    "title": "サポート",
-    "subtitle": "どのようにお手伝いしましょうか？",
-    "searchPlaceholder": "ヘルプを検索...",
-    "startChat": "チャットを開始",
-    "faq": "よくある質問",
-    "contactUs": "お問い合わせ",
-    "email": "メール",
-    "liveChat": "ライブチャット",
-    "phone": "電話",
-    "sendMessage": "メッセージを送信",
-    "yourMessage": "メッセージ...",
-    "subject": "件名",
-    "description": "説明",
-    "submit": "送信",
-    "howToDeposit": "資金を入金する方法は？",
-    "howToWithdraw": "資金を出金する方法は？",
-    "tradingFees": "取引手数料はいくらですか？",
-    "accountSecurity": "アカウントを保護する方法は？",
-    "kycVerification": "KYC認証",
-    "apiDocumentation": "APIドキュメント"
-  },
-  "profile": {
-    "title": "プロフィール",
-    "personalInfo": "個人情報",
-    "security": "セキュリティ",
-    "preferences": "設定",
-    "fullName": "氏名",
-    "email": "メール",
-    "phone": "電話番号",
-    "accountType": "アカウントタイプ",
-    "memberSince": "登録日",
-    "verified": "認証済み",
-    "notVerified": "未認証",
-    "save": "変更を保存",
-    "changePassword": "パスワードを変更",
-    "currentPassword": "現在のパスワード",
-    "newPassword": "新しいパスワード",
-    "confirmPassword": "パスワードを確認",
-    "twoFactor": "二要素認証",
-    "enable2FA": "2FAを有効にする",
-    "disable2FA": "2FAを無効にする",
-    "language": "言語",
-    "currency": "通貨",
-    "timezone": "タイムゾーン",
-    "notifications": "通知",
-    "emailNotifications": "メール通知",
-    "pushNotifications": "プッシュ通知"
-  },
-  "sidebar": {
-    "accountNumber": "アカウント番号",
-    "totalBalanceUsd": "総残高 (USD)",
-    "pnlUsd": "損益 (USD)",
-    "history": "履歴",
-    "settings": "設定"
-  },
-  "common": {
-    "loading": "読み込み中...",
-    "error": "エラー",
-    "success": "成功",
-    "cancel": "キャンセル",
-    "confirm": "確認",
-    "close": "閉じる",
-    "save": "保存",
-    "edit": "編集",
-    "delete": "削除",
-    "search": "検索",
-    "filter": "フィルタ",
-    "sort": "並べ替え",
-    "language": "言語"
-  },
   "market": {
     "title": "マーケット",
     "status": {
@@ -202,6 +120,28 @@
     },
     "buy": "購入"
   },
+  "trading": {
+    "title": "取引",
+    "search": "暗号通貨を検索...",
+    "name": "名前",
+    "price": "価格",
+    "change24h": "24時間変動",
+    "volume": "取引高",
+    "chart": "チャート",
+    "buy": "購入",
+    "sell": "売却",
+    "amount": "数量",
+    "total": "合計",
+    "available": "利用可能",
+    "orderType": "注文タイプ",
+    "market": "成行",
+    "limit": "指値",
+    "stop": "ストップ",
+    "placeOrder": "注文する",
+    "openOrders": "未約定の注文",
+    "orderHistory": "注文履歴",
+    "noOrders": "まだ注文はありません"
+  },
   "balance": {
     "loading": "残高データを読み込み中...",
     "title": "残高と取引",
@@ -214,6 +154,8 @@
     "operations": "操作",
     "transactionHistory": "取引履歴",
     "viewReceipt": "表示",
+    "refreshing": "更新中...",
+    "refresh": "更新",
     "table": {
       "type": "タイプ",
       "amount": "金額",
@@ -224,7 +166,9 @@
     },
     "types": {
       "deposit": "入金",
-      "withdrawal": "出金"
+      "withdrawal": "出金",
+      "bot_profit": "ボット利益",
+      "commission": "手数料"
     },
     "status": {
       "completed": "完了",
@@ -237,9 +181,14 @@
       "button": "残高に入金"
     },
     "modals": {
+      "selectPackage": "入金パッケージを選択",
+      "fromAmount": "250ユーロから",
       "depositTitle": "残高に入金",
+      "errorMinAmount": "最低入金額は{{amount}}ユーロです",
       "withdrawTitle": "資金を出金",
       "amountLabel": "入金額",
+      "minAmount": "最低額",
+      "transferAmount": "送金額",
       "withdrawAmountLabel": "出金額",
       "methodLabel": "支払方法",
       "withdrawMethodLabel": "出金方法",
@@ -247,6 +196,10 @@
       "uploadClick": "クリックしてアップロード",
       "uploadHint": "PNG、JPG、またはPDF（最大5MB）",
       "sending": "送信中...",
+      "processing": "処理中...",
+      "confirmDeposit": "入金を確認",
+      "back": "戻る",
+      "depositSuccess": "入金リクエストが正常に作成され、管理者の確認のために送信されました。",
       "sendButton": "確認のために送信",
       "errorReceipt": "支払領収書をアップロードしてください",
       "errorDeposit": "入金の作成中にエラーが発生しました",
@@ -255,12 +208,39 @@
       "requesting": "リクエストを送信中...",
       "requestButton": "出金をリクエスト",
       "errorInsufficientFunds": "残高が不足しています",
-      "errorWithdraw": "出金リクエストの作成中にエラーが発生しました"
+      "errorWithdraw": "出金リクエストの作成中にエラーが発生しました",
+      "withdrawMinimum": "最低",
+      "commission": "手数料"
     },
     "methods": {
       "card": "銀行カード",
       "crypto": "暗号通貨",
       "transfer": "銀行振込"
+    },
+    "depositOptions": {
+      "basic": {
+        "title": "ベーシックパッケージ",
+        "description": "初心者向け"
+      },
+      "premium": {
+        "title": "プレミアムパッケージ",
+        "description": "強化された取引機能"
+      },
+      "trader": {
+        "title": "トレーダーと取引",
+        "description": "すべてのツールへのフルアクセス"
+      },
+      "custom": {
+        "title": "カスタム金額",
+        "description": "最低250ユーロ"
+      }
+    },
+    "payment": {
+      "cardNumberLabel": "支払い用のカード番号",
+      "noCardNumber": "支払い用のカード番号が指定されていません。サポートにお問い合わせください。",
+      "attached": "添付：",
+      "replyPlaceholder": "ユーザーに返信...",
+      "downloadAttachment": "添付ファイルをダウンロード"
     }
   },
   "support": {
@@ -364,50 +344,19 @@
       "passwordUpdateError": "パスワードの変更中にエラーが発生しました"
     }
   },
-  "auth": {
-    "login": "ログイン",
-    "logout": "ログアウト",
-    "email": "メール",
-    "password": "パスワード",
-    "welcome": "ようこそ",
-    "loginSubtitle": "アカウントにアクセスするために資格情報を入力してください",
-    "loginButton": "サインイン",
-    "noAccount": "アカウントをお持ちではありませんか？",
-    "signUp": "サインアップ",
-    "platformSlogan": "プロフェッショナル取引プラットフォーム",
-    "hero": {
-      "title1": "暗号通貨を取引する",
-      "title2": "自信を持って"
-    },
-    "heroSubtitle": "私たちのプラットフォームを信頼する何千ものトレーダーに参加しましょう",
-    "features": {
-      "security": {
-        "title": "セキュリティ",
-        "description": "銀行レベルの暗号化を使用した資金保護"
-      },
-      "instantDeals": {
-        "title": "即時取引",
-        "description": "取引ボットは最大の利益のために24時間年中無休で動作します"
-      },
-      "provenPlatform": {
-        "title": "実績のあるプラットフォーム",
-        "description": "1000人以上のアクティブユーザーと250万ユーロの取引量"
-      }
-    },
-    "stats": {
-      "users": "ユーザー",
-      "volume": "取引量",
-      "support": "サポート"
-    },
-    "welcomeTitle": "ようこそ",
-    "welcomeSubtitle": "続行するにはアカウントにログインしてください",
-    "errorTitle": "ログインエラー",
-    "emailLabel": "メールアドレス",
-    "passwordLabel": "パスワード",
-    "loggingIn": "ログインしています...",
-    "demo": {
-      "title": "デモアカウントでクイックログイン"
-    },
-    "footer": "© Bemo Investment. 全著作権所有。"
+  "common": {
+    "loading": "読み込み中...",
+    "error": "エラー",
+    "success": "成功",
+    "cancel": "キャンセル",
+    "confirm": "確認",
+    "close": "閉じる",
+    "save": "保存",
+    "edit": "編集",
+    "delete": "削除",
+    "search": "検索",
+    "filter": "フィルタ",
+    "sort": "並べ替え",
+    "language": "言語"
   }
 }

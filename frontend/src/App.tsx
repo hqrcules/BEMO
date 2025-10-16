@@ -8,12 +8,14 @@ import Header from './components/layout/Header';
 import ProtectedRoute from './routes/ProtectedRoute';
 import AdminProtectedRoute from './routes/AdminProtectedRoute';
 import { Loader2 } from 'lucide-react';
+import { useBalanceSocket } from './shared/hooks/useBalanceSocket';
 
 // Lazy load components
 const LoginPage = lazy(() => import('./features/auth/LoginPage'));
 const DashboardLayout = lazy(() => import('./features/dashboard/DashboardPage'));
 const DashboardHome = lazy(() => import('./features/dashboard/DashboardHome'));
 const TradingPage = lazy(() => import('./features/trading/TradingPage'));
+const BotTradingPage = lazy(() => import('./features/trading/BotTradingPage'));
 const BalancePage = lazy(() => import('./features/balance/BalancePage'));
 const SupportPage = lazy(() => import('./features/support/SupportPage'));
 const ProfilePage = lazy(() => import('./features/profile/ProfilePage'));
@@ -43,8 +45,10 @@ function ScrollToTop() {
 
 function AppContent() {
   const dispatch = useAppDispatch();
-  const { isLoading } = useAppSelector((state) => state.auth);
+  const { user, isLoading } = useAppSelector((state) => state.auth);
   const location = useLocation();
+
+  useBalanceSocket(user);
 
   useEffect(() => {
     const publicPages = ['/login', '/admin/login'];
@@ -79,6 +83,7 @@ function AppContent() {
             <Route path="/" element={<DashboardLayout />}>
               <Route index element={<DashboardHome />} />
               <Route path="trading" element={<TradingPage />} />
+              <Route path="bot-trading" element={<BotTradingPage />} />
               <Route path="balance" element={<BalancePage />} />
               <Route path="support" element={<SupportPage />} />
               <Route path="profile" element={<ProfilePage />} />

@@ -15,7 +15,42 @@
     "loginSubtitle": "Introduce tus credenciales para acceder a tu cuenta",
     "loginButton": "Iniciar Sesión",
     "noAccount": "¿No tienes una cuenta?",
-    "signUp": "Regístrate"
+    "signUp": "Regístrate",
+    "platformSlogan": "Plataforma de Trading Profesional",
+    "hero": {
+      "title1": "Opera con criptomonedas",
+      "title2": "con confianza"
+    },
+    "heroSubtitle": "Únete a miles de traders que confían en nuestra plataforma",
+    "features": {
+      "security": {
+        "title": "Seguridad",
+        "description": "Protección de fondos con encriptación de nivel bancario"
+      },
+      "instantDeals": {
+        "title": "Operaciones Instantáneas",
+        "description": "El bot de trading funciona 24/7 para obtener el máximo beneficio"
+      },
+      "provenPlatform": {
+        "title": "Plataforma Probada",
+        "description": "Más de 1000 usuarios activos y 2,5M € de volumen de trading"
+      }
+    },
+    "stats": {
+      "users": "Usuarios",
+      "volume": "Volumen de Trading",
+      "support": "Soporte"
+    },
+    "welcomeTitle": "Bienvenido",
+    "welcomeSubtitle": "Inicia sesión en tu cuenta para continuar",
+    "errorTitle": "Error de inicio de sesión",
+    "emailLabel": "Dirección de correo electrónico",
+    "passwordLabel": "Contraseña",
+    "loggingIn": "Iniciando sesión...",
+    "demo": {
+      "title": "Inicio de sesión rápido con cuentas demo"
+    },
+    "footer": "© 2025 Bemo Investment. Todos los derechos reservados."
   },
   "dashboard": {
     "greeting": "Bienvenido",
@@ -55,123 +90,6 @@
     "mockTime2": "hace 15 min",
     "mockTime3": "hace 1 hora"
   },
-  "trading": {
-    "title": "Trading",
-    "search": "Buscar criptomoneda...",
-    "name": "Nombre",
-    "price": "Precio",
-    "change24h": "Cambio 24h",
-    "volume": "Volumen",
-    "chart": "Gráfico",
-    "buy": "Comprar",
-    "sell": "Vender",
-    "amount": "Cantidad",
-    "total": "Total",
-    "available": "Disponible",
-    "orderType": "Tipo de orden",
-    "market": "Mercado",
-    "limit": "Límite",
-    "stop": "Stop",
-    "placeOrder": "Realizar orden",
-    "openOrders": "Órdenes abiertas",
-    "orderHistory": "Historial de órdenes",
-    "noOrders": "Aún no hay órdenes"
-  },
-  "balance": {
-    "title": "Balance",
-    "totalBalance": "Balance total",
-    "availableBalance": "Disponible",
-    "lockedBalance": "Bloqueado",
-    "deposit": "Depositar",
-    "withdraw": "Retirar",
-    "transfer": "Transferir",
-    "crypto": "Cripto",
-    "fiat": "Fiat",
-    "asset": "Activo",
-    "total": "Total",
-    "available": "Disponible",
-    "locked": "En órdenes",
-    "actions": "Acciones",
-    "transactionHistory": "Historial de transacciones",
-    "type": "Tipo",
-    "amount": "Cantidad",
-    "status": "Estado",
-    "date": "Fecha",
-    "pending": "Pendiente",
-    "completed": "Completado",
-    "failed": "Fallido"
-  },
-  "support": {
-    "title": "Soporte",
-    "subtitle": "¿Cómo podemos ayudarte?",
-    "searchPlaceholder": "Buscar ayuda...",
-    "startChat": "Iniciar chat",
-    "faq": "Preguntas frecuentes",
-    "contactUs": "Contáctanos",
-    "email": "Email",
-    "liveChat": "Chat en vivo",
-    "phone": "Teléfono",
-    "sendMessage": "Enviar mensaje",
-    "yourMessage": "Tu mensaje...",
-    "subject": "Asunto",
-    "description": "Descripción",
-    "submit": "Enviar",
-    "howToDeposit": "¿Cómo depositar fondos?",
-    "howToWithdraw": "¿Cómo retirar fondos?",
-    "tradingFees": "¿Cuáles son las comisiones de trading?",
-    "accountSecurity": "¿Cómo asegurar mi cuenta?",
-    "kycVerification": "Verificación KYC",
-    "apiDocumentation": "Documentación de la API"
-  },
-  "profile": {
-    "title": "Perfil",
-    "personalInfo": "Información personal",
-    "security": "Seguridad",
-    "preferences": "Preferencias",
-    "fullName": "Nombre completo",
-    "email": "Email",
-    "phone": "Número de teléfono",
-    "accountType": "Tipo de cuenta",
-    "memberSince": "Miembro desde",
-    "verified": "Verificado",
-    "notVerified": "No verificado",
-    "save": "Guardar cambios",
-    "changePassword": "Cambiar contraseña",
-    "currentPassword": "Contraseña actual",
-    "newPassword": "Nueva contraseña",
-    "confirmPassword": "Confirmar contraseña",
-    "twoFactor": "Autenticación de dos factores",
-    "enable2FA": "Habilitar 2FA",
-    "disable2FA": "Deshabilitar 2FA",
-    "language": "Idioma",
-    "currency": "Moneda",
-    "timezone": "Zona horaria",
-    "notifications": "Notificaciones",
-    "emailNotifications": "Notificaciones por correo",
-    "pushNotifications": "Notificaciones push"
-  },
-  "sidebar": {
-    "accountNumber": "Número de cuenta",
-    "totalBalanceUsd": "BALANCE TOTAL (USD)",
-    "pnlUsd": "G/P (USD)",
-    "history": "Historial",
-    "settings": "Configuración"
-  },
-  "common": {
-    "loading": "Cargando...",
-    "error": "Error",
-    "success": "Éxito",
-    "cancel": "Cancelar",
-    "confirm": "Confirmar",
-    "close": "Cerrar",
-    "save": "Guardar",
-    "edit": "Editar",
-    "delete": "Eliminar",
-    "search": "Buscar",
-    "filter": "Filtrar",
-    "sort": "Ordenar",
-    "language": "Idioma"
-  },
   "market": {
     "title": "Mercado",
     "status": {
@@ -202,6 +120,28 @@
     },
     "buy": "Comprar"
   },
+  "trading": {
+    "title": "Trading",
+    "search": "Buscar criptomoneda...",
+    "name": "Nombre",
+    "price": "Precio",
+    "change24h": "Cambio 24h",
+    "volume": "Volumen",
+    "chart": "Gráfico",
+    "buy": "Comprar",
+    "sell": "Vender",
+    "amount": "Cantidad",
+    "total": "Total",
+    "available": "Disponible",
+    "orderType": "Tipo de orden",
+    "market": "Mercado",
+    "limit": "Límite",
+    "stop": "Stop",
+    "placeOrder": "Realizar orden",
+    "openOrders": "Órdenes abiertas",
+    "orderHistory": "Historial de órdenes",
+    "noOrders": "Aún no hay órdenes"
+  },
   "balance": {
     "loading": "Cargando datos del balance...",
     "title": "Balance y Transacciones",
@@ -214,6 +154,8 @@
     "operations": "Operaciones",
     "transactionHistory": "Historial de transacciones",
     "viewReceipt": "Ver",
+    "refreshing": "Actualizando...",
+    "refresh": "Actualizar",
     "table": {
       "type": "Tipo",
       "amount": "Cantidad",
@@ -224,7 +166,9 @@
     },
     "types": {
       "deposit": "Depósito",
-      "withdrawal": "Retiro"
+      "withdrawal": "Retiro",
+      "bot_profit": "Ganancia del bot",
+      "commission": "Comisión"
     },
     "status": {
       "completed": "Completado",
@@ -237,9 +181,14 @@
       "button": "Depositar Saldo"
     },
     "modals": {
+      "selectPackage": "Seleccione un paquete de depósito",
+      "fromAmount": "desde 250 €",
       "depositTitle": "Depositar Saldo",
+      "errorMinAmount": "El monto mínimo de depósito es de {{amount}} €",
       "withdrawTitle": "Retirar Fondos",
       "amountLabel": "Cantidad del Depósito",
+      "minAmount": "Monto mínimo",
+      "transferAmount": "Monto a transferir",
       "withdrawAmountLabel": "Cantidad de Retiro",
       "methodLabel": "Método de Pago",
       "withdrawMethodLabel": "Método de Retiro",
@@ -247,6 +196,10 @@
       "uploadClick": "Haz clic para subir",
       "uploadHint": "PNG, JPG o PDF hasta 5MB",
       "sending": "Enviando...",
+      "processing": "Procesando...",
+      "confirmDeposit": "Confirmar depósito",
+      "back": "Atrás",
+      "depositSuccess": "La solicitud de depósito se ha creado correctamente y se ha enviado para su revisión por parte del administrador.",
       "sendButton": "Enviar para revisión",
       "errorReceipt": "Por favor, sube un recibo de pago",
       "errorDeposit": "Error al crear el depósito",
@@ -255,12 +208,39 @@
       "requesting": "Enviando solicitud...",
       "requestButton": "Solicitar Retiro",
       "errorInsufficientFunds": "Fondos insuficientes en el balance",
-      "errorWithdraw": "Error al crear la solicitud de retiro"
+      "errorWithdraw": "Error al crear la solicitud de retiro",
+      "withdrawMinimum": "Mínimo",
+      "commission": "comisión"
     },
     "methods": {
       "card": "Tarjeta Bancaria",
       "crypto": "Criptomoneda",
       "transfer": "Transferencia Bancaria"
+    },
+    "depositOptions": {
+      "basic": {
+        "title": "Paquete Básico",
+        "description": "Ideal para principiantes"
+      },
+      "premium": {
+        "title": "Paquete Premium",
+        "description": "Capacidades de trading mejoradas"
+      },
+      "trader": {
+        "title": "Operar con un Trader",
+        "description": "Acceso completo a todas las herramientas"
+      },
+      "custom": {
+        "title": "Monto Personalizado",
+        "description": "Mínimo 250 €"
+      }
+    },
+    "payment": {
+      "cardNumberLabel": "Número de tarjeta para el pago",
+      "noCardNumber": "El número de tarjeta para el pago no está especificado. Por favor, contacte con el soporte.",
+      "attached": "Adjunto: ",
+      "replyPlaceholder": "Responder al usuario...",
+      "downloadAttachment": "Descargar archivo adjunto"
     }
   },
   "support": {
@@ -364,50 +344,19 @@
       "passwordUpdateError": "Error al cambiar la contraseña"
     }
   },
-  "auth": {
-    "login": "Iniciar sesión",
-    "logout": "Cerrar sesión",
-    "email": "Email",
-    "password": "Contraseña",
-    "welcome": "Bienvenido de nuevo",
-    "loginSubtitle": "Introduce tus credenciales para acceder a tu cuenta",
-    "loginButton": "Iniciar Sesión",
-    "noAccount": "¿No tienes una cuenta?",
-    "signUp": "Regístrate",
-    "platformSlogan": "Plataforma de Trading Profesional",
-    "hero": {
-      "title1": "Opera con criptomonedas",
-      "title2": "con confianza"
-    },
-    "heroSubtitle": "Únete a miles de traders que confían en nuestra plataforma",
-    "features": {
-      "security": {
-        "title": "Seguridad",
-        "description": "Protección de fondos con encriptación de nivel bancario"
-      },
-      "instantDeals": {
-        "title": "Operaciones Instantáneas",
-        "description": "El bot de trading funciona 24/7 para obtener el máximo beneficio"
-      },
-      "provenPlatform": {
-        "title": "Plataforma Probada",
-        "description": "Más de 1000 usuarios activos y 2,5M € de volumen de trading"
-      }
-    },
-    "stats": {
-      "users": "Usuarios",
-      "volume": "Volumen de Trading",
-      "support": "Soporte"
-    },
-    "welcomeTitle": "Bienvenido",
-    "welcomeSubtitle": "Inicia sesión en tu cuenta para continuar",
-    "errorTitle": "Error de inicio de sesión",
-    "emailLabel": "Dirección de correo electrónico",
-    "passwordLabel": "Contraseña",
-    "loggingIn": "Iniciando sesión...",
-    "demo": {
-      "title": "Inicio de sesión rápido con cuentas demo"
-    },
-    "footer": "© 2025 Bemo Investment. Todos los derechos reservados."
+  "common": {
+    "loading": "Cargando...",
+    "error": "Error",
+    "success": "Éxito",
+    "cancel": "Cancelar",
+    "confirm": "Confirmar",
+    "close": "Cerrar",
+    "save": "Guardar",
+    "edit": "Editar",
+    "delete": "Eliminar",
+    "search": "Buscar",
+    "filter": "Filtrar",
+    "sort": "Ordenar",
+    "language": "Idioma"
   }
 }

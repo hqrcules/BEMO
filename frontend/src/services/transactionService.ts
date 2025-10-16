@@ -1,9 +1,11 @@
+// hqrcules/bemo/BEMO-8415c65246c83f7667a1d5d44bac56dbccbc1d03/frontend/src/services/transactionService.ts
+
 import api from '@/shared/config/axios';
 
 export interface Transaction {
   id: string;
   user_email?: string;
-  transaction_type: 'deposit' | 'withdrawal' | 'commission' | 'bot_profit';
+  transaction_type: 'deposit' | 'withdrawal' | 'commission' | 'bot_profit' | 'bot_purchase';
   amount: string;
   commission?: string;
   total_amount?: string;

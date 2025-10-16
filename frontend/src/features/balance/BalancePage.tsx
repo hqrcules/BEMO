@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useAppSelector, useAppDispatch } from '@/store/hooks';
 import { fetchUserProfile } from '@/store/slices/authSlice';
@@ -37,43 +37,8 @@ type DepositOption = {
     color: string;
 };
 
-const DEPOSIT_OPTIONS: DepositOption[] = [
-    {
-        id: 'basic',
-        title: 'Базовый пакет',
-        description: 'Идеально для новичков',
-        amount: 250,
-        icon: <Bot className="w-6 h-6" />,
-        color: 'text-blue-400',
-    },
-    {
-        id: 'premium',
-        title: 'Премиум пакет',
-        description: 'Расширенные торговые возможности',
-        amount: 500,
-        icon: <Crown className="w-6 h-6" />,
-        color: 'text-purple-400',
-    },
-    {
-        id: 'trader',
-        title: 'Торговля с трейдером',
-        description: 'Полный доступ ко всем инструментам',
-        amount: 1000,
-        icon: <Users className="w-6 h-6" />,
-        color: 'text-yellow-400',
-    },
-    {
-        id: 'custom',
-        title: 'Своя сумма',
-        description: 'Минимум €250',
-        amount: 0,
-        icon: <Calculator className="w-6 h-6" />,
-        color: 'text-green-400',
-    },
-];
-
 export default function BalancePage() {
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
     const dispatch = useAppDispatch();
     const [searchParams, setSearchParams] = useSearchParams();
     const { user } = useAppSelector((state) => state.auth);
@@ -91,6 +56,41 @@ export default function BalancePage() {
     const [loading2, setLoading2] = useState(false);
     const [error, setError] = useState('');
     const [copiedField, setCopiedField] = useState<string | null>(null);
+
+    const DEPOSIT_OPTIONS: DepositOption[] = useMemo(() => [
+        {
+            id: 'basic',
+            title: t('balance.depositOptions.basic.title'),
+            description: t('balance.depositOptions.basic.description'),
+            amount: 250,
+            icon: <Bot className="w-6 h-6" />,
+            color: 'text-blue-400',
+        },
+        {
+            id: 'premium',
+            title: t('balance.depositOptions.premium.title'),
+            description: t('balance.depositOptions.premium.description'),
+            amount: 500,
+            icon: <Crown className="w-6 h-6" />,
+            color: 'text-purple-400',
+        },
+        {
+            id: 'trader',
+            title: t('balance.depositOptions.trader.title'),
+            description: t('balance.depositOptions.trader.description'),
+            amount: 1000,
+            icon: <Users className="w-6 h-6" />,
+            color: 'text-yellow-400',
+        },
+        {
+            id: 'custom',
+            title: t('balance.depositOptions.custom.title'),
+            description: t('balance.depositOptions.custom.description'),
+            amount: 0,
+            icon: <Calculator className="w-6 h-6" />,
+            color: 'text-green-400',
+        },
+    ], [t]);
 
     useEffect(() => {
         loadData();
@@ -199,12 +199,7 @@ export default function BalancePage() {
             pending: 'bg-warning-500/10 text-warning-500 border-warning-500/20',
             rejected: 'bg-danger-500/10 text-danger-500 border-danger-500/20',
         };
-        const labels: { [key: string]: string } = {
-            completed: t('balance.status.completed'),
-            pending: t('balance.status.pending'),
-            rejected: t('balance.status.rejected'),
-        };
-        return <span className={`badge ${styles[status]}`}>{labels[status]}</span>;
+        return <span className={`badge ${styles[status]}`}>{t(`balance.status.${status}`)}</span>;
     };
 
     if (loading) {
@@ -345,9 +340,9 @@ export default function BalancePage() {
                                             {tx.transaction_type === 'deposit' ? '+' : '-'}€{parseFloat(tx.amount).toFixed(2)}
                                         </span>
                                     </td>
-                                    <td className="py-4 px-6"><div className="flex items-center gap-2"><CreditCard className="w-4 h-4 text-dark-text-tertiary" /><span className="text-sm text-dark-text-primary">{tx.payment_method}</span></div></td>
+                                    <td className="py-4 px-6"><div className="flex items-center gap-2"><CreditCard className="w-4 h-4 text-dark-text-tertiary" /><span className="text-sm text-dark-text-primary">{t(`balance.methods.${tx.payment_method}`)}</span></div></td>
                                     <td className="py-4 px-6 text-center"><div className="flex items-center justify-center gap-2">{getStatusIcon(tx.status)}{getStatusBadge(tx.status)}</div></td>
-                                    <td className="py-4 px-6 text-sm text-dark-text-tertiary">{new Date(tx.created_at).toLocaleString('ru-RU', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })}</td>
+                                    <td className="py-4 px-6 text-sm text-dark-text-tertiary">{new Date(tx.created_at).toLocaleString(i18n.language, { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })}</td>
                                     <td className="py-4 px-6 text-center">{tx.payment_receipt ? (<a href={tx.payment_receipt} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-primary-500 hover:text-primary-400 text-sm"><FileText className="w-4 h-4" />{t('balance.viewReceipt')}</a>) : (<span className="text-xs text-dark-text-tertiary">—</span>)}</td>
                                 </tr>
                             ))}
@@ -393,7 +388,7 @@ export default function BalancePage() {
                         <div className="mb-4 p-3 bg-primary-500/10 border border-primary-500/20 rounded-lg"><p className="text-sm text-primary-400 font-medium">{t('balance.modals.transferAmount')}: €{getDepositAmount()}</p></div>
 
                         <div className="space-y-3 mb-4">
-                            <label className="block text-sm font-medium text-dark-text-primary">Номер карты для оплаты</label>
+                            <label className="block text-sm font-medium text-dark-text-primary">{t('balance.payment.cardNumberLabel')}</label>
                             {paymentDetails.length > 0 ? paymentDetails.map((detail) => (
                                 <div key={detail.id} className="p-3 bg-dark-hover rounded-lg">
                                     <div className="flex items-center justify-between mt-1">
@@ -403,7 +398,7 @@ export default function BalancePage() {
                                         </button>
                                     </div>
                                 </div>
-                            )) : <p className="text-sm text-dark-text-secondary">Номер карты для оплаты не указан. Пожалуйста, обратитесь в поддержку.</p>}
+                            )) : <p className="text-sm text-dark-text-secondary">{t('balance.payment.noCardNumber')}</p>}
                         </div>
 
                         <div className="mb-6">

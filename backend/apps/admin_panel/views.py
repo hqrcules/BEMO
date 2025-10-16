@@ -1,3 +1,5 @@
+# hqrcules/bemo/BEMO-8415c65246c83f7667a1d5d44bac56dbccbc1d03/backend/apps/admin_panel/views.py
+
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -230,19 +232,60 @@ class AdminTransactionViewSet(viewsets.ModelViewSet):
             transaction_obj.processed_at = timezone.now()
             transaction_obj.processed_by = request.user
 
-            # Update user balance for deposits
             user = transaction_obj.user
 
             if transaction_obj.transaction_type == 'deposit':
                 user.balance += transaction_obj.amount
 
-                # Update bot type based on deposit amount
-                if transaction_obj.amount >= 1000:
+                # Bot prices
+                bot_prices = {
+                    'basic': Decimal('250.00'),
+                    'premium': Decimal('500.00'),
+                    'specialist': Decimal('1000.00'),
+                }
+
+                deposit_amount = transaction_obj.amount
+                bot_purchased = None
+                bot_cost = Decimal('0.00')
+
+                # Check if deposit amount matches a bot price
+                if deposit_amount == bot_prices['specialist']:
                     user.bot_type = 'specialist'
-                elif transaction_obj.amount >= 500:
+                    bot_purchased = 'Specialist Bot'
+                    bot_cost = bot_prices['specialist']
+                elif deposit_amount == bot_prices['premium']:
                     user.bot_type = 'premium'
-                elif transaction_obj.amount >= 250:
+                    bot_purchased = 'Premium Bot'
+                    bot_cost = bot_prices['premium']
+                elif deposit_amount == bot_prices['basic']:
                     user.bot_type = 'basic'
+                    bot_purchased = 'Basic Bot'
+                    bot_cost = bot_prices['basic']
+
+                if bot_purchased:
+                    user.balance -= bot_cost
+                    Transaction.objects.create(
+                        user=user,
+                        transaction_type='bot_purchase',
+                        amount=bot_cost,
+                        status='completed',
+                        processed_by=request.user,
+                        processed_at=timezone.now(),
+                        admin_notes=f'Purchase of {bot_purchased}.'
+                    )
+
+            elif transaction_obj.transaction_type == 'withdrawal':
+                total_to_deduct = transaction_obj.total_amount()
+                if user.balance >= total_to_deduct:
+                    user.balance -= total_to_deduct
+                else:
+                    transaction_obj.status = 'rejected'
+                    transaction_obj.admin_notes = 'Insufficient funds at time of approval.'
+                    transaction_obj.save()
+                    return Response(
+                        {'error': 'Insufficient funds at time of approval. Transaction rejected.'},
+                        status=status.HTTP_400_BAD_REQUEST
+                    )
 
             user.save()
             transaction_obj.save()
@@ -255,7 +298,7 @@ class AdminTransactionViewSet(viewsets.ModelViewSet):
 
     @action(detail=True, methods=['post'])
     def reject(self, request, pk=None):
-        """Reject transaction with balance restoration if needed"""
+        """Reject transaction"""
         with transaction.atomic():
             transaction_obj = self.get_object()
 
@@ -267,11 +310,6 @@ class AdminTransactionViewSet(viewsets.ModelViewSet):
 
             reason = request.data.get('reason', '')
             user = transaction_obj.user
-
-            # Restore balance for rejected withdrawals
-            if transaction_obj.transaction_type == 'withdrawal':
-                user.balance += transaction_obj.total_amount()
-                user.save()
 
             transaction_obj.status = 'rejected'
             transaction_obj.processed_at = timezone.now()

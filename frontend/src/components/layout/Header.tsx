@@ -30,6 +30,7 @@ const Header = memo(() => {
   const dashboardNavItems = [
     { name: t('nav.home'), path: '/' },
     { name: t('nav.market'), path: '/trading' },
+    { name: 'Торговля Ботом', path: '/bot-trading' },
     { name: t('nav.balance'), path: '/balance' },
     { name: t('nav.support'), path: '/support' },
     { name: t('nav.profile'), path: '/profile' },

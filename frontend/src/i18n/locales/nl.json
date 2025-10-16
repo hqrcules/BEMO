@@ -15,7 +15,42 @@
     "loginSubtitle": "Voer uw gegevens in om toegang te krijgen tot uw account",
     "loginButton": "Inloggen",
     "noAccount": "Heeft u geen account?",
-    "signUp": "Aanmelden"
+    "signUp": "Aanmelden",
+    "platformSlogan": "Professioneel Handelsplatform",
+    "hero": {
+      "title1": "Handel in cryptocurrency",
+      "title2": "met vertrouwen"
+    },
+    "heroSubtitle": "Sluit u aan bij duizenden handelaren die ons platform vertrouwen",
+    "features": {
+      "security": {
+        "title": "Beveiliging",
+        "description": "Bescherming van fondsen met versleuteling op bankniveau"
+      },
+      "instantDeals": {
+        "title": "Directe Transacties",
+        "description": "De handelsbot werkt 24/7 voor maximale winst"
+      },
+      "provenPlatform": {
+        "title": "Bewezen Platform",
+        "description": "Meer dan 1000+ actieve gebruikers en €2,5M handelsvolume"
+      }
+    },
+    "stats": {
+      "users": "Gebruikers",
+      "volume": "Handelsvolume",
+      "support": "Ondersteuning"
+    },
+    "welcomeTitle": "Welkom",
+    "welcomeSubtitle": "Log in op uw account om door te gaan",
+    "errorTitle": "Inlogfout",
+    "emailLabel": "E-mailadres",
+    "passwordLabel": "Wachtwoord",
+    "loggingIn": "Inloggen...",
+    "demo": {
+      "title": "Snel inloggen met demo-accounts"
+    },
+    "footer": "© 2025 Bemo Investment. Alle rechten voorbehouden."
   },
   "dashboard": {
     "greeting": "Welkom",
@@ -55,123 +90,6 @@
     "mockTime2": "15 min geleden",
     "mockTime3": "1 uur geleden"
   },
-  "trading": {
-    "title": "Handelen",
-    "search": "Cryptocurrency zoeken...",
-    "name": "Naam",
-    "price": "Prijs",
-    "change24h": "24u Verandering",
-    "volume": "Volume",
-    "chart": "Grafiek",
-    "buy": "Kopen",
-    "sell": "Verkopen",
-    "amount": "Bedrag",
-    "total": "Totaal",
-    "available": "Beschikbaar",
-    "orderType": "Ordertype",
-    "market": "Markt",
-    "limit": "Limiet",
-    "stop": "Stop",
-    "placeOrder": "Order Plaatsen",
-    "openOrders": "Open Orders",
-    "orderHistory": "Ordergeschiedenis",
-    "noOrders": "Nog geen orders"
-  },
-  "balance": {
-    "title": "Saldo",
-    "totalBalance": "Totaal Saldo",
-    "availableBalance": "Beschikbaar",
-    "lockedBalance": "Vergrendeld",
-    "deposit": "Storten",
-    "withdraw": "Opnemen",
-    "transfer": "Overmaken",
-    "crypto": "Crypto",
-    "fiat": "Fiat",
-    "asset": "Activa",
-    "total": "Totaal",
-    "available": "Beschikbaar",
-    "locked": "In Orders",
-    "actions": "Acties",
-    "transactionHistory": "Transactiegeschiedenis",
-    "type": "Type",
-    "amount": "Bedrag",
-    "status": "Status",
-    "date": "Datum",
-    "pending": "In behandeling",
-    "completed": "Voltooid",
-    "failed": "Mislukt"
-  },
-  "support": {
-    "title": "Ondersteuning",
-    "subtitle": "Hoe kunnen we u helpen?",
-    "searchPlaceholder": "Zoeken naar hulp...",
-    "startChat": "Chat Starten",
-    "faq": "Veelgestelde Vragen",
-    "contactUs": "Neem Contact Op",
-    "email": "E-mail",
-    "liveChat": "Live Chat",
-    "phone": "Telefoon",
-    "sendMessage": "Bericht Verzenden",
-    "yourMessage": "Uw bericht...",
-    "subject": "Onderwerp",
-    "description": "Beschrijving",
-    "submit": "Verzenden",
-    "howToDeposit": "Hoe kan ik geld storten?",
-    "howToWithdraw": "Hoe kan ik geld opnemen?",
-    "tradingFees": "Wat zijn de handelskosten?",
-    "accountSecurity": "Hoe beveilig ik mijn account?",
-    "kycVerification": "KYC-verificatie",
-    "apiDocumentation": "API-documentatie"
-  },
-  "profile": {
-    "title": "Profiel",
-    "personalInfo": "Persoonlijke Informatie",
-    "security": "Beveiliging",
-    "preferences": "Voorkeuren",
-    "fullName": "Volledige Naam",
-    "email": "E-mail",
-    "phone": "Telefoonnummer",
-    "accountType": "Accounttype",
-    "memberSince": "Lid Sinds",
-    "verified": "Geverifieerd",
-    "notVerified": "Niet Geverifieerd",
-    "save": "Wijzigingen Opslaan",
-    "changePassword": "Wachtwoord Wijzigen",
-    "currentPassword": "Huidig Wachtwoord",
-    "newPassword": "Nieuw Wachtwoord",
-    "confirmPassword": "Wachtwoord Bevestigen",
-    "twoFactor": "Tweefactorauthenticatie",
-    "enable2FA": "2FA Inschakelen",
-    "disable2FA": "2FA Uitschakelen",
-    "language": "Taal",
-    "currency": "Valuta",
-    "timezone": "Tijdzone",
-    "notifications": "Meldingen",
-    "emailNotifications": "E-mailmeldingen",
-    "pushNotifications": "Pushmeldingen"
-  },
-  "sidebar": {
-    "accountNumber": "Accountnummer",
-    "totalBalanceUsd": "TOTAAL SALDO (USD)",
-    "pnlUsd": "W/V (USD)",
-    "history": "Geschiedenis",
-    "settings": "Instellingen"
-  },
-  "common": {
-    "loading": "Laden...",
-    "error": "Fout",
-    "success": "Succes",
-    "cancel": "Annuleren",
-    "confirm": "Bevestigen",
-    "close": "Sluiten",
-    "save": "Opslaan",
-    "edit": "Bewerken",
-    "delete": "Verwijderen",
-    "search": "Zoeken",
-    "filter": "Filteren",
-    "sort": "Sorteren",
-    "language": "Taal"
-  },
   "market": {
     "title": "Markt",
     "status": {
@@ -202,6 +120,28 @@
     },
     "buy": "Kopen"
   },
+  "trading": {
+    "title": "Handelen",
+    "search": "Cryptocurrency zoeken...",
+    "name": "Naam",
+    "price": "Prijs",
+    "change24h": "24u Verandering",
+    "volume": "Volume",
+    "chart": "Grafiek",
+    "buy": "Kopen",
+    "sell": "Verkopen",
+    "amount": "Bedrag",
+    "total": "Totaal",
+    "available": "Beschikbaar",
+    "orderType": "Ordertype",
+    "market": "Markt",
+    "limit": "Limiet",
+    "stop": "Stop",
+    "placeOrder": "Order Plaatsen",
+    "openOrders": "Open Orders",
+    "orderHistory": "Ordergeschiedenis",
+    "noOrders": "Nog geen orders"
+  },
   "balance": {
     "loading": "Saldogegevens laden...",
     "title": "Saldo & Transacties",
@@ -214,6 +154,8 @@
     "operations": "Operaties",
     "transactionHistory": "Transactiegeschiedenis",
     "viewReceipt": "Bekijken",
+    "refreshing": "Vernieuwen...",
+    "refresh": "Vernieuwen",
     "table": {
       "type": "Type",
       "amount": "Bedrag",
@@ -224,7 +166,9 @@
     },
     "types": {
       "deposit": "Storting",
-      "withdrawal": "Opname"
+      "withdrawal": "Opname",
+      "bot_profit": "Bot Winst",
+      "commission": "Commissie"
     },
     "status": {
       "completed": "Voltooid",
@@ -237,9 +181,14 @@
       "button": "Saldo Storten"
     },
     "modals": {
+      "selectPackage": "Selecteer een stortingspakket",
+      "fromAmount": "vanaf € 250",
       "depositTitle": "Saldo Storten",
+      "errorMinAmount": "Minimaal stortingsbedrag is €{{amount}}",
       "withdrawTitle": "Geld Opnemen",
       "amountLabel": "Stortingsbedrag",
+      "minAmount": "Minimumbedrag",
+      "transferAmount": "Over te maken bedrag",
       "withdrawAmountLabel": "Opnamebedrag",
       "methodLabel": "Betaalmethode",
       "withdrawMethodLabel": "Opnamemethode",
@@ -247,6 +196,10 @@
       "uploadClick": "Klik om te uploaden",
       "uploadHint": "PNG, JPG of PDF tot 5MB",
       "sending": "Verzenden...",
+      "processing": "Verwerken...",
+      "confirmDeposit": "Storting bevestigen",
+      "back": "Terug",
+      "depositSuccess": "Stortingsverzoek succesvol aangemaakt en ter beoordeling naar de beheerder verzonden.",
       "sendButton": "Ter beoordeling verzenden",
       "errorReceipt": "Upload alstublieft een betalingsbewijs",
       "errorDeposit": "Fout bij het aanmaken van de storting",
@@ -255,12 +208,39 @@
       "requesting": "Verzoek verzenden...",
       "requestButton": "Opname aanvragen",
       "errorInsufficientFunds": "Onvoldoende saldo",
-      "errorWithdraw": "Fout bij het aanmaken van opnameverzoek"
+      "errorWithdraw": "Fout bij het aanmaken van opnameverzoek",
+      "withdrawMinimum": "Minimum",
+      "commission": "commissie"
     },
     "methods": {
       "card": "Bankkaart",
       "crypto": "Cryptocurrency",
       "transfer": "Bankoverschrijving"
+    },
+    "depositOptions": {
+      "basic": {
+        "title": "Basispakket",
+        "description": "Ideaal voor beginners"
+      },
+      "premium": {
+        "title": "Premiumpakket",
+        "description": "Verbeterde handelsmogelijkheden"
+      },
+      "trader": {
+        "title": "Handelen met een handelaar",
+        "description": "Volledige toegang tot alle tools"
+      },
+      "custom": {
+        "title": "Aangepast bedrag",
+        "description": "Minimum € 250"
+      }
+    },
+    "payment": {
+      "cardNumberLabel": "Kaartnummer voor betaling",
+      "noCardNumber": "Kaartnummer voor betaling is niet opgegeven. Neem contact op met de ondersteuning.",
+      "attached": "Bijgevoegd: ",
+      "replyPlaceholder": "Antwoord gebruiker...",
+      "downloadAttachment": "Bijlage downloaden"
     }
   },
   "support": {
@@ -364,50 +344,19 @@
       "passwordUpdateError": "Fout bij het wijzigen van wachtwoord"
     }
   },
-  "auth": {
-    "login": "Inloggen",
-    "logout": "Uitloggen",
-    "email": "E-mail",
-    "password": "Wachtwoord",
-    "welcome": "Welkom terug",
-    "loginSubtitle": "Voer uw gegevens in om toegang te krijgen tot uw account",
-    "loginButton": "Inloggen",
-    "noAccount": "Heeft u geen account?",
-    "signUp": "Aanmelden",
-    "platformSlogan": "Professioneel Handelsplatform",
-    "hero": {
-      "title1": "Handel in cryptocurrency",
-      "title2": "met vertrouwen"
-    },
-    "heroSubtitle": "Sluit u aan bij duizenden handelaren die ons platform vertrouwen",
-    "features": {
-      "security": {
-        "title": "Beveiliging",
-        "description": "Bescherming van fondsen met versleuteling op bankniveau"
-      },
-      "instantDeals": {
-        "title": "Directe Transacties",
-        "description": "De handelsbot werkt 24/7 voor maximale winst"
-      },
-      "provenPlatform": {
-        "title": "Bewezen Platform",
-        "description": "Meer dan 1000+ actieve gebruikers en €2,5M handelsvolume"
-      }
-    },
-    "stats": {
-      "users": "Gebruikers",
-      "volume": "Handelsvolume",
-      "support": "Ondersteuning"
-    },
-    "welcomeTitle": "Welkom",
-    "welcomeSubtitle": "Log in op uw account om door te gaan",
-    "errorTitle": "Inlogfout",
-    "emailLabel": "E-mailadres",
-    "passwordLabel": "Wachtwoord",
-    "loggingIn": "Inloggen...",
-    "demo": {
-      "title": "Snel inloggen met demo-accounts"
-    },
-    "footer": "© 2025 Bemo Investment. Alle rechten voorbehouden."
+  "common": {
+    "loading": "Laden...",
+    "error": "Fout",
+    "success": "Succes",
+    "cancel": "Annuleren",
+    "confirm": "Bevestigen",
+    "close": "Sluiten",
+    "save": "Opslaan",
+    "edit": "Bewerken",
+    "delete": "Verwijderen",
+    "search": "Zoeken",
+    "filter": "Filteren",
+    "sort": "Sorteren",
+    "language": "Taal"
   }
 }

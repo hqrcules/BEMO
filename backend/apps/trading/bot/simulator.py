@@ -4,6 +4,8 @@ from django.utils import timezone
 from datetime import timedelta
 from apps.trading.models import BotTrade, TradingSession
 from apps.transactions.models import Transaction
+from asgiref.sync import async_to_sync
+from channels.layers import get_channel_layer
 
 
 class TradingBotSimulator:
@@ -171,6 +173,16 @@ class TradingBotSimulator:
             amount=profit_loss,
             status='completed',
             processed_at=closed_at
+        )
+
+        # Send balance update via WebSocket
+        channel_layer = get_channel_layer()
+        async_to_sync(channel_layer.group_send)(
+            f"user_{self.user.id}",
+            {
+                "type": "balance_update",
+                "balance": str(self.user.balance),
+            },
         )
 
         return trade

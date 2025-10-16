@@ -1,3 +1,5 @@
+# hqrcules/bemo/BEMO-8415c65246c83f7667a1d5d44bac56dbccbc1d03/backend/apps/transactions/models.py
+
 import uuid
 from decimal import Decimal
 from django.db import models
@@ -13,6 +15,7 @@ class Transaction(models.Model):
         ('withdrawal', 'Withdrawal'),
         ('commission', 'Commission'),
         ('bot_profit', 'Bot Profit'),
+        ('bot_purchase', 'Bot Purchase'),
     ]
 
     STATUS_CHOICES = [

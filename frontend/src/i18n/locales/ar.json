@@ -11,11 +11,46 @@
     "logout": "تسجيل الخروج",
     "email": "البريد الإلكتروني",
     "password": "كلمة المرور",
-    "welcome": "مرحباً",
+    "welcome": "مرحباً بعودتك",
     "loginSubtitle": "أدخل بياناتك للوصول إلى حسابك",
     "loginButton": "تسجيل الدخول",
     "noAccount": "ليس لديك حساب؟",
-    "signUp": "اشتراك"
+    "signUp": "اشتراك",
+    "platformSlogan": "منصة تداول احترافية",
+    "hero": {
+      "title1": "تداول العملات المشفرة",
+      "title2": "بثقة"
+    },
+    "heroSubtitle": "انضم إلى آلاف المتداولين الذين يثقون في منصتنا",
+    "features": {
+      "security": {
+        "title": "الأمان",
+        "description": "حماية الأموال باستخدام تشفير على مستوى البنوك"
+      },
+      "instantDeals": {
+        "title": "صفقات فورية",
+        "description": "يعمل روبوت التداول على مدار الساعة طوال أيام الأسبوع لتحقيق أقصى ربح"
+      },
+      "provenPlatform": {
+        "title": "منصة موثوقة",
+        "description": "أكثر من 1000 مستخدم نشط وحجم تداول 2.5 مليون يورو"
+      }
+    },
+    "stats": {
+      "users": "المستخدمون",
+      "volume": "حجم التداول",
+      "support": "الدعم"
+    },
+    "welcomeTitle": "مرحباً",
+    "welcomeSubtitle": "سجل الدخول إلى حسابك للمتابعة",
+    "errorTitle": "خطأ في تسجيل الدخول",
+    "emailLabel": "البريد الإلكتروني",
+    "passwordLabel": "كلمة المرور",
+    "loggingIn": "جارٍ تسجيل الدخول...",
+    "demo": {
+      "title": "تسجيل دخول سريع بحسابات تجريبية"
+    },
+    "footer": "© 2025 Bemo Investment. جميع الحقوق محفوظة."
   },
   "dashboard": {
     "greeting": "أهلاً",
@@ -55,123 +90,6 @@
     "mockTime2": "قبل 15 دقيقة",
     "mockTime3": "قبل ساعة"
   },
-  "trading": {
-    "title": "التداول",
-    "search": "ابحث عن عملة مشفرة...",
-    "name": "الاسم",
-    "price": "السعر",
-    "change24h": "التغيير 24 ساعة",
-    "volume": "الحجم",
-    "chart": "الرسم البياني",
-    "buy": "شراء",
-    "sell": "بيع",
-    "amount": "المبلغ",
-    "total": "الإجمالي",
-    "available": "متاح",
-    "orderType": "نوع الأمر",
-    "market": "سوق",
-    "limit": "محدد",
-    "stop": "إيقاف",
-    "placeOrder": "تنفيذ الأمر",
-    "openOrders": "الأوامر المفتوحة",
-    "orderHistory": "سجل الأوامر",
-    "noOrders": "لا توجد أوامر بعد"
-  },
-  "balance": {
-    "title": "الرصيد",
-    "totalBalance": "الرصيد الإجمالي",
-    "availableBalance": "متاح",
-    "lockedBalance": "محجوز",
-    "deposit": "إيداع",
-    "withdraw": "سحب",
-    "transfer": "تحويل",
-    "crypto": "عملات مشفرة",
-    "fiat": "عملات ورقية",
-    "asset": "الأصل",
-    "total": "الإجمالي",
-    "available": "متاح",
-    "locked": "في الأوامر",
-    "actions": "الإجراءات",
-    "transactionHistory": "سجل المعاملات",
-    "type": "النوع",
-    "amount": "المبلغ",
-    "status": "الحالة",
-    "date": "التاريخ",
-    "pending": "قيد الانتظار",
-    "completed": "مكتمل",
-    "failed": "فشل"
-  },
-  "support": {
-    "title": "الدعم",
-    "subtitle": "كيف يمكننا مساعدتك؟",
-    "searchPlaceholder": "ابحث عن مساعدة...",
-    "startChat": "بدء الدردشة",
-    "faq": "الأسئلة الشائعة",
-    "contactUs": "اتصل بنا",
-    "email": "البريد الإلكتروني",
-    "liveChat": "دردشة مباشرة",
-    "phone": "الهاتف",
-    "sendMessage": "إرسال رسالة",
-    "yourMessage": "رسالتك...",
-    "subject": "الموضوع",
-    "description": "الوصف",
-    "submit": "إرسال",
-    "howToDeposit": "كيفية إيداع الأموال؟",
-    "howToWithdraw": "كيفية سحب الأموال؟",
-    "tradingFees": "ما هي رسوم التداول؟",
-    "accountSecurity": "كيفية تأمين حسابي؟",
-    "kycVerification": "التحقق من الهوية",
-    "apiDocumentation": "وثائق API"
-  },
-  "profile": {
-    "title": "الملف الشخصي",
-    "personalInfo": "المعلومات الشخصية",
-    "security": "الأمان",
-    "preferences": "التفضيلات",
-    "fullName": "الاسم الكامل",
-    "email": "البريد الإلكتروني",
-    "phone": "رقم الهاتف",
-    "accountType": "نوع الحساب",
-    "memberSince": "عضو منذ",
-    "verified": "تم التحقق",
-    "notVerified": "لم يتم التحقق",
-    "save": "حفظ التغييرات",
-    "changePassword": "تغيير كلمة المرور",
-    "currentPassword": "كلمة المرور الحالية",
-    "newPassword": "كلمة المرور الجديدة",
-    "confirmPassword": "تأكيد كلمة المرور",
-    "twoFactor": "المصادقة الثنائية",
-    "enable2FA": "تفعيل 2FA",
-    "disable2FA": "تعطيل 2FA",
-    "language": "اللغة",
-    "currency": "العملة",
-    "timezone": "المنطقة الزمنية",
-    "notifications": "الإشعارات",
-    "emailNotifications": "إشعارات البريد الإلكتروني",
-    "pushNotifications": "إشعارات الدفع"
-  },
-  "sidebar": {
-    "accountNumber": "رقم الحساب",
-    "totalBalanceUsd": "الرصيد الإجمالي (USD)",
-    "pnlUsd": "الربح والخسارة (USD)",
-    "history": "السجل",
-    "settings": "الإعدادات"
-  },
-  "common": {
-    "loading": "جار التحميل...",
-    "error": "خطأ",
-    "success": "نجاح",
-    "cancel": "إلغاء",
-    "confirm": "تأكيد",
-    "close": "إغلاق",
-    "save": "حفظ",
-    "edit": "تعديل",
-    "delete": "حذف",
-    "search": "بحث",
-    "filter": "تصفية",
-    "sort": "فرز",
-    "language": "اللغة"
-  },
   "market": {
     "title": "السوق",
     "status": {
@@ -202,6 +120,28 @@
     },
     "buy": "شراء"
   },
+  "trading": {
+    "title": "التداول",
+    "search": "ابحث عن عملة مشفرة...",
+    "name": "الاسم",
+    "price": "السعر",
+    "change24h": "التغيير 24 ساعة",
+    "volume": "الحجم",
+    "chart": "الرسم البياني",
+    "buy": "شراء",
+    "sell": "بيع",
+    "amount": "المبلغ",
+    "total": "الإجمالي",
+    "available": "متاح",
+    "orderType": "نوع الأمر",
+    "market": "سوق",
+    "limit": "محدد",
+    "stop": "إيقاف",
+    "placeOrder": "تنفيذ الأمر",
+    "openOrders": "الأوامر المفتوحة",
+    "orderHistory": "سجل الأوامر",
+    "noOrders": "لا توجد أوامر بعد"
+  },
   "balance": {
     "loading": "جاري تحميل بيانات الرصيد...",
     "title": "الرصيد والمعاملات",
@@ -214,6 +154,8 @@
     "operations": "عمليات",
     "transactionHistory": "سجل المعاملات",
     "viewReceipt": "عرض",
+    "refreshing": "جارٍ التحديث...",
+    "refresh": "تحديث",
     "table": {
       "type": "النوع",
       "amount": "المبلغ",
@@ -224,7 +166,9 @@
     },
     "types": {
       "deposit": "إيداع",
-      "withdrawal": "سحب"
+      "withdrawal": "سحب",
+      "bot_profit": "ربح البوت",
+      "commission": "عمولة"
     },
     "status": {
       "completed": "مكتمل",
@@ -237,9 +181,14 @@
       "button": "إيداع في الرصيد"
     },
     "modals": {
+      "selectPackage": "اختر باقة الإيداع",
+      "fromAmount": "من 250 يورو",
       "depositTitle": "إيداع في الرصيد",
+      "errorMinAmount": "الحد الأدنى لمبلغ الإيداع هو {{amount}} يورو",
       "withdrawTitle": "سحب الأموال",
       "amountLabel": "مبلغ الإيداع",
+      "minAmount": "المبلغ الأدنى",
+      "transferAmount": "المبلغ المراد تحويله",
       "withdrawAmountLabel": "مبلغ السحب",
       "methodLabel": "طريقة الدفع",
       "withdrawMethodLabel": "طريقة السحب",
@@ -247,6 +196,10 @@
       "uploadClick": "انقر للتحميل",
       "uploadHint": "PNG, JPG أو PDF حتى 5 ميجابايت",
       "sending": "جارٍ الإرسال...",
+      "processing": "معالجة...",
+      "confirmDeposit": "تأكيد الإيداع",
+      "back": "رجوع",
+      "depositSuccess": "تم إنشاء طلب الإيداع بنجاح وإرساله للمراجعة من قبل المسؤول.",
       "sendButton": "إرسال للمراجعة",
       "errorReceipt": "يرجى تحميل إيصال الدفع",
       "errorDeposit": "خطأ في إنشاء الإيداع",
@@ -255,12 +208,39 @@
       "requesting": "جارٍ إرسال الطلب...",
       "requestButton": "طلب السحب",
       "errorInsufficientFunds": "الأموال غير كافية في الرصيد",
-      "errorWithdraw": "خطأ في إنشاء طلب السحب"
+      "errorWithdraw": "خطأ في إنشاء طلب السحب",
+      "withdrawMinimum": "الحد الأدنى",
+      "commission": "عمولة"
     },
     "methods": {
       "card": "بطاقة بنكية",
       "crypto": "عملة مشفرة",
       "transfer": "تحويل بنكي"
+    },
+    "depositOptions": {
+      "basic": {
+        "title": "الحزمة الأساسية",
+        "description": "مثالية للمبتدئين"
+      },
+      "premium": {
+        "title": "الحزمة المميزة",
+        "description": "قدرات تداول محسنة"
+      },
+      "trader": {
+        "title": "تداول مع متداول",
+        "description": "وصول كامل إلى جميع الأدوات"
+      },
+      "custom": {
+        "title": "مبلغ مخصص",
+        "description": "الحد الأدنى 250 يورو"
+      }
+    },
+    "payment": {
+      "cardNumberLabel": "رقم البطاقة للدفع",
+      "noCardNumber": "رقم البطاقة للدفع غير محدد. يرجى الاتصال بالدعم.",
+      "attached": "مرفق: ",
+      "replyPlaceholder": "الرد على المستخدم...",
+      "downloadAttachment": "تنزيل المرفق"
     }
   },
   "support": {
@@ -368,50 +348,19 @@
       "passwordUpdateError": "خطأ في تغيير كلمة المرور"
     }
   },
-  "auth": {
-    "login": "تسجيل الدخول",
-    "logout": "تسجيل الخروج",
-    "email": "البريد الإلكتروني",
-    "password": "كلمة المرور",
-    "welcome": "مرحباً بعودتك",
-    "loginSubtitle": "أدخل بياناتك للوصول إلى حسابك",
-    "loginButton": "تسجيل الدخول",
-    "noAccount": "ليس لديك حساب؟",
-    "signUp": "اشتراك",
-    "platformSlogan": "منصة تداول احترافية",
-    "hero": {
-      "title1": "تداول العملات المشفرة",
-      "title2": "بثقة"
-    },
-    "heroSubtitle": "انضم إلى آلاف المتداولين الذين يثقون في منصتنا",
-    "features": {
-      "security": {
-        "title": "الأمان",
-        "description": "حماية الأموال باستخدام تشفير على مستوى البنوك"
-      },
-      "instantDeals": {
-        "title": "صفقات فورية",
-        "description": "يعمل روبوت التداول على مدار الساعة طوال أيام الأسبوع لتحقيق أقصى ربح"
-      },
-      "provenPlatform": {
-        "title": "منصة موثوقة",
-        "description": "أكثر من 1000 مستخدم نشط وحجم تداول 2.5 مليون يورو"
-      }
-    },
-    "stats": {
-      "users": "المستخدمون",
-      "volume": "حجم التداول",
-      "support": "الدعم"
-    },
-    "welcomeTitle": "مرحباً",
-    "welcomeSubtitle": "سجل الدخول إلى حسابك للمتابعة",
-    "errorTitle": "خطأ في تسجيل الدخول",
-    "emailLabel": "البريد الإلكتروني",
-    "passwordLabel": "كلمة المرور",
-    "loggingIn": "جارٍ تسجيل الدخول...",
-    "demo": {
-      "title": "تسجيل دخول سريع بحسابات تجريبية"
-    },
-    "footer": "© 2025 Bemo Investment. جميع الحقوق محفوظة."
+  "common": {
+    "loading": "جار التحميل...",
+    "error": "خطأ",
+    "success": "نجاح",
+    "cancel": "إلغاء",
+    "confirm": "تأكيد",
+    "close": "إغلاق",
+    "save": "حفظ",
+    "edit": "تعديل",
+    "delete": "حذف",
+    "search": "بحث",
+    "filter": "تصفية",
+    "sort": "فرز",
+    "language": "اللغة"
   }
 }

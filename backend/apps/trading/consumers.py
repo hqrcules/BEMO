@@ -1,4 +1,3 @@
-# backend/apps/trading/consumers.py
 import json
 import asyncio
 import aiohttp
@@ -227,6 +226,8 @@ class BalanceConsumer(AsyncWebsocketConsumer):
         self.user = self.scope['user']
 
         if self.user.is_authenticated:
+            self.group_name = f"user_{self.user.id}"
+            await self.channel_layer.group_add(self.group_name, self.channel_name)
             await self.accept()
             print(f"✅ Balance WebSocket connected for user: {self.user.email}")
 
@@ -240,6 +241,7 @@ class BalanceConsumer(AsyncWebsocketConsumer):
 
     async def disconnect(self, close_code):
         if hasattr(self, 'user') and self.user.is_authenticated:
+            await self.channel_layer.group_discard(self.group_name, self.channel_name)
             print(f"❌ Balance WebSocket disconnected for user: {self.user.email}")
 
     async def receive(self, text_data):
@@ -259,3 +261,11 @@ class BalanceConsumer(AsyncWebsocketConsumer):
             print("⚠️ Invalid JSON")
         except Exception as e:
             print(f"❌ Error: {e}")
+
+    async def balance_update(self, event):
+        """Handler for balance_update messages from channel layer"""
+        await self.send(text_data=json.dumps({
+            'type': 'balance_update',
+            'balance': event['balance'],
+            'timestamp': datetime.now().isoformat()
+        }))

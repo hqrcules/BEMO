@@ -15,7 +15,42 @@
     "loginSubtitle": "Zadejte své přihlašovací údaje pro přístup k účtu",
     "loginButton": "Přihlásit se",
     "noAccount": "Nemáte účet?",
-    "signUp": "Zaregistrovat se"
+    "signUp": "Zaregistrovat se",
+    "platformSlogan": "Profesionální obchodní platforma",
+    "hero": {
+      "title1": "Obchodujte s kryptoměnou",
+      "title2": "s důvěrou"
+    },
+    "heroSubtitle": "Připojte se k tisícům obchodníků, kteří důvěřují naší platformě",
+    "features": {
+      "security": {
+        "title": "Bezpečnost",
+        "description": "Ochrana prostředků pomocí šifrování na bankovní úrovni"
+      },
+      "instantDeals": {
+        "title": "Okamžité obchody",
+        "description": "Obchodní bot pracuje 24/7 pro maximální zisk"
+      },
+      "provenPlatform": {
+        "title": "Osvědčená platforma",
+        "description": "Více než 1000+ aktivních uživatelů a objem obchodů 2,5 mil. €"
+      }
+    },
+    "stats": {
+      "users": "Uživatelé",
+      "volume": "Objem obchodů",
+      "support": "Podpora"
+    },
+    "welcomeTitle": "Vítejte",
+    "welcomeSubtitle": "Přihlaste se ke svému účtu a pokračujte",
+    "errorTitle": "Chyba přihlášení",
+    "emailLabel": "E-mailová adresa",
+    "passwordLabel": "Heslo",
+    "loggingIn": "Přihlašování...",
+    "demo": {
+      "title": "Rychlé přihlášení s demo účty"
+    },
+    "footer": "© 2025 Bemo Investment. Všechna práva vyhrazena."
   },
   "dashboard": {
     "greeting": "Vítejte",
@@ -55,123 +90,6 @@
     "mockTime2": "před 15 min",
     "mockTime3": "před 1 hodinou"
   },
-  "trading": {
-    "title": "Obchodování",
-    "search": "Hledat kryptoměnu...",
-    "name": "Název",
-    "price": "Cena",
-    "change24h": "24h Změna",
-    "volume": "Objem",
-    "chart": "Graf",
-    "buy": "Koupit",
-    "sell": "Prodat",
-    "amount": "Částka",
-    "total": "Celkem",
-    "available": "Dostupné",
-    "orderType": "Typ Objednávky",
-    "market": "Tržní",
-    "limit": "Limitní",
-    "stop": "Stop",
-    "placeOrder": "Zadat Objednávku",
-    "openOrders": "Otevřené Objednávky",
-    "orderHistory": "Historie Objednávek",
-    "noOrders": "Zatím žádné objednávky"
-  },
-  "balance": {
-    "title": "Zůstatek",
-    "totalBalance": "Celkový Zůstatek",
-    "availableBalance": "Dostupné",
-    "lockedBalance": "Blokované",
-    "deposit": "Vklad",
-    "withdraw": "Výběr",
-    "transfer": "Převod",
-    "crypto": "Krypto",
-    "fiat": "Fiat",
-    "asset": "Aktivum",
-    "total": "Celkem",
-    "available": "Dostupné",
-    "locked": "V Objednávkách",
-    "actions": "Akce",
-    "transactionHistory": "Historie Transakcí",
-    "type": "Typ",
-    "amount": "Částka",
-    "status": "Stav",
-    "date": "Datum",
-    "pending": "Čekající",
-    "completed": "Dokončeno",
-    "failed": "Selhalo"
-  },
-  "support": {
-    "title": "Podpora",
-    "subtitle": "Jak vám můžeme pomoci?",
-    "searchPlaceholder": "Hledat pomoc...",
-    "startChat": "Začít Chat",
-    "faq": "Často Kladené Otázky",
-    "contactUs": "Kontaktujte Nás",
-    "email": "E-mail",
-    "liveChat": "Živý Chat",
-    "phone": "Telefon",
-    "sendMessage": "Odeslat Zprávu",
-    "yourMessage": "Vaše zpráva...",
-    "subject": "Předmět",
-    "description": "Popis",
-    "submit": "Odeslat",
-    "howToDeposit": "Jak vložit prostředky?",
-    "howToWithdraw": "Jak vybrat prostředky?",
-    "tradingFees": "Jaké jsou obchodní poplatky?",
-    "accountSecurity": "Jak zabezpečit můj účet?",
-    "kycVerification": "Ověření KYC",
-    "apiDocumentation": "Dokumentace API"
-  },
-  "profile": {
-    "title": "Profil",
-    "personalInfo": "Osobní Údaje",
-    "security": "Zabezpečení",
-    "preferences": "Předvolby",
-    "fullName": "Celé Jméno",
-    "email": "E-mail",
-    "phone": "Telefonní Číslo",
-    "accountType": "Typ Účtu",
-    "memberSince": "Člen Od",
-    "verified": "Ověřeno",
-    "notVerified": "Neověřeno",
-    "save": "Uložit Změny",
-    "changePassword": "Změnit Heslo",
-    "currentPassword": "Současné Heslo",
-    "newPassword": "Nové Heslo",
-    "confirmPassword": "Potvrdit Heslo",
-    "twoFactor": "Dvoufaktorové Ověření",
-    "enable2FA": "Povolit 2FA",
-    "disable2FA": "Zakázat 2FA",
-    "language": "Jazyk",
-    "currency": "Měna",
-    "timezone": "Časové Pásmo",
-    "notifications": "Oznámení",
-    "emailNotifications": "E-mailová Oznámení",
-    "pushNotifications": "Push Oznámení"
-  },
-  "sidebar": {
-    "accountNumber": "Číslo Účtu",
-    "totalBalanceUsd": "CELKOVÝ ZŮSTATEK (USD)",
-    "pnlUsd": "Z/Z (USD)",
-    "history": "Historie",
-    "settings": "Nastavení"
-  },
-  "common": {
-    "loading": "Načítání...",
-    "error": "Chyba",
-    "success": "Úspěch",
-    "cancel": "Zrušit",
-    "confirm": "Potvrdit",
-    "close": "Zavřít",
-    "save": "Uložit",
-    "edit": "Upravit",
-    "delete": "Smazat",
-    "search": "Hledat",
-    "filter": "Filtr",
-    "sort": "Řadit",
-    "language": "Jazyk"
-  },
   "market": {
     "title": "Trh",
     "status": {
@@ -202,6 +120,28 @@
     },
     "buy": "Koupit"
   },
+  "trading": {
+    "title": "Obchodování",
+    "search": "Hledat kryptoměnu...",
+    "name": "Název",
+    "price": "Cena",
+    "change24h": "24h Změna",
+    "volume": "Objem",
+    "chart": "Graf",
+    "buy": "Koupit",
+    "sell": "Prodat",
+    "amount": "Částka",
+    "total": "Celkem",
+    "available": "Dostupné",
+    "orderType": "Typ Objednávky",
+    "market": "Tržní",
+    "limit": "Limitní",
+    "stop": "Stop",
+    "placeOrder": "Zadat Objednávku",
+    "openOrders": "Otevřené Objednávky",
+    "orderHistory": "Historie Objednávek",
+    "noOrders": "Zatím žádné objednávky"
+  },
   "balance": {
     "loading": "Načítání údajů o zůstatku...",
     "title": "Zůstatek a transakce",
@@ -214,6 +154,8 @@
     "operations": "Operace",
     "transactionHistory": "Historie transakcí",
     "viewReceipt": "Zobrazit",
+    "refreshing": "Aktualizace...",
+    "refresh": "Aktualizovat",
     "table": {
       "type": "Typ",
       "amount": "Částka",
@@ -224,7 +166,9 @@
     },
     "types": {
       "deposit": "Vklad",
-      "withdrawal": "Výběr"
+      "withdrawal": "Výběr",
+      "bot_profit": "Zisk z bota",
+      "commission": "Provize"
     },
     "status": {
       "completed": "Dokončeno",
@@ -237,9 +181,14 @@
       "button": "Vložit na zůstatek"
     },
     "modals": {
+      "selectPackage": "Vyberte vkladový balíček",
+      "fromAmount": "od 250 €",
       "depositTitle": "Vložit na zůstatek",
+      "errorMinAmount": "Minimální částka vkladu je {{amount}} €",
       "withdrawTitle": "Vybrat prostředky",
       "amountLabel": "Částka vkladu",
+      "minAmount": "Minimální částka",
+      "transferAmount": "Částka k převodu",
       "withdrawAmountLabel": "Částka výběru",
       "methodLabel": "Platební metoda",
       "withdrawMethodLabel": "Metoda výběru",
@@ -247,6 +196,10 @@
       "uploadClick": "Klikněte pro nahrání",
       "uploadHint": "PNG, JPG nebo PDF do 5 MB",
       "sending": "Odesílání...",
+      "processing": "Zpracovávání...",
+      "confirmDeposit": "Potvrdit vklad",
+      "back": "Zpět",
+      "depositSuccess": "Žádost o vklad byla úspěšně vytvořena a odeslána ke schválení administrátorovi.",
       "sendButton": "Odeslat ke kontrole",
       "errorReceipt": "Prosím, nahrajte doklad o platbě",
       "errorDeposit": "Chyba při vytváření vkladu",
@@ -255,12 +208,39 @@
       "requesting": "Odesílání žádosti...",
       "requestButton": "Požádat o výběr",
       "errorInsufficientFunds": "Nedostatek prostředků na zůstatku",
-      "errorWithdraw": "Chyba při vytváření žádosti o výběr"
+      "errorWithdraw": "Chyba při vytváření žádosti o výběr",
+      "withdrawMinimum": "Minimum",
+      "commission": "provize"
     },
     "methods": {
       "card": "Bankovní karta",
       "crypto": "Kryptoměna",
       "transfer": "Bankovní převod"
+    },
+    "depositOptions": {
+      "basic": {
+        "title": "Základní balíček",
+        "description": "Ideální pro začátečníky"
+      },
+      "premium": {
+        "title": "Prémiový balíček",
+        "description": "Vylepšené obchodní možnosti"
+      },
+      "trader": {
+        "title": "Obchodujte s obchodníkem",
+        "description": "Plný přístup ke všem nástrojům"
+      },
+      "custom": {
+        "title": "Vlastní částka",
+        "description": "Minimálně 250 €"
+      }
+    },
+    "payment": {
+      "cardNumberLabel": "Číslo karty pro platbu",
+      "noCardNumber": "Číslo karty pro platbu není uvedeno. Obraťte se na podporu.",
+      "attached": "Připojeno: ",
+      "replyPlaceholder": "Odpovědět uživateli...",
+      "downloadAttachment": "Stáhnout přílohu"
     }
   },
   "support": {
@@ -365,50 +345,19 @@
       "passwordUpdateError": "Chyba při změně hesla"
     }
   },
-  "auth": {
-    "login": "Přihlásit se",
-    "logout": "Odhlásit se",
-    "email": "E-mail",
-    "password": "Heslo",
-    "welcome": "Vítejte zpět",
-    "loginSubtitle": "Zadejte své přihlašovací údaje pro přístup k účtu",
-    "loginButton": "Přihlásit se",
-    "noAccount": "Nemáte účet?",
-    "signUp": "Zaregistrovat se",
-    "platformSlogan": "Profesionální obchodní platforma",
-    "hero": {
-      "title1": "Obchodujte s kryptoměnou",
-      "title2": "s důvěrou"
-    },
-    "heroSubtitle": "Připojte se k tisícům obchodníků, kteří důvěřují naší platformě",
-    "features": {
-      "security": {
-        "title": "Bezpečnost",
-        "description": "Ochrana prostředků pomocí šifrování na bankovní úrovni"
-      },
-      "instantDeals": {
-        "title": "Okamžité obchody",
-        "description": "Obchodní bot pracuje 24/7 pro maximální zisk"
-      },
-      "provenPlatform": {
-        "title": "Osvědčená platforma",
-        "description": "Více než 1000+ aktivních uživatelů a objem obchodů 2,5 mil. €"
-      }
-    },
-    "stats": {
-      "users": "Uživatelé",
-      "volume": "Objem obchodů",
-      "support": "Podpora"
-    },
-    "welcomeTitle": "Vítejte",
-    "welcomeSubtitle": "Přihlaste se ke svému účtu a pokračujte",
-    "errorTitle": "Chyba přihlášení",
-    "emailLabel": "E-mailová adresa",
-    "passwordLabel": "Heslo",
-    "loggingIn": "Přihlašování...",
-    "demo": {
-      "title": "Rychlé přihlášení s demo účty"
-    },
-    "footer": "© 2025 Bemo Investment. Všechna práva vyhrazena."
+  "common": {
+    "loading": "Načítání...",
+    "error": "Chyba",
+    "success": "Úspěch",
+    "cancel": "Zrušit",
+    "confirm": "Potvrdit",
+    "close": "Zavřít",
+    "save": "Uložit",
+    "edit": "Upravit",
+    "delete": "Smazat",
+    "search": "Hledat",
+    "filter": "Filter",
+    "sort": "Řadit",
+    "language": "Jazyk"
   }
 }
