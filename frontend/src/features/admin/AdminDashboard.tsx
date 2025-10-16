@@ -16,7 +16,7 @@ export default function AdminDashboard() {
       const data = await adminService.getStats();
       setStats(data);
     } catch (error) {
-      console.error('Error loading admin stats:', error);
+      console.error('Ошибка загрузки статистики администратора:', error);
     } finally {
       setLoading(false);
     }
@@ -35,20 +35,17 @@ export default function AdminDashboard() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
       <div>
         <h1 className="text-3xl font-bold text-dark-text-primary mb-2">
-          Admin Dashboard
+          Панель администратора
         </h1>
         <p className="text-dark-text-secondary">
           Обзор платформы и статистика
         </p>
       </div>
 
-      {/* Stats Grid */}
       {stats && (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {/* Total Users */}
           <div className="stat-card group">
             <div className="flex items-center justify-between mb-4">
               <div className="w-12 h-12 bg-gradient-to-br from-primary-500 to-primary-600 rounded-xl flex items-center justify-center shadow-lg group-hover:shadow-glow-primary transition-all">
@@ -65,7 +62,6 @@ export default function AdminDashboard() {
             </p>
           </div>
 
-          {/* Total Balance */}
           <div className="stat-card group">
             <div className="flex items-center justify-between mb-4">
               <div className="w-12 h-12 bg-gradient-to-br from-success-500 to-success-600 rounded-xl flex items-center justify-center shadow-lg group-hover:shadow-glow-success transition-all">
@@ -82,7 +78,6 @@ export default function AdminDashboard() {
             </p>
           </div>
 
-          {/* Pending Transactions */}
           <div className="stat-card group">
             <div className="flex items-center justify-between mb-4">
               <div className="w-12 h-12 bg-gradient-to-br from-warning-500 to-warning-600 rounded-xl flex items-center justify-center shadow-lg group-hover:shadow-warning-500/30 transition-all">
@@ -103,7 +98,6 @@ export default function AdminDashboard() {
             </p>
           </div>
 
-          {/* Total Deposits */}
           <div className="stat-card group">
             <div className="flex items-center justify-between mb-4">
               <div className="w-12 h-12 bg-gradient-to-br from-success-500 to-success-600 rounded-xl flex items-center justify-center shadow-lg group-hover:shadow-glow-success transition-all">
@@ -120,7 +114,6 @@ export default function AdminDashboard() {
             </p>
           </div>
 
-          {/* Total Withdrawals */}
           <div className="stat-card group">
             <div className="flex items-center justify-between mb-4">
               <div className="w-12 h-12 bg-gradient-to-br from-primary-500 to-primary-600 rounded-xl flex items-center justify-center shadow-lg group-hover:shadow-glow-primary transition-all">
@@ -137,7 +130,6 @@ export default function AdminDashboard() {
             </p>
           </div>
 
-          {/* Net Profit */}
           <div className="stat-card group">
             <div className="flex items-center justify-between mb-4">
               <div className="w-12 h-12 bg-gradient-to-br from-primary-500 via-success-500 to-primary-600 rounded-xl flex items-center justify-center shadow-lg group-hover:shadow-glow-success transition-all">
@@ -156,7 +148,6 @@ export default function AdminDashboard() {
         </div>
       )}
 
-      {/* Quick Actions */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <button
           onClick={() => window.location.href = '/admin/users'}

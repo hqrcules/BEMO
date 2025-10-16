@@ -58,6 +58,10 @@ export interface AdminStats {
   active_users: number;
   verified_users: number;
   inactive_users: number;
+  total_balance: string;
+  pending_transactions: number;
+  total_deposits: string;
+  total_withdrawals: string;
 }
 
 export interface TransactionStats {
@@ -149,7 +153,7 @@ export const adminService = {
   },
 
   async updatePaymentDetails(id: string, data: Partial<PaymentDetails>): Promise<PaymentDetails> {
-    const response = await api.put(`/api/admin/payment-details/${id}/`, data);
+    const response = await api.patch(`/api/admin/payment-details/${id}/`, data);
     return response.data;
   },
 
@@ -192,5 +196,11 @@ export const adminService = {
 
   async deleteSupportChat(chatId: string): Promise<void> {
     await api.delete(`/api/support/chats/${chatId}/`);
+  },
+
+  // Dashboard Stats
+  async getStats(): Promise<AdminStats> {
+    const response = await api.get('/api/admin/stats/');
+    return response.data;
   }
 };

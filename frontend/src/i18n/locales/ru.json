@@ -6,35 +6,51 @@
     "support": "Поддержка",
     "profile": "Профиль"
   },
-  "market": {
-    "title": "Маркет",
-    "status": {
-      "realtime": "В реальном времени",
-      "disconnected": "Отключено"
+  "auth": {
+    "login": "Вход",
+    "logout": "Выход",
+    "email": "Email",
+    "password": "Пароль",
+    "welcome": "С возвращением",
+    "loginSubtitle": "Введите свои данные для доступа к аккаунту",
+    "loginButton": "Войти",
+    "noAccount": "Нет аккаунта?",
+    "signUp": "Зарегистрироваться",
+    "platformSlogan": "Профессиональная торговая платформа",
+    "hero": {
+      "title1": "Торгуйте криптовалютой",
+      "title2": "с уверенностью"
     },
-    "availableBalance": "Доступный баланс",
-    "tabs": {
-      "crypto": "Криптовалюты",
-      "stocks": "Акции",
-      "forex": "Форекс",
-      "commodities": "Товары"
+    "heroSubtitle": "Присоединяйтесь к тысячам трейдеров, которые доверяют нашей платформе",
+    "features": {
+      "security": {
+        "title": "Безопасность",
+        "description": "Защита средств с использованием банковского уровня шифрования"
+      },
+      "instantDeals": {
+        "title": "Мгновенные сделки",
+        "description": "Торговый бот работает 24/7 для максимальной прибыли"
+      },
+      "provenPlatform": {
+        "title": "Проверенная платформа",
+        "description": "Более 1000+ активных пользователей и €2.5M торгового объема"
+      }
     },
-    "searchPlaceholder": "Поиск по названию или символу...",
-    "favorites": "Избранное",
-    "view": {
-      "table": "Таблица",
-      "grid": "Сетка"
+    "stats": {
+      "users": "Пользователей",
+      "volume": "Объем торгов",
+      "support": "Поддержка"
     },
-    "assetsCount": "{{count}} активов",
-    "noAssetsFound": "Активы не найдены",
-    "table": {
-      "asset": "Актив",
-      "price": "Цена",
-      "change24h": "Изменение 24ч",
-      "chart": "График",
-      "action": "Действие"
+    "welcomeTitle": "Добро пожаловать",
+    "welcomeSubtitle": "Войдите в свой аккаунт для продолжения",
+    "errorTitle": "Ошибка входа",
+    "emailLabel": "Email адрес",
+    "passwordLabel": "Пароль",
+    "loggingIn": "Вход в систему...",
+    "demo": {
+      "title": "Быстрый вход с демо-аккаунтами"
     },
-    "buy": "Купить"
+    "footer": "© 2025 Bemo Investment. Все права защищены."
   },
   "dashboard": {
     "greetingName": "Добро пожаловать, {{name}}!",
@@ -73,12 +89,44 @@
     "mockTime2": "15 мин назад",
     "mockTime3": "1 час назад"
   },
+  "market": {
+    "title": "Маркет",
+    "status": {
+      "realtime": "В реальном времени",
+      "disconnected": "Отключено"
+    },
+    "availableBalance": "Доступный баланс",
+    "tabs": {
+      "crypto": "Криптовалюты",
+      "stocks": "Акции",
+      "forex": "Форекс",
+      "commodities": "Товары"
+    },
+    "searchPlaceholder": "Поиск по названию или символу...",
+    "favorites": "Избранное",
+    "view": {
+      "table": "Таблица",
+      "grid": "Сетка"
+    },
+    "assetsCount": "{{count}} активов",
+    "noAssetsFound": "Активы не найдены",
+    "table": {
+      "asset": "Актив",
+      "price": "Цена",
+      "change24h": "Изменение 24ч",
+      "chart": "График",
+      "action": "Действие"
+    },
+    "buy": "Купить"
+  },
   "trading": {
     "buy": "Покупка",
     "sell": "Продажа"
   },
   "balance": {
     "loading": "Загрузка данных баланса...",
+    "refreshing": "Обновление...",
+    "refresh": "Обновить",
     "title": "Баланс и транзакции",
     "subtitle": "Управление депозитами и выводом средств",
     "availableBalance": "Доступный баланс",
@@ -88,6 +136,8 @@
     "totalWithdrawals": "Всего выведено",
     "operations": "Операций",
     "transactionHistory": "История транзакций",
+    "transactionsCount": "Транзакций: {{count}}",
+    "commission": "Комиссия",
     "viewReceipt": "Просмотр",
     "table": {
       "type": "Тип",
@@ -99,7 +149,9 @@
     },
     "types": {
       "deposit": "Пополнение",
-      "withdrawal": "Вывод"
+      "withdrawal": "Вывод",
+      "bot_profit": "Прибыль от бота",
+      "commission": "Комиссия"
     },
     "status": {
       "completed": "Завершено",
@@ -112,25 +164,37 @@
       "button": "Пополнить баланс"
     },
     "modals": {
-      "depositTitle": "Пополнение баланса",
-      "withdrawTitle": "Вывод средств",
-      "amountLabel": "Сумма пополнения",
-      "withdrawAmountLabel": "Сумма вывода",
-      "methodLabel": "Способ оплаты",
-      "withdrawMethodLabel": "Способ вывода",
-      "receiptLabel": "Чек об оплате",
-      "uploadClick": "Нажмите для загрузки",
-      "uploadHint": "PNG, JPG или PDF до 5MB",
-      "sending": "Отправка...",
-      "sendButton": "Отправить на проверку",
-      "errorReceipt": "Пожалуйста, загрузите чек об оплате",
-      "errorDeposit": "Ошибка создания депозита",
-      "availableToWithdraw": "Доступно для вывода",
-      "walletAddressLabel": "Адрес кошелька",
-      "requesting": "Отправка запроса...",
-      "requestButton": "Запросить вывод",
-      "errorInsufficientFunds": "Недостаточно средств на балансе",
-      "errorWithdraw": "Ошибка создания запроса на вывод"
+        "depositTitle": "Пополнение баланса",
+        "withdrawTitle": "Вывод средств",
+        "amountLabel": "Сумма пополнения",
+        "withdrawAmountLabel": "Сумма вывода",
+        "methodLabel": "Способ оплаты",
+        "withdrawMethodLabel": "Способ вывода",
+        "receiptLabel": "Чек об оплате",
+        "uploadClick": "Нажмите для загрузки",
+        "uploadHint": "PNG, JPG или PDF до 5MB",
+        "sending": "Отправка...",
+        "sendButton": "Отправить на проверку",
+        "errorReceipt": "Пожалуйста, загрузите чек об оплате",
+        "errorDeposit": "Ошибка создания депозита",
+        "availableToWithdraw": "Доступно для вывода",
+        "walletAddressLabel": "Адрес кошелька",
+        "requesting": "Отправка запроса...",
+        "requestButton": "Запросить вывод",
+        "errorInsufficientFunds": "Недостаточно средств на балансе",
+        "errorWithdraw": "Ошибка создания запроса на вывод",
+        "selectPackage": "Выберите пакет пополнения",
+        "fromAmount": "от €250",
+        "minAmount": "Минимальная сумма",
+        "transferAmount": "Сумма к переводу",
+        "additionalNotes": "Дополнительные заметки",
+        "notesPlaceholder": "Номер транзакции, комментарии...",
+        "confirmDeposit": "Подтвердить пополнение",
+        "processing": "Обработка...",
+        "back": "Назад",
+        "depositSuccess": "Запрос на пополнение успешно создан и отправлен на проверку администратору.",
+        "withdrawMinimum": "Минимум",
+        "commission": "комиссия"
     },
     "methods": {
       "card": "Банковская карта",
@@ -240,50 +304,7 @@
       "passwordUpdateError": "Ошибка изменения пароля"
     }
   },
-  "auth": {
-    "login": "Вход",
-    "logout": "Выход",
-    "email": "Email",
-    "password": "Пароль",
-    "welcome": "С возвращением",
-    "loginSubtitle": "Введите свои данные для доступа к аккаунту",
-    "loginButton": "Войти",
-    "noAccount": "Нет аккаунта?",
-    "signUp": "Зарегистрироваться",
-    "platformSlogan": "Профессиональная торговая платформа",
-    "hero": {
-      "title1": "Торгуйте криптовалютой",
-      "title2": "с уверенностью"
-    },
-    "heroSubtitle": "Присоединяйтесь к тысячам трейдеров, которые доверяют нашей платформе",
-    "features": {
-      "security": {
-        "title": "Безопасность",
-        "description": "Защита средств с использованием банковского уровня шифрования"
-      },
-      "instantDeals": {
-        "title": "Мгновенные сделки",
-        "description": "Торговый бот работает 24/7 для максимальной прибыли"
-      },
-      "provenPlatform": {
-        "title": "Проверенная платформа",
-        "description": "Более 1000+ активных пользователей и €2.5M торгового объема"
-      }
-    },
-    "stats": {
-      "users": "Пользователей",
-      "volume": "Объем торгов",
-      "support": "Поддержка"
-    },
-    "welcomeTitle": "Добро пожаловать",
-    "welcomeSubtitle": "Войдите в свой аккаунт для продолжения",
-    "errorTitle": "Ошибка входа",
-    "emailLabel": "Email адрес",
-    "passwordLabel": "Пароль",
-    "loggingIn": "Вход в систему...",
-    "demo": {
-      "title": "Быстрый вход с демо-аккаунтами"
-    },
-    "footer": "© 2025 Bemo Investment. Все права защищены."
+  "common": {
+    "loading": "Загрузка..."
   }
 }

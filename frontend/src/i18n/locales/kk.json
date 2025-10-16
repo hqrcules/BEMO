@@ -15,10 +15,44 @@
     "loginSubtitle": "Аккаунтыңызға кіру үшін деректеріңізді енгізіңіз",
     "loginButton": "Кіру",
     "noAccount": "Аккаунтыңыз жоқ па?",
-    "signUp": "Тіркелу"
+    "signUp": "Тіркелу",
+    "platformSlogan": "Кәсіби сауда платформасы",
+    "hero": {
+      "title1": "Криптовалюта саудасы",
+      "title2": "сенімділікпен"
+    },
+    "heroSubtitle": "Біздің платформамызға сенетін мыңдаған трейдерлерге қосылыңыз",
+    "features": {
+      "security": {
+        "title": "Қауіпсіздік",
+        "description": "Банк деңгейіндегі шифрлау арқылы қаражатты қорғау"
+      },
+      "instantDeals": {
+        "title": "Лезде жасалатын мәмілелер",
+        "description": "Сауда боты максималды пайда үшін 24/7 жұмыс істейді"
+      },
+      "provenPlatform": {
+        "title": "Сыналған платформа",
+        "description": "1000-нан астам белсенді пайдаланушы және 2,5 млн еуро сауда көлемі"
+      }
+    },
+    "stats": {
+      "users": "Пайдаланушылар",
+      "volume": "Сауда көлемі",
+      "support": "Қолдау"
+    },
+    "welcomeTitle": "Қош келдіңіз",
+    "welcomeSubtitle": "Жалғастыру үшін аккаунтыңызға кіріңіз",
+    "errorTitle": "Кіру қатесі",
+    "emailLabel": "Email мекенжайы",
+    "passwordLabel": "Құпия сөз",
+    "loggingIn": "Кіруде...",
+    "demo": {
+      "title": "Демо-аккаунттармен жылдам кіру"
+    },
+    "footer": "© 2025 Bemo Investment. Барлық құқықтар қорғалған."
   },
   "dashboard": {
-    "greeting": "Қош келдіңіз",
     "greetingName": "Қош келдіңіз, {{name}}!",
     "portfolioGrowth": "Сіздің портфеліңіз өсті",
     "last24h": "соңғы 24 сағатта",
@@ -55,123 +89,6 @@
     "mockTime2": "15 мин бұрын",
     "mockTime3": "1 сағат бұрын"
   },
-  "trading": {
-    "title": "Сауда",
-    "search": "Криптовалютаны іздеу...",
-    "name": "Атауы",
-    "price": "Баға",
-    "change24h": "24с Өзгеріс",
-    "volume": "Көлем",
-    "chart": "График",
-    "buy": "Сатып алу",
-    "sell": "Сату",
-    "amount": "Сома",
-    "total": "Жалпы",
-    "available": "Қолжетімді",
-    "orderType": "Тапсырыс түрі",
-    "market": "Нарық",
-    "limit": "Шектеу",
-    "stop": "Тоқтату",
-    "placeOrder": "Тапсырыс беру",
-    "openOrders": "Ашық тапсырыстар",
-    "orderHistory": "Тапсырыстар тарихы",
-    "noOrders": "Әзірше тапсырыс жоқ"
-  },
-  "balance": {
-    "title": "Баланс",
-    "totalBalance": "Жалпы баланс",
-    "availableBalance": "Қолжетімді",
-    "lockedBalance": "Блокталған",
-    "deposit": "Салым",
-    "withdraw": "Шығару",
-    "transfer": "Аудару",
-    "crypto": "Крипто",
-    "fiat": "Фиат",
-    "asset": "Актив",
-    "total": "Жалпы",
-    "available": "Қолжетімді",
-    "locked": "Тапсырыстарда",
-    "actions": "Әрекеттер",
-    "transactionHistory": "Транзакциялар тарихы",
-    "type": "Түрі",
-    "amount": "Сома",
-    "status": "Мәртебесі",
-    "date": "Күні",
-    "pending": "Күтілуде",
-    "completed": "Аяқталды",
-    "failed": "Сәтсіз"
-  },
-  "support": {
-    "title": "Қолдау",
-    "subtitle": "Сізге қалай көмектесуге болады?",
-    "searchPlaceholder": "Көмек іздеу...",
-    "startChat": "Чатты бастау",
-    "faq": "Жиі қойылатын сұрақтар",
-    "contactUs": "Бізбен байланысу",
-    "email": "Email",
-    "liveChat": "Тікелей чат",
-    "phone": "Телефон",
-    "sendMessage": "Хабарлама жіберу",
-    "yourMessage": "Сіздің хабарламаңыз...",
-    "subject": "Тақырып",
-    "description": "Сипаттама",
-    "submit": "Жіберу",
-    "howToDeposit": "Қаражатты қалай салуға болады?",
-    "howToWithdraw": "Қаражатты қалай шығаруға болады?",
-    "tradingFees": "Сауда комиссиялары қандай?",
-    "accountSecurity": "Аккаунтымды қалай қорғауға болады?",
-    "kycVerification": "KYC верификациясы",
-    "apiDocumentation": "API құжаттамасы"
-  },
-  "profile": {
-    "title": "Профиль",
-    "personalInfo": "Жеке ақпарат",
-    "security": "Қауіпсіздік",
-    "preferences": "Баптаулар",
-    "fullName": "Толық аты",
-    "email": "Email",
-    "phone": "Телефон нөмірі",
-    "accountType": "Аккаунт түрі",
-    "memberSince": "Мүше болған күнінен",
-    "verified": "Верификацияланған",
-    "notVerified": "Верификацияланбаған",
-    "save": "Өзгерістерді сақтау",
-    "changePassword": "Құпия сөзді өзгерту",
-    "currentPassword": "Ағымдағы құпия сөз",
-    "newPassword": "Жаңа құпия сөз",
-    "confirmPassword": "Құпия сөзді растау",
-    "twoFactor": "Екі факторлы аутентификация",
-    "enable2FA": "2FA қосу",
-    "disable2FA": "2FA өшіру",
-    "language": "Тіл",
-    "currency": "Валюта",
-    "timezone": "Уақыт белдеуі",
-    "notifications": "Хабарландырулар",
-    "emailNotifications": "Email хабарландырулары",
-    "pushNotifications": "Push хабарландырулары"
-  },
-  "sidebar": {
-    "accountNumber": "Шот нөмірі",
-    "totalBalanceUsd": "ЖАЛПЫ БАЛАНС (USD)",
-    "pnlUsd": "П/Ш (USD)",
-    "history": "Тарих",
-    "settings": "Баптаулар"
-  },
-  "common": {
-    "loading": "Жүктелуде...",
-    "error": "Қате",
-    "success": "Сәтті",
-    "cancel": "Болдырмау",
-    "confirm": "Растау",
-    "close": "Жабу",
-    "save": "Сақтау",
-    "edit": "Өңдеу",
-    "delete": "Жою",
-    "search": "Іздеу",
-    "filter": "Сүзгі",
-    "sort": "Сұрыптау",
-    "language": "Тіл"
-  },
   "market": {
     "title": "Нарық",
     "status": {
@@ -201,6 +118,10 @@
       "action": "Әрекет"
     },
     "buy": "Сатып алу"
+  },
+  "trading": {
+    "buy": "Сатып алу",
+    "sell": "Сату"
   },
   "balance": {
     "loading": "Баланс деректері жүктелуде...",
@@ -364,50 +285,7 @@
       "passwordUpdateError": "Құпия сөзді өзгерту қатесі"
     }
   },
-  "auth": {
-    "login": "Кіру",
-    "logout": "Шығу",
-    "email": "Email",
-    "password": "Құпия сөз",
-    "welcome": "Қош келдіңіз",
-    "loginSubtitle": "Аккаунтыңызға кіру үшін деректеріңізді енгізіңіз",
-    "loginButton": "Кіру",
-    "noAccount": "Аккаунтыңыз жоқ па?",
-    "signUp": "Тіркелу",
-    "platformSlogan": "Кәсіби сауда платформасы",
-    "hero": {
-      "title1": "Криптовалюта саудасы",
-      "title2": "сенімділікпен"
-    },
-    "heroSubtitle": "Біздің платформамызға сенетін мыңдаған трейдерлерге қосылыңыз",
-    "features": {
-      "security": {
-        "title": "Қауіпсіздік",
-        "description": "Банк деңгейіндегі шифрлау арқылы қаражатты қорғау"
-      },
-      "instantDeals": {
-        "title": "Лезде жасалатын мәмілелер",
-        "description": "Сауда боты максималды пайда үшін 24/7 жұмыс істейді"
-      },
-      "provenPlatform": {
-        "title": "Сыналған платформа",
-        "description": "1000-нан астам белсенді пайдаланушы және 2,5 млн еуро сауда көлемі"
-      }
-    },
-    "stats": {
-      "users": "Пайдаланушылар",
-      "volume": "Сауда көлемі",
-      "support": "Қолдау"
-    },
-    "welcomeTitle": "Қош келдіңіз",
-    "welcomeSubtitle": "Жалғастыру үшін аккаунтыңызға кіріңіз",
-    "errorTitle": "Кіру қатесі",
-    "emailLabel": "Email мекенжайы",
-    "passwordLabel": "Құпия сөз",
-    "loggingIn": "Кіруде...",
-    "demo": {
-      "title": "Демо-аккаунттармен жылдам кіру"
-    },
-    "footer": "© 2025 Bemo Investment. Барлық құқықтар қорғалған."
+  "common": {
+    "loading": "Жүктелуде..."
   }
 }
