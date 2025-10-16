@@ -1,12 +1,13 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import { authService } from '@/services/authService';
-import { AuthState, LoginCredentials, User } from '@/shared/types';
+import { AuthState, LoginCredentials, User, AuthResponse } from '@/shared/types';
 
 const initialState: AuthState = {
   user: null,
   isAuthenticated: false,
-  isLoading: true, // Changed to true for initialization
+  isLoading: true,
   error: null,
+  accessToken: null,
 };
 
 // Async thunk for login
@@ -40,7 +41,6 @@ export const fetchUserProfile = createAsyncThunk(
       const user = await authService.getProfile();
       return user;
     } catch (error: any) {
-      // Don't treat 401 as a critical error - user just not logged in
       if (error.response?.status === 401) {
         return rejectWithValue('Not authenticated');
       }
@@ -55,11 +55,9 @@ const authSlice = createSlice({
   name: 'auth',
   initialState,
   reducers: {
-    // Clear error message
     clearError: (state) => {
       state.error = null;
     },
-    // Set user manually (if needed)
     setUser: (state, action: PayloadAction<User>) => {
       state.user = action.payload;
       state.isAuthenticated = true;
@@ -72,28 +70,27 @@ const authSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      // Login cases
       .addCase(loginUser.pending, (state) => {
         state.isLoading = true;
         state.error = null;
       })
-      .addCase(loginUser.fulfilled, (state, action) => {
+      .addCase(loginUser.fulfilled, (state, action: PayloadAction<AuthResponse>) => {
         state.isLoading = false;
         state.isAuthenticated = true;
         state.user = action.payload.user;
+        state.accessToken = action.payload.access; // Зберігаємо токен
         state.error = null;
       })
       .addCase(loginUser.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload as string;
       })
-      // Logout cases
       .addCase(logoutUser.fulfilled, (state) => {
         state.user = null;
         state.isAuthenticated = false;
+        state.accessToken = null; // Очищуємо токен
         state.error = null;
       })
-      // Fetch profile cases
       .addCase(fetchUserProfile.pending, (state) => {
         state.isLoading = true;
       })

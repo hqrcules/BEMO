@@ -39,6 +39,7 @@ def login_view(request):
             'created_at': user.created_at.isoformat(),
             'last_login': user.last_login.isoformat() if user.last_login else None,
         },
+        'access': access_token,
         'message': 'Login successful'
     }, status=status.HTTP_200_OK)
 
@@ -132,3 +133,10 @@ def refresh_token_view(request):
             {'message': 'Invalid refresh token'},
             status=status.HTTP_401_UNAUTHORIZED
         )
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def balance_view(request):
+    """Get current user balance"""
+    user = request.user
+    return Response({'balance': str(user.balance)})

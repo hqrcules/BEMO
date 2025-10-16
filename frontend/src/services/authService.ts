@@ -3,7 +3,7 @@ import { LoginCredentials, AuthResponse, User } from '@/shared/types';
 
 export const authService = {
   hasCookies(): boolean {
-    return document.cookie.length > 0; // Basic check
+    return document.cookie.length > 0;
   },
 
   async login(credentials: LoginCredentials): Promise<AuthResponse> {
@@ -11,7 +11,6 @@ export const authService = {
     return response.data;
   },
 
-  // Logout - removes cookies on backend
   async logout(): Promise<void> {
     try {
       await api.post('/api/auth/logout/');
@@ -20,18 +19,15 @@ export const authService = {
     }
   },
 
-  // Get current user profile
   async getProfile(): Promise<User> {
     const response = await api.get('/api/auth/profile/');
     return response.data;
   },
 
-  // Refresh access token
   async refreshToken(): Promise<void> {
     await api.post('/api/auth/refresh/');
   },
 
-  // Check if user is authenticated
   async checkAuth(): Promise<boolean> {
     try {
       await this.getProfile();
@@ -39,5 +35,10 @@ export const authService = {
     } catch {
       return false;
     }
+  },
+
+  async getBalance(): Promise<{ balance: string }> {
+    const response = await api.get('/api/auth/balance/');
+    return response.data;
   },
 };

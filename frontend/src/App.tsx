@@ -1,32 +1,31 @@
 import { useEffect, lazy, Suspense } from 'react';
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { Provider } from 'react-redux';
-import { store } from './store/store';
-import { useAppDispatch, useAppSelector } from './store/hooks';
-import { fetchUserProfile } from './store/slices/authSlice';
-import Header from './components/layout/Header';
-import ProtectedRoute from './routes/ProtectedRoute';
-import AdminProtectedRoute from './routes/AdminProtectedRoute';
+import { store } from '@/store/store';
+import { useAppDispatch, useAppSelector } from '@/store/hooks';
+import { fetchUserProfile } from '@/store/slices/authSlice';
+import Header from '@/components/layout/Header';
+import ProtectedRoute from '@/routes/ProtectedRoute';
+import AdminProtectedRoute from '@/routes/AdminProtectedRoute';
 import { Loader2 } from 'lucide-react';
-import { useBalanceSocket } from './shared/hooks/useBalanceSocket';
+import { useBalancePolling } from '@/shared/hooks/useBalancePolling';
 
-// Lazy load components
-const LoginPage = lazy(() => import('./features/auth/LoginPage'));
-const DashboardLayout = lazy(() => import('./features/dashboard/DashboardPage'));
-const DashboardHome = lazy(() => import('./features/dashboard/DashboardHome'));
-const TradingPage = lazy(() => import('./features/trading/TradingPage'));
-const BotTradingPage = lazy(() => import('./features/trading/BotTradingPage'));
-const BalancePage = lazy(() => import('./features/balance/BalancePage'));
-const SupportPage = lazy(() => import('./features/support/SupportPage'));
-const ProfilePage = lazy(() => import('./features/profile/ProfilePage'));
-const AdminLogin = lazy(() => import('./features/admin/AdminLogin'));
-const AdminLayout = lazy(() => import('./features/admin/AdminLayout'));
-const AdminDashboard = lazy(() => import('./features/admin/AdminDashboard'));
-const AdminUsers = lazy(() => import('./features/admin/AdminUsers'));
-const AdminTransactions = lazy(() => import('./features/admin/AdminTransactions'));
-const AdminTrades = lazy(() => import('./features/admin/AdminTrades'));
-const AdminSupportPage = lazy(() => import('./features/admin/AdminSupportPage'));
-const AdminPaymentDetails = lazy(() => import('./features/admin/AdminPaymentDetails'));
+const LoginPage = lazy(() => import('@/features/auth/LoginPage'));
+const DashboardLayout = lazy(() => import('@/features/dashboard/DashboardPage'));
+const DashboardHome = lazy(() => import('@/features/dashboard/DashboardHome'));
+const TradingPage = lazy(() => import('@/features/trading/TradingPage'));
+const BotTradingPage = lazy(() => import('@/features/trading/BotTradingPage'));
+const BalancePage = lazy(() => import('@/features/balance/BalancePage'));
+const SupportPage = lazy(() => import('@/features/support/SupportPage'));
+const ProfilePage = lazy(() => import('@/features/profile/ProfilePage'));
+const AdminLogin = lazy(() => import('@/features/admin/AdminLogin'));
+const AdminLayout = lazy(() => import('@/features/admin/AdminLayout'));
+const AdminDashboard = lazy(() => import('@/features/admin/AdminDashboard'));
+const AdminUsers = lazy(() => import('@/features/admin/AdminUsers'));
+const AdminTransactions = lazy(() => import('@/features/admin/AdminTransactions'));
+const AdminTrades = lazy(() => import('@/features/admin/AdminTrades'));
+const AdminSupportPage = lazy(() => import('@/features/admin/AdminSupportPage'));
+const AdminPaymentDetails = lazy(() => import('@/features/admin/AdminPaymentDetails'));
 
 
 const LoadingFallback = () => (
@@ -45,10 +44,10 @@ function ScrollToTop() {
 
 function AppContent() {
   const dispatch = useAppDispatch();
-  const { user, isLoading } = useAppSelector((state) => state.auth);
+  const { isLoading } = useAppSelector((state) => state.auth);
   const location = useLocation();
 
-  useBalanceSocket(user);
+  useBalancePolling();
 
   useEffect(() => {
     const publicPages = ['/login', '/admin/login'];
@@ -61,7 +60,6 @@ function AppContent() {
   const isLoginPage = location.pathname === '/login';
   const isAdminRoute = location.pathname.startsWith('/admin');
 
-  // Initial load check for non-public pages
   if (isLoading && !isLoginPage && !isAdminRoute) {
     const publicPages = ['/login', '/admin/login'];
     if (!publicPages.includes(location.pathname)) {
