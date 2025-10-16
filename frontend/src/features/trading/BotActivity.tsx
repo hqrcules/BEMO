@@ -10,8 +10,8 @@ interface BotActivityProps {
 
 export default function BotActivity({ stats }: BotActivityProps) {
   const { user } = useAppSelector((state) => state.auth);
-  const [activeSession, setActiveSession] =
-    useState<TradingSession | null>(null);
+  const [activeSession, setActiveSession] = useState<TradingSession | null>(null);
+  const [uptimePercent, setUptimePercent] = useState(0);
 
   useEffect(() => {
     async function fetchActiveSession() {
@@ -26,6 +26,15 @@ export default function BotActivity({ stats }: BotActivityProps) {
     if (user?.bot_type !== 'none') {
       fetchActiveSession();
     }
+
+    const interval = setInterval(() => {
+      setUptimePercent(prev => {
+        const next = prev + 2;
+        return next > 100 ? 0 : next;
+      });
+    }, 100);
+
+    return () => clearInterval(interval);
   }, [user]);
 
   if (!user || user.bot_type === 'none') {
@@ -45,12 +54,26 @@ export default function BotActivity({ stats }: BotActivityProps) {
         <div>
           <h2 className="text-2xl font-bold text-dark-text-primary mb-2 flex items-center gap-3">
             <Zap className={`w-7 h-7 ${botColor}`} />
-            Активность Бота
+            Активність Бота
           </h2>
           <p className="text-dark-text-secondary">
             Ваш <span className={`font-bold ${botColor}`}>{user.bot_type}</span>{' '}
-            бот активен и торгует.
+            бот активен і торгує.
           </p>
+
+          {/* Смужка аптайму */}
+          <div className="mt-3">
+            <div className="flex justify-between text-xs text-dark-text-secondary mb-1">
+              <span>Сесія/аптайм</span>
+              <span>{uptimePercent.toFixed(0)}%</span>
+            </div>
+            <div className="w-full bg-dark-border rounded-full h-2">
+              <div
+                className="bg-gradient-to-r from-primary-500 to-success-500 h-2 rounded-full transition-all duration-300"
+                style={{ width: `${uptimePercent}%` }}
+              ></div>
+            </div>
+          </div>
         </div>
         <div className="flex items-center gap-2 px-4 py-2 bg-success-500/10 border border-success-500/20 rounded-xl">
           <div className="w-3 h-3 bg-success-500 rounded-full animate-pulse"></div>
@@ -68,6 +91,7 @@ export default function BotActivity({ stats }: BotActivityProps) {
             <p className="text-2xl font-bold text-success-500">
               +€{parseFloat(activeSession.total_profit).toFixed(2)}
             </p>
+            <p className="text-xs text-dark-text-tertiary mt-1">за сьогодні</p>
           </div>
           <div className="stat-card">
             <Shield className="w-8 h-8 text-primary-500 mb-3" />
@@ -75,6 +99,12 @@ export default function BotActivity({ stats }: BotActivityProps) {
             <p className="text-2xl font-bold text-dark-text-primary">
               {stats.win_rate.toFixed(2)}%
             </p>
+            <div className="w-full bg-dark-border rounded-full h-1 mt-2">
+              <div
+                className="bg-primary-500 h-1 rounded-full transition-all duration-500"
+                style={{ width: `${stats.win_rate}%` }}
+              ></div>
+            </div>
           </div>
           <div className="stat-card">
             <TrendingUp className="w-8 h-8 text-dark-text-secondary mb-3" />

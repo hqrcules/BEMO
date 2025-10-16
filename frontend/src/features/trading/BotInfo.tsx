@@ -1,97 +1,73 @@
-import { useNavigate } from 'react-router-dom';
-import { Zap, Shield, TrendingUp, Crown } from 'lucide-react';
-
-const botTypes = [
-  {
-    name: 'Basic Bot',
-    price: '€250',
-    description: 'Идеально подходит для начинающих. Использует стратегию скальпинга для быстрых, низкорискованных сделок.',
-    features: [
-      'Стратегия: Скальпинг',
-      'Низкий риск',
-      'До 15 сделок в день',
-      'Торгуемые пары: BTC/USDT, ETH/USDT',
-    ],
-    icon: <Shield className="w-8 h-8 text-blue-400" />,
-    color: 'blue',
-  },
-  {
-    name: 'Premium Bot',
-    price: '€500',
-    description: 'Для более опытных трейдеров. Применяет свинг-трейдинг для получения прибыли от среднесрочных колебаний рынка.',
-    features: [
-      'Стратегия: Свинг-трейдинг',
-      'Умеренный риск',
-      'До 25 сделок в день',
-      'Расширенный список торговых пар',
-    ],
-    icon: <Zap className="w-8 h-8 text-purple-400" />,
-    color: 'purple',
-  },
-  {
-    name: 'Specialist Bot',
-    price: '€1000',
-    description: 'Максимальная производительность. Использует трендовые стратегии для получения высокой прибыли на волатильном рынке.',
-    features: [
-      'Стратегия: Следование за трендом',
-      'Высокий потенциал прибыли',
-      'До 40 сделок в день',
-      'Все доступные торговые пары',
-    ],
-    icon: <Crown className="w-8 h-8 text-yellow-400" />,
-    color: 'yellow',
-  },
-];
+import { CheckCircle, Bot, TrendingUp, Shield, Bell } from 'lucide-react';
 
 export default function BotInfo() {
-  const navigate = useNavigate();
-
   return (
-    <div className="space-y-8">
-      <div className="text-center">
-        <h2 className="text-3xl font-bold text-dark-text-primary mb-2">
-          Активируйте своего торгового бота
-        </h2>
-        <p className="text-dark-text-secondary max-w-2xl mx-auto">
-          Наши боты используют передовые алгоритмы для автоматической торговли
-          на рынке криптовалют 24/7. Выберите подходящий для вас пакет, чтобы
-          начать получать пассивный доход.
-        </p>
-      </div>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {botTypes.map((bot) => (
-          <div
-            key={bot.name}
-            className={`glass-card p-6 border-2 border-dark-border hover:border-${bot.color}-500/50 transition-all transform hover:-translate-y-1`}
-          >
-            <div className="flex items-center gap-4 mb-4">
-              {bot.icon}
-              <h3 className={`text-2xl font-bold text-${bot.color}-400`}>
-                {bot.name}
-              </h3>
+    <div className="min-h-screen bg-gradient-to-br from-dark-bg via-dark-bg to-dark-surface/20 flex items-center justify-center p-4">
+      <div className="max-w-2xl mx-auto text-center">
+        <div className="glass-card p-8">
+          <Bot className="w-24 h-24 text-primary-500 mx-auto mb-6" />
+
+          <h1 className="text-3xl font-bold text-dark-text-primary mb-4">
+            Торговельний бот недоступний
+          </h1>
+
+          <p className="text-dark-text-secondary mb-8 text-lg">
+            Для доступу до автоматичної торгівлі вам потрібно активувати торговельного бота.
+          </p>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+            <div className="flex flex-col items-center p-4 bg-dark-surface/50 rounded-lg">
+              <TrendingUp className="w-8 h-8 text-green-500 mb-2" />
+              <h3 className="font-semibold text-dark-text-primary mb-1">Автоматичні угоди</h3>
+              <p className="text-sm text-dark-text-secondary text-center">24/7 торгівля без вашої участі</p>
             </div>
-            <p className="text-3xl font-bold text-dark-text-primary mb-4">
-              {bot.price}
-            </p>
-            <p className="text-sm text-dark-text-secondary mb-6 h-12">
-              {bot.description}
-            </p>
-            <ul className="space-y-3 mb-8">
-              {bot.features.map((feature, i) => (
-                <li key={i} className="flex items-center gap-2 text-sm">
-                  <TrendingUp className="w-4 h-4 text-green-500" />
-                  <span className="text-dark-text-secondary">{feature}</span>
-                </li>
-              ))}
-            </ul>
-            <button
-              onClick={() => navigate('/balance', { state: { openDepositModal: true } })}
-              className={`w-full btn bg-gradient-to-r from-${bot.color}-500 to-${bot.color}-600 text-white`}
-            >
-              Активировать
+
+            <div className="flex flex-col items-center p-4 bg-dark-surface/50 rounded-lg">
+              <Shield className="w-8 h-8 text-blue-500 mb-2" />
+              <h3 className="font-semibold text-dark-text-primary mb-1">Керування ризиком</h3>
+              <p className="text-sm text-dark-text-secondary text-center">Автоматичний стоп-лосс і тейк-профіт</p>
+            </div>
+
+            <div className="flex flex-col items-center p-4 bg-dark-surface/50 rounded-lg">
+              <Bell className="w-8 h-8 text-yellow-500 mb-2" />
+              <h3 className="font-semibold text-dark-text-primary mb-1">Сповіщення</h3>
+              <p className="text-sm text-dark-text-secondary text-center">Миттєві оповіщення про угоди</p>
+            </div>
+          </div>
+
+          <div className="space-y-4">
+            <button className="w-full py-3 px-6 bg-gradient-to-r from-primary-600 to-primary-500
+                             hover:from-primary-700 hover:to-primary-600 text-white font-semibold
+                             rounded-lg transition-all duration-300 transform hover:scale-105
+                             shadow-lg hover:shadow-xl">
+              Активувати базовий бот
+            </button>
+
+            <button className="w-full py-3 px-6 bg-dark-surface border border-primary-500/50
+                             text-primary-500 font-semibold rounded-lg transition-colors
+                             hover:bg-primary-500/10">
+              Обрати стратегію
             </button>
           </div>
-        ))}
+
+          <div className="mt-8 p-4 bg-dark-card/50 rounded-lg border border-dark-border/50">
+            <h4 className="font-semibold text-dark-text-primary mb-2">Доступні стратегії:</h4>
+            <div className="space-y-2 text-sm text-dark-text-secondary">
+              <div className="flex items-center">
+                <CheckCircle className="w-4 h-4 text-green-500 mr-2" />
+                <span>Базова стратегія - безкоштовно</span>
+              </div>
+              <div className="flex items-center">
+                <CheckCircle className="w-4 h-4 text-blue-500 mr-2" />
+                <span>Преміум стратегія - підвищена прибутковість</span>
+              </div>
+              <div className="flex items-center">
+                <CheckCircle className="w-4 h-4 text-purple-500 mr-2" />
+                <span>Спеціаліст стратегія - максимальний контроль</span>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );

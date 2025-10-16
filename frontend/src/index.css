@@ -123,6 +123,53 @@
   .badge-danger {
     @apply badge bg-danger-500/10 text-danger-500 border border-danger-500/20;
   }
+
+  /* Trading Bot Specific Styles */
+  .bot-card {
+    @apply glass-card p-4 hover:bg-dark-card/90 transition-all duration-300;
+  }
+
+  .position-card {
+    @apply p-4 hover:bg-dark-hover/30 transition-colors duration-200;
+  }
+
+  .metric-card {
+    @apply bg-dark-card/60 p-4 rounded-lg border border-dark-border/30 hover:bg-dark-card/80 transition-colors;
+  }
+
+  /* Range Slider Styles */
+  input[type="range"] {
+    -webkit-appearance: none;
+    background: transparent;
+    @apply w-full;
+  }
+
+  input[type="range"]::-webkit-slider-track {
+    @apply w-full h-2 bg-dark-card rounded-lg cursor-pointer;
+  }
+
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    @apply w-4 h-4 bg-primary-500 rounded-full cursor-pointer;
+    margin-top: -4px;
+  }
+
+  input[type="range"]::-moz-range-track {
+    @apply w-full h-2 bg-dark-card rounded-lg cursor-pointer border-0;
+  }
+
+  input[type="range"]::-moz-range-thumb {
+    @apply w-4 h-4 bg-primary-500 rounded-full cursor-pointer border-0;
+  }
+
+  /* Switch Styles for Headless UI */
+  .bot-switch {
+    @apply relative inline-flex h-6 w-11 items-center rounded-full transition-colors;
+  }
+
+  .bot-switch-thumb {
+    @apply inline-block h-4 w-4 transform rounded-full bg-white transition-transform;
+  }
 }
 
 @layer utilities {
@@ -133,8 +180,79 @@
   .text-gradient-success {
     @apply bg-clip-text text-transparent bg-gradient-to-r from-success-400 to-success-600;
   }
+
+  .text-gradient-danger {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-danger-400 to-danger-600;
+  }
+
+  /* Animations */
+  .animate-pulse-slow {
+    animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+
+  /* Custom scrollbar for containers */
+  .custom-scroll::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .custom-scroll::-webkit-scrollbar-track {
+    @apply bg-dark-card;
+  }
+
+  .custom-scroll::-webkit-scrollbar-thumb {
+    @apply bg-dark-border rounded-full;
+  }
+
+  .custom-scroll::-webkit-scrollbar-thumb:hover {
+    @apply bg-dark-text-tertiary;
+  }
 }
 
-.text-gradient-danger {
-  @apply bg-clip-text text-transparent bg-gradient-to-r from-danger-400 to-danger-600;
+/* Fix для PostCSS - замінюємо всі посилання на dark-surface */
+.bg-dark-surface {
+  @apply bg-dark-card;
+}
+
+.hover\:bg-dark-surface:hover {
+  @apply hover:bg-dark-card;
+}
+
+.hover\:bg-dark-surface\/50:hover {
+  @apply hover:bg-dark-card/50;
+}
+
+.hover\:bg-dark-surface-hover:hover {
+  @apply hover:bg-dark-hover;
+}
+
+.bg-dark-surface\/50 {
+  @apply bg-dark-card/50;
+}
+
+.border-dark-surface {
+  @apply border-dark-card;
+}
+
+/* Градієнт для accent кольорів */
+.bg-accent-600 {
+  @apply bg-primary-600;
+}
+
+.hover\:bg-accent-600:hover {
+  @apply hover:bg-primary-600;
+}
+
+/* Animation keyframes */
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.3s ease-out;
 }
