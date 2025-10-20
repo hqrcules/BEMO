@@ -52,7 +52,7 @@ class MarketConsumer(AsyncWebsocketConsumer):
         print("🔄 Refreshing crypto data from CoinGecko...")
 
         # Fetch top 50 coins by market cap
-        coins = await CryptoDataFetcher.get_top_coins(limit=50)
+        coins = await CryptoDataFetcher.get_top_coins(limit=103)
 
         if coins:
             MarketConsumer.crypto_cache = coins
