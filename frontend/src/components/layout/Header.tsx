@@ -94,11 +94,13 @@ const Header = memo(() => {
                         </nav>
 
                         <div className="flex items-center gap-4">
-                            {connected ? (
-                                <Wifi className="w-5 h-5 text-success-500" title="WebSocket Connected" />
-                            ) : (
-                                <WifiOff className="w-5 h-5 text-danger-500" title="WebSocket Disconnected" />
-                            )}
+                             <span title={connected ? "WebSocket Connected" : "WebSocket Disconnected"}>
+                                {connected ? (
+                                    <Wifi className="w-5 h-5 text-success-500" />
+                                ) : (
+                                    <WifiOff className="w-5 h-5 text-danger-500" />
+                                )}
+                            </span>
 
                              <CurrencySelector />
 

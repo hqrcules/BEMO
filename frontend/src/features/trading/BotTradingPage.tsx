@@ -4,7 +4,7 @@ import BotActivity from './BotActivity';
 import { useAppSelector } from '@/store/hooks';
 import BotInfo from './BotInfo';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import { TrendingUp, TrendingDown, Activity, Play, Pause, Square } from 'lucide-react';
+import { Activity, Play, Pause, Square } from 'lucide-react';
 
 interface SimpleChartData {
   time: string;
@@ -34,7 +34,6 @@ export default function BotTradingPage() {
 
   const [chartData, setChartData] = useState<SimpleChartData[]>([]);
 
-  // Fetch all closed trades for history and open trades for positions
   useEffect(() => {
     async function fetchData() {
       if (user?.bot_type !== 'none') {
@@ -60,13 +59,11 @@ export default function BotTradingPage() {
     fetchData();
   }, [user]);
 
-  // Polling for open positions and simulating PNL
   useEffect(() => {
     const pollPositions = async () => {
       if (user?.bot_type !== 'none') {
         try {
           const openPositionsData = await tradingService.getOpenTrades();
-          // Simulate PNL change for visual effect
           const updatedPositions = openPositionsData.map(pos => {
             const currentProfit = parseFloat(pos.profit_loss) || 0;
             const simulatedChange = (Math.random() - 0.5) * (parseFloat(pos.entry_price) * 0.0001);
@@ -82,7 +79,7 @@ export default function BotTradingPage() {
       }
     };
 
-    const interval = setInterval(pollPositions, 5000); // Poll every 5 seconds
+    const interval = setInterval(pollPositions, 5000);
     return () => clearInterval(interval);
   }, [user]);
 
@@ -136,7 +133,6 @@ export default function BotTradingPage() {
   };
 
   const closePosition = (id: string) => {
-    // This would be an API call in a real app
     setOpenPositions(prev => prev.filter(p => p.id !== id));
   };
 
@@ -200,8 +196,8 @@ export default function BotTradingPage() {
               <button
                 onClick={toggleBot}
                 className={`py-2 px-4 rounded-lg font-medium transition-colors flex items-center justify-center space-x-2 ${
-                  botState.isActive 
-                    ? 'bg-red-600 hover:bg-red-700 text-white' 
+                  botState.isActive
+                    ? 'bg-red-600 hover:bg-red-700 text-white'
                     : 'bg-green-600 hover:bg-green-700 text-white'
                 }`}
               >

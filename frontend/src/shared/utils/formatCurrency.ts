@@ -1,11 +1,10 @@
-import { RootState } from '@/store/store';
+import { CurrencyState } from '@/store/slices/currencySlice';
 
 export const formatCurrency = (
     amount: number | string | undefined | null,
-    state: RootState | undefined | null,
+    currencyState: CurrencyState | undefined | null,
     options: Intl.NumberFormatOptions = {}
 ): string => {
-    const currencyState = state?.currency;
     const fallbackSymbol = '€';
 
     if (!currencyState || !currencyState.rates || !currencyState.symbols) {
@@ -40,7 +39,7 @@ export const formatCurrency = (
     const defaultOptions: Intl.NumberFormatOptions = {
         style: 'decimal',
         minimumFractionDigits: 2,
-        maximumFractionDigits: displayCurrency === 'BTC' ? 8 : 2,
+        maximumFractionDigits: displayCurrency === 'BTC' ? 8 : (displayCurrency === 'ETH' ? 6 : 2),
     };
 
     const finalOptions = { ...defaultOptions, ...options };
@@ -55,9 +54,8 @@ export const formatCurrency = (
 
 export const convertToSelectedCurrency = (
     amountInEur: number | string | undefined | null,
-    state: RootState | undefined | null
+    currencyState: CurrencyState | undefined | null
 ): number => {
-    const currencyState = state?.currency;
     if (!currencyState || !currencyState.rates) {
         return Number(amountInEur) || 0;
     }
