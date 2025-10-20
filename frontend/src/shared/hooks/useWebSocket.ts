@@ -8,15 +8,17 @@ interface UseWebSocketProps {
   autoConnect?: boolean;
   reconnectInterval?: number;
   maxReconnectAttempts?: number;
+  onMessage?: (message: any) => void;
 }
 
-const WEBSOCKET_MARKET_URL = import.meta.env.VITE_WS_URL || 'ws://localhost:8000/ws/market/';
+const WEBSOCKET_MARKET_URL =  'ws://localhost:8000/ws/market/';
 
 export function useWebSocket({
   url = WEBSOCKET_MARKET_URL,
   autoConnect = true,
   reconnectInterval = 3000,
-  maxReconnectAttempts = 10
+  maxReconnectAttempts = 10,
+  onMessage
 }: UseWebSocketProps = {}) {
   const dispatch = useAppDispatch();
   const { connected } = useAppSelector((state: RootState) => state.websocket);
@@ -28,7 +30,7 @@ export function useWebSocket({
   const isConnecting = useRef(false);
 
   const connect = useCallback(() => {
-    if (!url || typeof url !== 'string' || !url.startsWith('ws://') && !url.startsWith('wss://')) {
+    if (!url || typeof url !== 'string' || (!url.startsWith('ws://') && !url.startsWith('wss://'))) {
         dispatch(setError('Неправильна URL WebSocket'));
         return;
     }
@@ -38,7 +40,7 @@ export function useWebSocket({
     }
 
     if (reconnectAttempts.current >= maxReconnectAttempts) {
-      dispatch(setError('Превышено максимальное количество попыток подключения'));
+      dispatch(setError('Перевищено максимальну кількість спроб підключення'));
       return;
     }
 
@@ -51,7 +53,7 @@ export function useWebSocket({
         dispatch(setConnected(true));
         reconnectAttempts.current = 0;
         isConnecting.current = false;
-        if (ws.current && ws.current.readyState === WebSocket.OPEN) {
+        if (ws.current && ws.current.readyState === WebSocket.OPEN && url.includes('/ws/market/')) {
           ws.current.send(JSON.stringify({ type: 'get_crypto_list' }));
         }
       };
@@ -59,18 +61,24 @@ export function useWebSocket({
       ws.current.onmessage = (event) => {
         try {
           const message = JSON.parse(event.data);
-          if (message.type === 'price_update') {
-            dispatch(updatePrices(message.data));
+          if (onMessage) {
+            onMessage(message);
           }
-          if (message.type === 'crypto_list') {
-            dispatch(setCryptoList(message.data));
+          if (url.includes('/ws/market/')) {
+            if (message.type === 'price_update') {
+              dispatch(updatePrices(message.data));
+            }
+            if (message.type === 'crypto_list') {
+              dispatch(setCryptoList(message.data));
+            }
           }
         } catch (err) {
+            // Error handling removed
         }
       };
 
       ws.current.onerror = () => {
-        dispatch(setError('Ошибка подключения WebSocket'));
+        dispatch(setError('Помилка підключення WebSocket'));
         isConnecting.current = false;
       };
 
@@ -96,7 +104,7 @@ export function useWebSocket({
       dispatch(setError('Не вдалося підключитися'));
       isConnecting.current = false;
     }
-  }, [url, dispatch, reconnectInterval, maxReconnectAttempts]);
+  }, [url, dispatch, reconnectInterval, maxReconnectAttempts, onMessage]);
 
   const disconnect = useCallback(() => {
     shouldReconnect.current = false;
@@ -108,10 +116,9 @@ export function useWebSocket({
       ws.current.close(1000, 'Client disconnect');
       ws.current = null;
     }
-    dispatch(setConnected(false));
     isConnecting.current = false;
     reconnectAttempts.current = 0;
-  }, [dispatch]);
+  }, [dispatch, url]);
 
   const send = useCallback((data: any) => {
     if (ws.current?.readyState === WebSocket.OPEN) {
@@ -129,7 +136,7 @@ export function useWebSocket({
     return () => {
       disconnect();
     };
-  }, [autoConnect, connect, disconnect]);
+  }, [autoConnect, connect, disconnect, url]);
 
   return {
     isConnected: connected,

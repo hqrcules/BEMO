@@ -6,14 +6,8 @@ from .bot.simulator import TradingBotSimulator
 
 @shared_task
 def run_bot_simulation():
-    """
-    Celery task for automatic trading simulation
-    Runs every minute via Celery Beat
-    """
-    # Get all users with active bots that are enabled
     users = User.objects.filter(
         is_active=True,
-        is_bot_active=True, # Added this check
         bot_type__in=['basic', 'premium', 'specialist']
     )
 
@@ -42,9 +36,6 @@ def run_bot_simulation():
 
 @shared_task
 def simulate_for_user(user_id, trades_count=5):
-    """
-    Celery task to simulate trading for specific user
-    """
     try:
         user = User.objects.get(id=user_id)
 

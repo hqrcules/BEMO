@@ -4,6 +4,9 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from django.db.models import Sum, Avg, Max, Min, Q, Count
 from django.utils import timezone
+from django.db import transaction as db_transaction
+from django.db import models
+from decimal import Decimal
 from .models import BotTrade, TradingSession
 from .serializers import (
     BotTradeSerializer,
@@ -13,11 +16,6 @@ from .serializers import (
 
 
 class BotTradeViewSet(viewsets.ReadOnlyModelViewSet):
-    """
-    ViewSet for bot trades
-    GET /api/trading/trades/ - list all user trades
-    GET /api/trading/trades/{id}/ - retrieve single trade
-    """
     serializer_class = BotTradeSerializer
     permission_classes = [IsAuthenticated]
 
@@ -31,44 +29,29 @@ class BotTradeViewSet(viewsets.ReadOnlyModelViewSet):
 
     @action(detail=False, methods=['get'])
     def open(self, request):
-        """
-        Get all open trades
-        GET /api/trading/trades/open/
-        """
         trades = self.get_queryset().filter(is_open=True)
         serializer = self.get_serializer(trades, many=True)
         return Response(serializer.data)
 
     @action(detail=False, methods=['get'])
     def closed(self, request):
-        """
-        Get all closed trades
-        GET /api/trading/trades/closed/
-        """
         trades = self.get_queryset().filter(is_open=False)
         serializer = self.get_serializer(trades, many=True)
         return Response(serializer.data)
 
     @action(detail=False, methods=['get'])
     def stats(self, request):
-        """
-        Get trading statistics
-        GET /api/trading/trades/stats/
-        """
         trades = self.get_queryset()
 
         total_trades = trades.count()
         open_trades = trades.filter(is_open=True).count()
         closed_trades = trades.filter(is_open=False).count()
 
-        # Winning/Losing trades
         winning_trades = trades.filter(is_open=False, profit_loss__gt=0).count()
         losing_trades = trades.filter(is_open=False, profit_loss__lt=0).count()
 
-        # Win rate
         win_rate = (winning_trades / closed_trades * 100) if closed_trades > 0 else 0.0
 
-        # Profit stats
         closed_trades_qs = trades.filter(is_open=False)
         total_profit = closed_trades_qs.aggregate(Sum('profit_loss'))['profit_loss__sum'] or 0
         average_profit = closed_trades_qs.aggregate(Avg('profit_loss'))['profit_loss__avg'] or 0
@@ -102,23 +85,58 @@ class TradingSessionViewSet(viewsets.ReadOnlyModelViewSet):
     @action(detail=False, methods=['post'], url_path='start-bot')
     def start_bot(self, request):
         user = request.user
-        if user.bot_type != 'none':
-            user.is_bot_active = True
-            user.save(update_fields=['is_bot_active'])
-            return Response({'status': 'Bot started'}, status=status.HTTP_200_OK)
-        return Response({'error': 'No bot purchased'}, status=status.HTTP_400_BAD_REQUEST)
+        if user.bot_type == 'none':
+            return Response({'error': 'No bot purchased'}, status=status.HTTP_400_BAD_REQUEST)
+
+        session, created = TradingSession.objects.get_or_create(
+            user=user,
+            is_active=True,
+            defaults={'bot_type': user.bot_type, 'starting_balance': user.balance, 'current_balance': user.balance}
+        )
+
+        if not created and not session.is_active:
+             session.is_active = True
+             session.ended_at = None
+             session.save(update_fields=['is_active', 'ended_at'])
+             print(f"Reactivated existing session for user {user.email}")
+        elif created:
+             print(f"Started new session for user {user.email}")
+        else:
+             print(f"Session already active for user {user.email}")
+
+        return Response({'status': 'Bot session active'}, status=status.HTTP_200_OK)
 
     @action(detail=False, methods=['post'], url_path='stop-bot')
     def stop_bot(self, request):
         user = request.user
-        user.is_bot_active = False
-        user.save(update_fields=['is_bot_active'])
+        closed_trade_count = 0
+        session_stopped = False
 
-        # Close all open trades for the user
+        active_session = TradingSession.objects.filter(user=user, is_active=True).first()
+        if active_session:
+            active_session.is_active = False
+            active_session.ended_at = timezone.now()
+            active_session.save(update_fields=['is_active', 'ended_at'])
+            session_stopped = True
+            print(f"Stopped active session for user {user.email}")
+
         open_trades = BotTrade.objects.filter(user=user, is_open=True)
-        closed_count = open_trades.update(is_open=False, exit_price=models.F('entry_price'), closed_at=timezone.now())
+        closed_trade_count = open_trades.update(
+            is_open=False,
+            exit_price=models.F('entry_price'),
+            closed_at=timezone.now(),
+            profit_loss=Decimal('0.00'),
+            profit_loss_percent=Decimal('0.00')
+        )
+        print(f"Closed {closed_trade_count} open positions for user {user.email}")
 
-        return Response({'status': f'Bot stopped, {closed_count} positions closed.'}, status=status.HTTP_200_OK)
+        status_message = f'Bot stopped. {closed_trade_count} open positions closed (at entry price).'
+        if not session_stopped and closed_trade_count == 0:
+             status_message = 'No active session found and no open positions to close.'
+        elif not session_stopped:
+             status_message = f'No active session found, but {closed_trade_count} open positions were closed (at entry price).'
+
+        return Response({'status': status_message}, status=status.HTTP_200_OK)
 
     @action(detail=False, methods=['get'])
     def active(self, request):

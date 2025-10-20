@@ -5,7 +5,6 @@ import { loginUser, clearError } from '@/store/slices/authSlice';
 import { useTranslation } from 'react-i18next';
 import { Lock, Mail, AlertCircle, Loader2, TrendingUp, Shield, Award, Zap, Globe } from 'lucide-react';
 
-// --- Список доступних мов ---
 const languages = [
   { code: 'en', name: 'English' },
   { code: 'ru', name: 'Русский' },
