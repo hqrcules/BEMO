@@ -1,7 +1,8 @@
-# backend/apps/trading/utils/crypto_fetcher.py
 import aiohttp
 import asyncio
+import requests
 from typing import List, Dict
+from decimal import Decimal
 
 
 class CryptoDataFetcher:
@@ -11,6 +12,35 @@ class CryptoDataFetcher:
     """
 
     COINGECKO_API_BASE = "https://api.coingecko.com/api/v3"
+
+    @staticmethod
+    def get_base_prices_sync(limit: int = 20) -> Dict[str, Decimal]:
+        """
+        Fetch top cryptocurrencies from CoinGecko synchronously and return a dictionary
+        of symbol -> price, formatted for the simulator.
+        """
+        url = f"{CryptoDataFetcher.COINGECKO_API_BASE}/coins/markets"
+        params = {
+            'vs_currency': 'usd',
+            'order': 'market_cap_desc',
+            'per_page': limit,
+            'page': 1,
+            'sparkline': 'false',
+        }
+        try:
+            response = requests.get(url, params=params, timeout=10)
+            response.raise_for_status()  # Raise an exception for bad status codes
+            data = response.json()
+
+            prices = {
+                f"{coin.get('symbol', '').upper()}/USDT": Decimal(str(coin.get('current_price', 0)))
+                for coin in data
+            }
+            # Filter out any coins that didn't have a symbol or price
+            return {k: v for k, v in prices.items() if k and v > 0}
+        except requests.exceptions.RequestException as e:
+            print(f"❌ Error fetching sync prices from CoinGecko: {e}")
+            return {}  # Return empty dict on failure
 
     @staticmethod
     async def get_top_coins(limit: int = 100) -> List[Dict]:
@@ -93,5 +123,3 @@ class CryptoDataFetcher:
             except Exception as e:
                 print(f"❌ Error fetching Binance pairs: {e}")
                 return []
-
-

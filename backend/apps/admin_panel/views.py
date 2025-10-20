@@ -1,5 +1,3 @@
-# hqrcules/bemo/BEMO-8415c65246c83f7667a1d5d44bac56dbccbc1d03/backend/apps/admin_panel/views.py
-
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -15,6 +13,7 @@ from .serializers import (
 )
 from apps.accounts.models import User
 from apps.transactions.models import Transaction
+from apps.trading.models import BotTrade
 
 
 class PaymentDetailsViewSet(viewsets.ModelViewSet):
@@ -145,6 +144,64 @@ class AdminUserViewSet(viewsets.ModelViewSet):
         return Response({
             'message': 'User verified successfully'
         })
+
+    @action(detail=True, methods=['post'], url_path='create-trade')
+    def create_trade(self, request, pk=None):
+        user = self.get_object()
+        data = request.data
+
+        required_fields = ['symbol', 'side', 'entry_price', 'exit_price', 'quantity']
+        if not all(field in data for field in required_fields):
+            return Response(
+                {'error': 'Missing required fields for trade creation.'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        try:
+            with transaction.atomic():
+                entry_price = Decimal(str(data['entry_price']))
+                exit_price = Decimal(str(data['exit_price']))
+                quantity = Decimal(str(data['quantity']))
+
+                if data['side'] == 'buy':
+                    profit_loss = (exit_price - entry_price) * quantity
+                else:
+                    profit_loss = (entry_price - exit_price) * quantity
+
+                profit_loss_percent = (profit_loss / (
+                            entry_price * quantity)) * 100 if entry_price > 0 and quantity > 0 else 0
+
+                BotTrade.objects.create(
+                    user=user,
+                    symbol=data['symbol'],
+                    side=data['side'],
+                    entry_price=entry_price,
+                    exit_price=exit_price,
+                    quantity=quantity,
+                    profit_loss=profit_loss,
+                    profit_loss_percent=profit_loss_percent,
+                    is_open=False,
+                    closed_at=timezone.now()
+                )
+
+                Transaction.objects.create(
+                    user=user,
+                    transaction_type='bot_profit',
+                    amount=profit_loss,
+                    status='completed',
+                    processed_by=request.user,
+                    processed_at=timezone.now()
+                )
+
+                user.balance += profit_loss
+                user.save()
+
+            return Response(
+                {'message': f'Trade created successfully for {user.email}. Profit: {profit_loss:.2f}'},
+                status=status.HTTP_201_CREATED
+            )
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class AdminTransactionViewSet(viewsets.ModelViewSet):

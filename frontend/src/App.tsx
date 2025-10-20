@@ -9,6 +9,7 @@ import ProtectedRoute from '@/routes/ProtectedRoute';
 import AdminProtectedRoute from '@/routes/AdminProtectedRoute';
 import { Loader2 } from 'lucide-react';
 import { useBalancePolling } from '@/shared/hooks/useBalancePolling';
+import { useBalanceWebSocket } from '@/shared/hooks/useBalanceWebSocket';
 
 const LoginPage = lazy(() => import('@/features/auth/LoginPage'));
 const DashboardLayout = lazy(() => import('@/features/dashboard/DashboardPage'));
@@ -47,7 +48,7 @@ function AppContent() {
   const { isLoading } = useAppSelector((state) => state.auth);
   const location = useLocation();
 
-  useBalancePolling();
+  useBalanceWebSocket();
 
   useEffect(() => {
     const publicPages = ['/login', '/admin/login'];

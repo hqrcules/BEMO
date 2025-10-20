@@ -6,8 +6,9 @@ export interface User {
   balance: string;
   bot_type: 'none' | 'basic' | 'premium' | 'specialist';
   is_verified: boolean;
-  is_staff?: boolean; // Added for admin check
-  is_superuser?: boolean; // Added for superuser check
+  is_staff?: boolean;
+  is_superuser?: boolean;
+  is_bot_active: boolean; // Додано
   created_at: string;
   last_login: string | null;
 }

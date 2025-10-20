@@ -8,14 +8,12 @@ from .bot.simulator import TradingBotSimulator
 def run_bot_simulation():
     """
     Celery task for automatic trading simulation
-    Runs every hour via Celery Beat
-
-    Returns:
-        List of results for each user
+    Runs every minute via Celery Beat
     """
-    # Get all users with active bots
+    # Get all users with active bots that are enabled
     users = User.objects.filter(
         is_active=True,
+        is_bot_active=True, # Added this check
         bot_type__in=['basic', 'premium', 'specialist']
     )
 
@@ -23,18 +21,16 @@ def run_bot_simulation():
 
     for user in users:
         try:
-            # Run daily trading simulation
             result = TradingBotSimulator.simulate_daily_trading(user)
-
-            results.append({
-                'user': user.email,
-                'success': True,
-                'trades': result['trades_count'],
-                'profit': float(result['total_profit'])
-            })
+            if result:
+                results.append({
+                    'user': user.email,
+                    'success': True,
+                    'trades': result['trades_count'],
+                    'profit': float(result['total_profit'])
+                })
 
         except Exception as e:
-            # Log error but continue with other users
             results.append({
                 'user': user.email,
                 'success': False,
@@ -48,13 +44,6 @@ def run_bot_simulation():
 def simulate_for_user(user_id, trades_count=5):
     """
     Celery task to simulate trading for specific user
-
-    Args:
-        user_id: User UUID as string
-        trades_count: Number of trades to generate
-
-    Returns:
-        Dictionary with simulation results
     """
     try:
         user = User.objects.get(id=user_id)
@@ -65,7 +54,6 @@ def simulate_for_user(user_id, trades_count=5):
                 'error': 'User does not have active bot'
             }
 
-        # Get or create session
         from .models import TradingSession
 
         session = TradingSession.objects.filter(
@@ -80,9 +68,8 @@ def simulate_for_user(user_id, trades_count=5):
         else:
             simulator.session = session
 
-        # Generate trades
         trades = simulator.generate_multiple_trades(trades_count)
-        total_profit = sum(t.profit_loss for t in trades)
+        total_profit = sum(t.profit_loss for t in trades if not t.is_open and t.profit_loss)
 
         return {
             'success': True,

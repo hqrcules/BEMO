@@ -3,6 +3,7 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from django.db.models import Sum, Avg, Max, Min, Q, Count
+from django.utils import timezone
 from .models import BotTrade, TradingSession
 from .serializers import (
     BotTradeSerializer,
@@ -21,7 +22,12 @@ class BotTradeViewSet(viewsets.ReadOnlyModelViewSet):
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        return BotTrade.objects.filter(user=self.request.user)
+        return BotTrade.objects.filter(user=self.request.user).order_by('-closed_at')
+
+    def list(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+        serializer = self.get_serializer(queryset, many=True)
+        return Response({'results': serializer.data})
 
     @action(detail=False, methods=['get'])
     def open(self, request):
@@ -87,49 +93,49 @@ class BotTradeViewSet(viewsets.ReadOnlyModelViewSet):
 
 
 class TradingSessionViewSet(viewsets.ReadOnlyModelViewSet):
-    """
-    ViewSet for trading sessions
-    GET /api/trading/sessions/ - list all user sessions
-    GET /api/trading/sessions/{id}/ - retrieve single session
-    """
     serializer_class = TradingSessionSerializer
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
         return TradingSession.objects.filter(user=self.request.user)
 
+    @action(detail=False, methods=['post'], url_path='start-bot')
+    def start_bot(self, request):
+        user = request.user
+        if user.bot_type != 'none':
+            user.is_bot_active = True
+            user.save(update_fields=['is_bot_active'])
+            return Response({'status': 'Bot started'}, status=status.HTTP_200_OK)
+        return Response({'error': 'No bot purchased'}, status=status.HTTP_400_BAD_REQUEST)
+
+    @action(detail=False, methods=['post'], url_path='stop-bot')
+    def stop_bot(self, request):
+        user = request.user
+        user.is_bot_active = False
+        user.save(update_fields=['is_bot_active'])
+
+        # Close all open trades for the user
+        open_trades = BotTrade.objects.filter(user=user, is_open=True)
+        closed_count = open_trades.update(is_open=False, exit_price=models.F('entry_price'), closed_at=timezone.now())
+
+        return Response({'status': f'Bot stopped, {closed_count} positions closed.'}, status=status.HTTP_200_OK)
+
     @action(detail=False, methods=['get'])
     def active(self, request):
-        """
-        Get active trading session
-        GET /api/trading/sessions/active/
-        """
         session = self.get_queryset().filter(is_active=True).first()
-
         if session:
             serializer = self.get_serializer(session)
             return Response(serializer.data)
-
-        return Response({
-            'message': 'No active trading session'
-        }, status=status.HTTP_404_NOT_FOUND)
+        return Response({'message': 'No active trading session'}, status=status.HTTP_404_NOT_FOUND)
 
     @action(detail=True, methods=['get'])
     def trades(self, request, pk=None):
-        """
-        Get all trades for a specific session
-        GET /api/trading/sessions/{id}/trades/
-        """
         session = self.get_object()
-
-        # Get trades in the session time range
         trades = BotTrade.objects.filter(
             user=session.user,
             opened_at__gte=session.started_at
         )
-
         if session.ended_at:
             trades = trades.filter(opened_at__lte=session.ended_at)
-
         serializer = BotTradeSerializer(trades, many=True)
         return Response(serializer.data)

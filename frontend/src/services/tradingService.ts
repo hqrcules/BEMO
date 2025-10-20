@@ -48,37 +48,42 @@ export interface TradingSession {
 }
 
 export const tradingService = {
-  // Get all trades
+  // Bot control
+  async startBot(): Promise<{ status: string }> {
+    const response = await api.post('/api/trading/sessions/start-bot/');
+    return response.data;
+  },
+
+  async stopBot(): Promise<{ status: string }> {
+    const response = await api.post('/api/trading/sessions/stop-bot/');
+    return response.data;
+  },
+
   async getTrades(): Promise<{ results: BotTrade[] }> {
     const response = await api.get('/api/trading/trades/');
     return response.data;
   },
 
-  // Get open trades
   async getOpenTrades(): Promise<BotTrade[]> {
     const response = await api.get('/api/trading/trades/open/');
     return response.data;
   },
 
-  // Get closed trades
   async getClosedTrades(): Promise<BotTrade[]> {
     const response = await api.get('/api/trading/trades/closed/');
     return response.data;
   },
 
-  // Get trading stats
   async getStats(): Promise<TradingStats> {
     const response = await api.get('/api/trading/trades/stats/');
     return response.data;
   },
 
-  // Get trading sessions
   async getSessions(): Promise<{ results: TradingSession[] }> {
     const response = await api.get('/api/trading/sessions/');
     return response.data;
   },
 
-  // Get active session
   async getActiveSession(): Promise<TradingSession> {
     const response = await api.get('/api/trading/sessions/active/');
     return response.data;

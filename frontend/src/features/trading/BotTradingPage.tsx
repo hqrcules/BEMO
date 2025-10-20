@@ -18,16 +18,9 @@ interface BotState {
   profitToday: number;
 }
 
-interface ActivePosition {
-  id: string;
-  symbol: string;
-  side: 'buy' | 'sell';
-  pnl: number;
-  entryPrice: number;
-}
-
 export default function BotTradingPage() {
   const [trades, setTrades] = useState<BotTrade[]>([]);
+  const [openPositions, setOpenPositions] = useState<BotTrade[]>([]);
   const [stats, setStats] = useState<TradingStats | null>(null);
   const [loading, setLoading] = useState(true);
   const { user } = useAppSelector((state) => state.auth);
@@ -41,22 +34,20 @@ export default function BotTradingPage() {
 
   const [chartData, setChartData] = useState<SimpleChartData[]>([]);
 
-  const [positions, setPositions] = useState<ActivePosition[]>([
-    { id: '1', symbol: 'BTC/USDT', side: 'buy', pnl: 45.20, entryPrice: 44800 },
-    { id: '2', symbol: 'ETH/USDT', side: 'sell', pnl: -12.50, entryPrice: 2850 }
-  ]);
-
+  // Fetch all closed trades for history and open trades for positions
   useEffect(() => {
     async function fetchData() {
       if (user?.bot_type !== 'none') {
         try {
           setLoading(true);
-          const [tradesData, statsData] = await Promise.all([
+          const [tradesData, statsData, openPositionsData] = await Promise.all([
             tradingService.getTrades(),
             tradingService.getStats(),
+            tradingService.getOpenTrades(),
           ]);
-          setTrades(tradesData.results || []);
+          setTrades(tradesData.results.filter(t => !t.is_open) || []);
           setStats(statsData);
+          setOpenPositions(openPositionsData || []);
         } catch (error) {
           console.error('Error fetching trading data:', error);
         } finally {
@@ -66,9 +57,35 @@ export default function BotTradingPage() {
         setLoading(false);
       }
     }
-
     fetchData();
   }, [user]);
+
+  // Polling for open positions and simulating PNL
+  useEffect(() => {
+    const pollPositions = async () => {
+      if (user?.bot_type !== 'none') {
+        try {
+          const openPositionsData = await tradingService.getOpenTrades();
+          // Simulate PNL change for visual effect
+          const updatedPositions = openPositionsData.map(pos => {
+            const currentProfit = parseFloat(pos.profit_loss) || 0;
+            const simulatedChange = (Math.random() - 0.5) * (parseFloat(pos.entry_price) * 0.0001);
+            return {
+              ...pos,
+              profit_loss: (currentProfit + simulatedChange).toString(),
+            }
+          });
+          setOpenPositions(updatedPositions);
+        } catch (error) {
+          console.error('Error polling open positions:', error);
+        }
+      }
+    };
+
+    const interval = setInterval(pollPositions, 5000); // Poll every 5 seconds
+    return () => clearInterval(interval);
+  }, [user]);
+
 
   useEffect(() => {
     const generateChartData = () => {
@@ -88,7 +105,7 @@ export default function BotTradingPage() {
 
     const interval = setInterval(() => {
       setChartData(prev => {
-        const newData = [...prev.slice(1)]; // Видаляємо перший елемент
+        const newData = [...prev.slice(1)];
         const lastPrice = prev[prev.length - 1]?.price || 45000;
         const newPrice = lastPrice + (Math.random() - 0.5) * 200;
 
@@ -105,11 +122,6 @@ export default function BotTradingPage() {
 
         return newData;
       });
-
-      setPositions(prev => prev.map(pos => ({
-        ...pos,
-        pnl: pos.pnl + (Math.random() - 0.5) * 2
-      })));
     }, 5000);
 
     return () => clearInterval(interval);
@@ -124,7 +136,8 @@ export default function BotTradingPage() {
   };
 
   const closePosition = (id: string) => {
-    setPositions(prev => prev.filter(p => p.id !== id));
+    // This would be an API call in a real app
+    setOpenPositions(prev => prev.filter(p => p.id !== id));
   };
 
   if (loading) {
@@ -144,7 +157,6 @@ export default function BotTradingPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-dark-bg via-dark-bg to-dark-card/20 p-4">
-      {/* Заголовок */}
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-dark-text-primary mb-2">
           Торгівля з ботом
@@ -213,12 +225,12 @@ export default function BotTradingPage() {
                 </span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-dark-text-secondary">Угод:</span>
-                <span className="text-dark-text-primary">{trades.length}</span>
+                <span className="text-dark-text-secondary">Закрито угод:</span>
+                <span className="text-dark-text-primary">{stats?.closed_trades || 0}</span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-dark-text-secondary">Позицій:</span>
-                <span className="text-dark-text-primary">{positions.length}</span>
+                <span className="text-dark-text-secondary">Відкрито позицій:</span>
+                <span className="text-dark-text-primary">{openPositions.length}</span>
               </div>
             </div>
           </div>
@@ -275,12 +287,12 @@ export default function BotTradingPage() {
           <div className="glass-card">
             <div className="p-4 border-b border-dark-border">
               <h3 className="text-lg font-semibold text-dark-text-primary">
-                Позиції ({positions.length})
+                Позиції ({openPositions.length})
               </h3>
             </div>
-            <div className="divide-y divide-dark-border">
-              {positions.length > 0 ? (
-                positions.map((position) => (
+            <div className="divide-y divide-dark-border max-h-96 overflow-y-auto">
+              {openPositions.length > 0 ? (
+                openPositions.map((position) => (
                   <div key={position.id} className="p-4 hover:bg-dark-card/50 transition-colors">
                     <div className="flex justify-between items-center mb-2">
                       <div>
@@ -298,10 +310,10 @@ export default function BotTradingPage() {
                     </div>
                     <div className="flex justify-between">
                       <span className="text-sm text-dark-text-secondary">
-                        Вхід: ${position.entryPrice}
+                        Вхід: ${parseFloat(position.entry_price).toFixed(2)}
                       </span>
-                      <span className={`text-sm font-semibold ${position.pnl >= 0 ? 'text-green-500' : 'text-red-500'}`}>
-                        {position.pnl >= 0 ? '+' : ''}${position.pnl.toFixed(2)}
+                      <span className={`text-sm font-semibold ${parseFloat(position.profit_loss) >= 0 ? 'text-green-500' : 'text-red-500'}`}>
+                        {parseFloat(position.profit_loss) >= 0 ? '+' : ''}${parseFloat(position.profit_loss).toFixed(2)}
                       </span>
                     </div>
                   </div>
@@ -309,49 +321,61 @@ export default function BotTradingPage() {
               ) : (
                 <div className="p-6 text-center text-dark-text-secondary">
                   <Activity className="w-12 h-12 mx-auto mb-3 opacity-50" />
-                  <p>Немає позицій</p>
+                  <p>Немає відкритих позицій</p>
                 </div>
               )}
             </div>
           </div>
+        </div>
+      </div>
 
-          <div className="glass-card">
-            <div className="p-4 border-b border-dark-border">
-              <h3 className="text-lg font-semibold text-dark-text-primary">
-                Останні угоди
-              </h3>
-            </div>
-            <div className="divide-y divide-dark-border max-h-64 overflow-y-auto">
-              {trades.slice(0, 5).map((trade) => (
-                <div key={trade.id} className="p-4 hover:bg-dark-card/50 transition-colors">
-                  <div className="flex justify-between items-center">
-                    <div>
+      <div className="mt-6 glass-card overflow-hidden">
+        <div className="p-4 border-b border-dark-border">
+          <h3 className="text-lg font-semibold text-dark-text-primary">
+            Історія угод ({trades.length})
+          </h3>
+        </div>
+        <div className="max-h-96 overflow-y-auto">
+          <table className="w-full">
+            <thead className="bg-dark-card sticky top-0">
+              <tr>
+                <th className="text-left py-3 px-4 text-xs font-semibold text-dark-text-secondary uppercase">Символ</th>
+                <th className="text-left py-3 px-4 text-xs font-semibold text-dark-text-secondary uppercase">Тип</th>
+                <th className="text-right py-3 px-4 text-xs font-semibold text-dark-text-secondary uppercase">Прибуток/Збиток</th>
+                <th className="text-left py-3 px-4 text-xs font-semibold text-dark-text-secondary uppercase">Дата закриття</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-dark-border">
+              {trades.length > 0 ? (
+                trades.map((trade) => (
+                  <tr key={trade.id} className="hover:bg-dark-hover/30 transition-colors">
+                    <td className="p-4">
                       <div className="font-medium text-dark-text-primary">{trade.symbol}</div>
-                      <div className="text-sm text-dark-text-secondary">
-                        {new Date(trade.opened_at).toLocaleDateString()}
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <div className={`font-semibold ${
-                        parseFloat(trade.profit_loss) >= 0 ? 'text-green-500' : 'text-red-500'
-                      }`}>
-                        {parseFloat(trade.profit_loss) >= 0 ? '+' : ''}$
-                        {parseFloat(trade.profit_loss).toFixed(2)}
-                      </div>
-                      <div className={`text-sm ${trade.side === 'buy' ? 'text-green-400' : 'text-red-400'}`}>
+                    </td>
+                    <td className="p-4">
+                      <span className={`font-semibold ${trade.side === 'buy' ? 'text-green-400' : 'text-red-400'}`}>
                         {trade.side.toUpperCase()}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              ))}
-              {trades.length === 0 && (
-                <div className="p-6 text-center text-dark-text-secondary">
-                  <p>Поки немає історії</p>
-                </div>
+                      </span>
+                    </td>
+                    <td className="p-4 text-right">
+                      <span className={`font-semibold ${parseFloat(trade.profit_loss) >= 0 ? 'text-green-500' : 'text-red-500'}`}>
+                        {parseFloat(trade.profit_loss) >= 0 ? '+' : ''}€{parseFloat(trade.profit_loss).toFixed(2)}
+                      </span>
+                    </td>
+                    <td className="p-4 text-sm text-dark-text-secondary">
+                      {new Date(trade.closed_at).toLocaleString()}
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan={4} className="p-6 text-center text-dark-text-secondary">
+                    <p>Історія угод порожня.</p>
+                  </td>
+                </tr>
               )}
-            </div>
-          </div>
+            </tbody>
+          </table>
         </div>
       </div>
     </div>
