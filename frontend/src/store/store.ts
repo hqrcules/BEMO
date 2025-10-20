@@ -1,11 +1,13 @@
 import { configureStore } from '@reduxjs/toolkit';
 import authReducer from './slices/authSlice';
 import websocketReducer from './slices/websocketSlice';
+import currencyReducer from './slices/currencySlice';
 
 export const store = configureStore({
   reducer: {
     auth: authReducer,
-    websocket: websocketReducer, // Add WebSocket reducer
+    websocket: websocketReducer,
+    currency: currencyReducer,
   },
 });
 

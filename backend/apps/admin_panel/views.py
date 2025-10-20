@@ -320,7 +320,7 @@ class AdminTransactionViewSet(viewsets.ModelViewSet):
                     bot_cost = bot_prices['basic']
 
                 if bot_purchased:
-                    user.balance -= bot_cost
+                    # user.balance -= bot_cost
                     Transaction.objects.create(
                         user=user,
                         transaction_type='bot_purchase',

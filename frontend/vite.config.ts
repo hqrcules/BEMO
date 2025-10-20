@@ -1,8 +1,7 @@
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
-import path from 'path'
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
+import path from 'path';
 
-// https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react()],
   resolve: {
@@ -11,15 +10,21 @@ export default defineConfig({
     },
   },
   server: {
-    host: '127.0.0.1',  // Force 127.0.0.1 instead of localhost
     port: 3000,
     proxy: {
       '/api': {
-        target: 'http://127.0.0.1:8000',
+        target: 'http://localhost:8000',
         changeOrigin: true,
-        secure: false,
-        ws: true,  // WebSocket support
       },
+      '/ws': {
+        target: 'ws://localhost:8000',
+        ws: true,
+        changeOrigin: true,
+      },
+      '/media': {
+         target: 'http://localhost:8000',
+         changeOrigin: true,
+      }
     },
   },
-})
+});
