@@ -1,9 +1,7 @@
-/// <reference types="vite/client" />
-
 import { useEffect, useRef, useCallback } from 'react';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { updatePrices, setCryptoList, setConnected, setError } from '@/store/slices/websocketSlice';
-import { RootState } from '@/store/store'; // Import RootState
+import { RootState } from '@/store/store';
 
 interface UseWebSocketProps {
   url?: string;
@@ -21,7 +19,6 @@ export function useWebSocket({
   maxReconnectAttempts = 10
 }: UseWebSocketProps = {}) {
   const dispatch = useAppDispatch();
-  // Explicitly use RootState here to fix the 'connected' type error
   const { connected } = useAppSelector((state: RootState) => state.websocket);
 
   const ws = useRef<WebSocket | null>(null);
@@ -32,7 +29,6 @@ export function useWebSocket({
 
   const connect = useCallback(() => {
     if (!url || typeof url !== 'string' || !url.startsWith('ws://') && !url.startsWith('wss://')) {
-        console.error('❌ Invalid WebSocket URL provided:', url);
         dispatch(setError('Неправильна URL WebSocket'));
         return;
     }
@@ -70,17 +66,15 @@ export function useWebSocket({
             dispatch(setCryptoList(message.data));
           }
         } catch (err) {
-            console.error('Error parsing message:', err)
         }
       };
 
-      ws.current.onerror = (error) => {
-        console.error('❌ WebSocket ошибка:', error);
+      ws.current.onerror = () => {
         dispatch(setError('Ошибка подключения WebSocket'));
         isConnecting.current = false;
       };
 
-      ws.current.onclose = (event) => {
+      ws.current.onclose = () => {
         dispatch(setConnected(false));
         isConnecting.current = false;
         ws.current = null;
@@ -99,7 +93,6 @@ export function useWebSocket({
       };
 
     } catch (err) {
-      console.error('❌ Не вдалося створити WebSocket:', err);
       dispatch(setError('Не вдалося підключитися'));
       isConnecting.current = false;
     }

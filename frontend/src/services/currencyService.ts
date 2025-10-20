@@ -8,8 +8,8 @@ const API_BASE_URL = 'https://api.frankfurter.app';
 
 const PREFERRED_CURRENCIES = ['EUR', 'USD', 'RUB', 'GBP', 'JPY', 'CHF', 'CAD', 'AUD', 'CNY', 'PLN', 'TRY'];
 const CURRENCY_SYMBOLS: Record<string, string> = {
-    EUR: '€', USD: '$', RUB: '₽', GBP: '£', JPY: '¥', CHF: 'Fr',
-    CAD: 'C$', AUD: 'A$', CNY: '¥', PLN: 'zł', TRY: '₺'
+    EUR: '€', USD: '$', RUB: '₽', GBP: '£', JPY: '¥', CHF: '€',
+    CAD: '$', AUD: '$', CNY: '¥', PLN: 'zł', TRY: '₺'
 };
 
 export const currencyService = {
