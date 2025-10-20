@@ -1,12 +1,12 @@
-// frontend/src/store/slices/websocketSlice.ts
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
+// Define PriceData and CryptoInfo interfaces here as they belong to the slice's state shape
 interface PriceData {
   price: number;
   change: number;
   changePercent: number;
-  image?: string; // Add image URL
-  name?: string; // Add coin name
+  image?: string;
+  name?: string;
   volume?: number;
 }
 
@@ -14,7 +14,7 @@ interface CryptoInfo {
   id: string;
   symbol: string;
   name: string;
-  image: string; // Logo URL from CoinGecko
+  image: string;
   price: number;
   change_24h: number;
   change_percent_24h: number;
@@ -22,9 +22,10 @@ interface CryptoInfo {
   volume: number;
 }
 
+// Define WebSocketState interface
 interface WebSocketState {
   prices: Record<string, PriceData>;
-  cryptoList: CryptoInfo[]; // List of all available cryptos
+  cryptoList: CryptoInfo[];
   connected: boolean;
   lastUpdate: string | null;
   error: string | null;
@@ -42,32 +43,29 @@ const websocketSlice = createSlice({
   name: 'websocket',
   initialState,
   reducers: {
-    // Update multiple prices from WebSocket
     updatePrices: (state, action: PayloadAction<Record<string, PriceData>>) => {
       state.prices = { ...state.prices, ...action.payload };
       state.lastUpdate = new Date().toISOString();
     },
-
-    // Set crypto list (metadata)
     setCryptoList: (state, action: PayloadAction<CryptoInfo[]>) => {
       state.cryptoList = action.payload;
     },
-
-    // Update connection status
     setConnected: (state, action: PayloadAction<boolean>) => {
       state.connected = action.payload;
+      if (!action.payload) {
+        // Optionally clear prices or handle disconnect state further
+        // state.prices = {}; // Uncomment if you want to clear prices on disconnect
+      }
     },
-
-    // Set error message
-    setError: (state, action: PayloadAction<string>) => {
+    setError: (state, action: PayloadAction<string | null>) => { // Allow null to clear error
       state.error = action.payload;
     },
-
-    // Clear all data
     clearData: (state) => {
       state.prices = {};
       state.cryptoList = [];
       state.lastUpdate = null;
+      state.error = null;
+      state.connected = false; // Also reset connected status if needed
     },
   },
 });
@@ -80,4 +78,8 @@ export const {
   clearData,
 } = websocketSlice.actions;
 
+// Export the reducer as default
 export default websocketSlice.reducer;
+
+// Export the state type if needed elsewhere, though RootState from store is preferred
+export type { WebSocketState, PriceData, CryptoInfo };
