@@ -1,17 +1,20 @@
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAppSelector, useAppDispatch } from '@/store/hooks';
 import { logoutUser } from '@/store/slices/authSlice';
-import { TrendingUp, Menu, Bell, Wifi, WifiOff, LogOut, Globe } from 'lucide-react';
+import { TrendingUp, Menu, Bell, Wifi, WifiOff, LogOut, Globe, Wallet } from 'lucide-react';
 import { useState, memo, useCallback, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import Sidebar from './Sidebar';
 import CurrencySelector from '@/components/CurrencySelector';
 import { fetchCurrencyRates } from '@/store/slices/currencySlice';
+import { formatCurrency } from '@/shared/utils/formatCurrency';
+import { RootState } from '@/store/store';
 
 const Header = memo(() => {
     const { t, i18n } = useTranslation();
-    const { user } = useAppSelector((state) => state.auth);
-    const { connected } = useAppSelector((state) => state.websocket);
+    const { user } = useAppSelector((state: RootState) => state.auth);
+    const { connected } = useAppSelector((state: RootState) => state.websocket);
+    const currencyState = useAppSelector((state: RootState) => state.currency);
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
     const location = useLocation();
@@ -63,38 +66,51 @@ const Header = memo(() => {
             <header className="bg-dark-card border-b border-dark-border sticky top-0 z-30">
                 <div className="max-w-7xl mx-auto px-6 py-4">
                     <div className="flex items-center justify-between">
+                        {/* Left Side: Logo & Burger Menu */}
                         <div className="flex items-center gap-4">
                             <button
                                 onClick={() => setSidebarOpen(true)}
-                                className="lg:hidden text-dark-text-secondary hover:text-dark-text-primary"
+                                className="lg:hidden text-dark-text-secondary hover:text-dark-text-primary p-2 -ml-2" // Added padding
                                 aria-label="Open menu"
                             >
                                 <Menu className="w-6 h-6" />
                             </button>
 
-                            <div className="flex items-center gap-2 cursor-pointer" onClick={() => navigate('/')}>
-                                <TrendingUp className="w-6 h-6 text-primary-500" />
-                                <span className="text-dark-text-primary font-bold text-xl">Bemo Investment</span>
+                            <div
+                                className="flex items-center gap-2 cursor-pointer group" // Added group for potential hover effects
+                                onClick={() => navigate('/')}
+                            >
+                                <div className="w-8 h-8 bg-gradient-to-br from-primary-500 to-primary-600 rounded-lg flex items-center justify-center shadow-md group-hover:shadow-glow-primary transition-shadow duration-300"> {/* Styled logo icon */}
+                                    <TrendingUp className="w-5 h-5 text-white" />
+                                </div>
+                                <span className="text-dark-text-primary font-bold text-xl hidden sm:inline"> {/* Hid text on very small screens */}
+                                    Bemo Investment
+                                </span>
                             </div>
                         </div>
 
+                        {/* Center: Navigation */}
                         <nav className="hidden md:flex items-center gap-1">
                             {dashboardNavItems.map((item) => (
                                 <button
                                     key={item.path}
                                     onClick={() => navigate(item.path)}
-                                    className={`px-4 py-2 rounded-lg transition text-sm font-medium ${location.pathname === item.path
-                                            ? 'bg-primary-500 text-white shadow-md'
-                                            : 'text-dark-text-secondary hover:text-dark-text-primary hover:bg-dark-hover'
+                                    className={`px-4 py-2 rounded-lg transition text-sm font-medium relative group ${location.pathname === item.path
+                                        ? 'text-dark-text-primary' // Active text color slightly brighter
+                                        : 'text-dark-text-secondary hover:text-dark-text-primary hover:bg-dark-hover'
                                         }`}
                                 >
                                     {item.name}
+                                    {/* Underline animation for active/hover */}
+                                    <span className={`absolute bottom-0 left-1/2 transform -translate-x-1/2 h-0.5 bg-primary-500 transition-all duration-300 group-hover:w-4/5 ${location.pathname === item.path ? 'w-4/5' : 'w-0'}`}></span>
                                 </button>
                             ))}
                         </nav>
 
+                        {/* Right Side: Controls & User Menu */}
                         <div className="flex items-center gap-4">
-                             <span title={connected ? "WebSocket Connected" : "WebSocket Disconnected"}>
+                            {/* Connection Status */}
+                            <span title={connected ? "WebSocket Connected" : "WebSocket Disconnected"}>
                                 {connected ? (
                                     <Wifi className="w-5 h-5 text-success-500" />
                                 ) : (
@@ -102,24 +118,25 @@ const Header = memo(() => {
                                 )}
                             </span>
 
-                             <CurrencySelector />
+                            {/* Currency Selector */}
+                            <CurrencySelector />
 
+                            {/* Language Dropdown */}
                             <div className="relative">
                                 <button
                                     onClick={() => setLangDropdown(!langDropdown)}
-                                    className="text-dark-text-secondary hover:text-dark-text-primary flex items-center gap-2"
+                                    className="text-dark-text-secondary hover:text-dark-text-primary p-2 rounded-lg hover:bg-dark-hover transition-colors" // Added padding and hover bg
                                     aria-label="Change language"
                                 >
                                     <Globe className="w-5 h-5" />
                                 </button>
-
                                 {langDropdown && (
                                     <>
                                         <div
                                             className="fixed inset-0 z-40 bg-transparent"
                                             onClick={() => setLangDropdown(false)}
                                         />
-                                        <div className="absolute right-0 mt-2 w-48 bg-dark-card rounded-lg shadow-xl border border-dark-border overflow-hidden z-50 animate-fade-in">
+                                        <div className="absolute right-0 mt-2 w-48 bg-dark-card rounded-lg shadow-xl border border-dark-border overflow-hidden z-50 animate-fade-in max-h-60 overflow-y-auto"> {/* Added max-height and scroll */}
                                             {languages.map((lang) => (
                                                 <button
                                                     key={lang.code}
@@ -136,25 +153,34 @@ const Header = memo(() => {
                                 )}
                             </div>
 
-                            <button className="relative text-dark-text-secondary hover:text-dark-text-primary" aria-label="Notifications">
+                            {/* Notifications */}
+                            <button className="relative text-dark-text-secondary hover:text-dark-text-primary p-2 rounded-lg hover:bg-dark-hover transition-colors" aria-label="Notifications"> {/* Added padding and hover bg */}
                                 <Bell className="w-5 h-5" />
-                                <span className="absolute -top-1 -right-1 w-2 h-2 bg-danger-500 rounded-full border-2 border-dark-card" />
+                                <span className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 bg-danger-500 rounded-full border-2 border-dark-card" /> {/* Slightly adjusted indicator */}
                             </button>
 
+                            {/* User Menu */}
                             <div className="relative">
                                 <button
                                     onClick={() => setDropdownOpen(!dropdownOpen)}
-                                    className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-dark-hover transition"
+                                    className="flex items-center gap-3 pl-2 pr-3 py-1.5 rounded-lg hover:bg-dark-hover transition" // Adjusted padding
                                     aria-label="User menu"
                                 >
-                                    <div className="text-right hidden sm:block">
-                                        <p className="text-dark-text-primary text-sm font-medium">{user?.email}</p>
-                                    </div>
-                                    <div className="w-9 h-9 bg-gradient-to-br from-primary-500 to-primary-600 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-md">
+                                    {/* Avatar */}
+                                    <div className="w-8 h-8 bg-gradient-to-br from-primary-500 to-primary-600 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-md flex-shrink-0"> {/* Fixed size */}
                                         {user?.email?.[0].toUpperCase()}
+                                    </div>
+                                    {/* User Info (Email & Balance) - Hidden on small screens */}
+                                    <div className="text-left hidden sm:block">
+                                        <p className="text-dark-text-primary text-sm font-medium leading-tight truncate max-w-[120px]">{user?.email}</p> {/* Added truncate */}
+                                        <p className="text-xs text-dark-text-secondary leading-tight flex items-center gap-1">
+                                            <Wallet size={12} className="opacity-70" />
+                                            {formatCurrency(user?.balance, currencyState)} {/* Display formatted balance */}
+                                        </p>
                                     </div>
                                 </button>
 
+                                {/* User Dropdown */}
                                 {dropdownOpen && (
                                     <>
                                         <div

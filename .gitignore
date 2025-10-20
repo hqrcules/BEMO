@@ -16,3 +16,12 @@ build
 *.class
 *.war
 *.jar
+celerybeat-schedule
+coverage.xml
+htmlcov/
+.tox/
+.nox/
+.coverage
+.pytest_cache/
+nosetests.xml
+db.sqlite3
