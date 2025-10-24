@@ -23,73 +23,98 @@ import {
 export default function ProfilePage() {
   const { t } = useTranslation();
   const { user } = useAppSelector((state) => state.auth);
-  const dispatch = useAppDispatch();
   const [activeTab, setActiveTab] = useState<'profile' | 'security' | 'activity'>('profile');
 
   if (!user) return null;
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="glass-card p-6 bg-gradient-to-br from-primary-500/10 via-transparent to-success-500/10">
-        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-          <div className="flex items-center gap-4">
-            <div className="w-16 h-16 bg-gradient-to-br from-primary-500 to-primary-600 rounded-2xl flex items-center justify-center shadow-lg shadow-primary-500/50">
-              <User className="w-8 h-8 text-white" />
-            </div>
-            <div>
-              <h1 className="text-3xl font-bold text-dark-text-primary mb-1">
-                {user.full_name || t('profile.defaultUser')}
-              </h1>
-              <p className="text-dark-text-secondary flex items-center gap-2">
-                <Mail className="w-4 h-4" />
-                {user.email}
-              </p>
+    <div className="min-h-screen bg-black text-white">
+      <div className="max-w-8xl mx-auto">
+
+        {/* --- Header + Tabs --- */}
+        <div className="w-full border-b border-zinc-900 bg-zinc-950/30 backdrop-blur-sm">
+          {/* Header Content */}
+          <div className="w-full px-6 py-6">
+            <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+              <div className="flex items-center gap-4">
+                <div className="w-16 h-16 bg-gradient-to-br from-primary-500 to-primary-600 rounded-2xl flex items-center justify-center shadow-lg shadow-primary-500/50">
+                  <User className="w-8 h-8 text-white" />
+                </div>
+                <div>
+                  <h1 className="text-3xl sm:text-4xl font-extralight text-white tracking-tight mb-1">
+                    {user.full_name || t('profile.defaultUser')}
+                  </h1>
+                  <p className="text-zinc-500 font-light flex items-center gap-2">
+                    <Mail className="w-4 h-4" />
+                    {user.email}
+                  </p>
+                </div>
+              </div>
+              {user.is_verified && (
+                <div className="flex items-center gap-2 px-4 py-2 bg-green-950 border border-green-800 rounded-xl">
+                  <CheckCircle className="w-5 h-5 text-green-400" />
+                  <span className="text-sm font-semibold text-green-400">{t('profile.verified')}</span>
+                </div>
+              )}
             </div>
           </div>
-          {user.is_verified && (
-            <div className="flex items-center gap-2 px-4 py-2 bg-success-500/10 border border-success-500/20 rounded-xl">
-              <CheckCircle className="w-5 h-5 text-success-500" />
-              <span className="text-sm font-semibold text-success-500">{t('profile.verified')}</span>
+
+          {/* Tabs */}
+          <div className="w-full px-6">
+            <div className="flex items-center gap-1 border-b border-zinc-800">
+              <TabButton
+                label={t('profile.tabs.profile')}
+                icon={<User className="w-4 h-4" />}
+                isActive={activeTab === 'profile'}
+                onClick={() => setActiveTab('profile')}
+              />
+              <TabButton
+                label={t('profile.tabs.security')}
+                icon={<Lock className="w-4 h-4" />}
+                isActive={activeTab === 'security'}
+                onClick={() => setActiveTab('security')}
+              />
+              <TabButton
+                label={t('profile.tabs.activity')}
+                icon={<TrendingUp className="w-4 h-4" />}
+                isActive={activeTab === 'activity'}
+                onClick={() => setActiveTab('activity')}
+              />
             </div>
-          )}
+          </div>
         </div>
-      </div>
 
-      {/* Tabs */}
-      <div className="flex gap-2 overflow-x-auto pb-2">
-        <button
-          onClick={() => setActiveTab('profile')}
-          className={activeTab === 'profile' ? 'nav-pill-active' : 'nav-pill-inactive'}
-        >
-          <User className="w-4 h-4" />
-          {t('profile.tabs.profile')}
-        </button>
-        <button
-          onClick={() => setActiveTab('security')}
-          className={activeTab === 'security' ? 'nav-pill-active' : 'nav-pill-inactive'}
-        >
-          <Lock className="w-4 h-4" />
-          {t('profile.tabs.security')}
-        </button>
-        <button
-          onClick={() => setActiveTab('activity')}
-          className={activeTab === 'activity' ? 'nav-pill-active' : 'nav-pill-inactive'}
-        >
-          <TrendingUp className="w-4 h-4" />
-          {t('profile.tabs.activity')}
-        </button>
-      </div>
-
-      {/* Tab Content */}
-      <div className="animate-fade-in">
-        {activeTab === 'profile' && <ProfileTab user={user} dispatch={dispatch} />}
-        {activeTab === 'security' && <SecurityTab />}
-        {activeTab === 'activity' && <ActivityTab user={user} />}
+        {/* Tab Content */}
+        <div className="w-full px-6 py-8">
+          <div className="animate-fade-in">
+            {activeTab === 'profile' && <ProfileTab user={user} dispatch={useAppDispatch()} />}
+            {activeTab === 'security' && <SecurityTab />}
+            {activeTab === 'activity' && <ActivityTab user={user} />}
+          </div>
+        </div>
       </div>
     </div>
   );
 }
+
+// TabButton Component
+function TabButton({ label, icon, isActive, onClick }: { label: string, icon: React.ReactNode, isActive: boolean, onClick: () => void }) {
+  return (
+    <button
+      onClick={onClick}
+      className={`flex items-center gap-2 px-5 py-3.5 font-medium text-sm transition-colors duration-200 relative -mb-px ${
+        isActive ? 'text-white' : 'text-zinc-500 hover:text-zinc-300'
+      }`}
+    >
+      {icon}
+      {label}
+      <div className={`absolute bottom-0 left-0 right-0 h-0.5 bg-white transition-all duration-300 ease-out ${
+        isActive ? 'scale-x-100' : 'scale-x-0'
+      }`} />
+    </button>
+  );
+}
+
 
 // Profile Tab Component
 function ProfileTab({ user, dispatch }: { user: any; dispatch: any }) {
@@ -108,7 +133,7 @@ function ProfileTab({ user, dispatch }: { user: any; dispatch: any }) {
       await profileService.updateProfile({ full_name: fullName });
       await dispatch(fetchUserProfile());
       setSuccess(t('profile.messages.profileUpdateSuccess'));
-    } catch (err: any) {
+    } catch (err: any) { // --- ВИПРАВЛЕНО ТУТ ---
       setError(err.response?.data?.message || t('profile.messages.profileUpdateError'));
     } finally {
       setLoading(false);
@@ -117,76 +142,86 @@ function ProfileTab({ user, dispatch }: { user: any; dispatch: any }) {
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-      <div className="lg:col-span-2 glass-card p-6">
-        <h3 className="text-xl font-bold text-dark-text-primary mb-6 flex items-center gap-2">
+      <div className="lg:col-span-2 bg-zinc-950 border border-zinc-800 rounded-3xl p-6">
+        <h3 className="text-xl font-bold text-white mb-6 flex items-center gap-2">
           <Settings className="w-5 h-5 text-primary-500" />
           {t('profile.accountInfo.title')}
         </h3>
         <form onSubmit={handleUpdateProfile} className="space-y-6">
           {success && (
-            <div className="p-4 bg-success-500/10 border border-success-500/20 rounded-xl flex items-start gap-3">
-              <CheckCircle className="w-5 h-5 text-success-500 flex-shrink-0 mt-0.5" />
-              <p className="text-sm text-success-500">{success}</p>
+            <div className="p-4 bg-green-950 border border-green-800 rounded-xl flex items-start gap-3">
+              <CheckCircle className="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5" />
+              <p className="text-sm text-green-400">{success}</p>
             </div>
           )}
           {error && (
-            <div className="p-4 bg-danger-500/10 border border-danger-500/20 rounded-xl flex items-start gap-3">
-              <AlertCircle className="w-5 h-5 text-danger-500 flex-shrink-0 mt-0.5" />
-              <p className="text-sm text-danger-500">{error}</p>
+            <div className="p-4 bg-red-950 border border-red-800 rounded-xl flex items-start gap-3">
+              <AlertCircle className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
+              <p className="text-sm text-red-400">{error}</p>
             </div>
           )}
           <div>
-            <label className="block text-sm font-medium text-dark-text-primary mb-2">{t('profile.accountInfo.emailLabel')}</label>
-            <input type="email" value={user.email} disabled className="input-field bg-dark-hover cursor-not-allowed" />
-            <p className="text-xs text-dark-text-tertiary mt-2">{t('profile.accountInfo.emailHint')}</p>
+            <label className="block text-sm font-medium text-white mb-2">{t('profile.accountInfo.emailLabel')}</label>
+            <input type="email" value={user.email} disabled className="w-full bg-zinc-950 border border-zinc-800 rounded-xl text-sm px-4 py-2.5 cursor-not-allowed" />
+            <p className="text-xs text-zinc-500 mt-2">{t('profile.accountInfo.emailHint')}</p>
           </div>
           <div>
-            <label className="block text-sm font-medium text-dark-text-primary mb-2">{t('profile.accountInfo.fullNameLabel')}</label>
-            <input type="text" value={fullName} onChange={(e) => setFullName(e.target.value)} className="input-field" placeholder={t('profile.accountInfo.fullNamePlaceholder')} />
+            <label className="block text-sm font-medium text-white mb-2">{t('profile.accountInfo.fullNameLabel')}</label>
+            <input
+              type="text"
+              value={fullName}
+              onChange={(e) => setFullName(e.target.value)}
+              className="w-full bg-zinc-900 border border-zinc-800 rounded-xl text-sm px-4 py-2.5 focus:outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500 transition-colors"
+              placeholder={t('profile.accountInfo.fullNamePlaceholder')}
+            />
           </div>
           <div>
-            <label className="block text-sm font-medium text-dark-text-primary mb-2">{t('profile.accountInfo.userIdLabel')}</label>
-            <input type="text" value={user.id} disabled className="input-field bg-dark-hover cursor-not-allowed font-mono text-sm" />
+            <label className="block text-sm font-medium text-white mb-2">{t('profile.accountInfo.userIdLabel')}</label>
+            <input type="text" value={user.id} disabled className="w-full bg-zinc-950 border border-zinc-800 rounded-xl text-sm px-4 py-2.5 cursor-not-allowed font-mono" />
           </div>
-          <button type="submit" disabled={loading} className="btn-primary">
+          <button
+            type="submit"
+            disabled={loading}
+            className="bg-primary-500 hover:bg-primary-600 rounded-xl text-white font-medium flex items-center justify-center gap-2 px-6 py-3 disabled:opacity-50 transition-colors"
+          >
             <Save className="w-5 h-5" />
             {loading ? t('profile.buttons.saving') : t('profile.buttons.save')}
           </button>
         </form>
       </div>
       <div className="space-y-6">
-        <div className="glass-card p-6">
-          <h4 className="text-sm font-semibold text-dark-text-secondary mb-4">{t('profile.status.title')}</h4>
+        <div className="bg-zinc-950 border border-zinc-800 rounded-3xl p-6">
+          <h4 className="text-sm font-semibold text-zinc-400 mb-4">{t('profile.status.title')}</h4>
           <div className="space-y-4">
             <div className="flex items-center justify-between">
-              <span className="text-sm text-dark-text-secondary">{t('profile.status.verification')}</span>
+              <span className="text-sm text-zinc-400">{t('profile.status.verification')}</span>
               {user.is_verified ? (
-                <div className="flex items-center gap-1 text-success-500 text-sm font-medium"><CheckCircle className="w-4 h-4" />{t('profile.status.yes')}</div>
+                <div className="flex items-center gap-1 text-green-400 text-sm font-medium"><CheckCircle className="w-4 h-4" />{t('profile.status.yes')}</div>
               ) : (
-                <div className="flex items-center gap-1 text-warning-500 text-sm font-medium"><XCircle className="w-4 h-4" />{t('profile.status.no')}</div>
+                <div className="flex items-center gap-1 text-yellow-400 text-sm font-medium"><XCircle className="w-4 h-4" />{t('profile.status.no')}</div>
               )}
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-sm text-dark-text-secondary">{t('profile.status.botType')}</span>
-              <span className="text-sm font-semibold text-dark-text-primary capitalize">{user.bot_type === 'none' ? t('profile.status.no') : user.bot_type}</span>
+              <span className="text-sm text-zinc-400">{t('profile.status.botType')}</span>
+              <span className="text-sm font-semibold text-white capitalize">{user.bot_type === 'none' ? t('profile.status.no') : user.bot_type}</span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-sm text-dark-text-secondary">{t('profile.status.balance')}</span>
+              <span className="text-sm text-zinc-400">{t('profile.status.balance')}</span>
               <span className="text-sm font-bold text-primary-500">€{parseFloat(user.balance).toFixed(2)}</span>
             </div>
           </div>
         </div>
-        <div className="glass-card p-6">
-          <h4 className="text-sm font-semibold text-dark-text-secondary mb-4 flex items-center gap-2"><Calendar className="w-4 h-4" />{t('profile.dates.title')}</h4>
+        <div className="bg-zinc-950 border border-zinc-800 rounded-3xl p-6">
+          <h4 className="text-sm font-semibold text-zinc-400 mb-4 flex items-center gap-2"><Calendar className="w-4 h-4" />{t('profile.dates.title')}</h4>
           <div className="space-y-3">
             <div>
-              <p className="text-xs text-dark-text-tertiary mb-1">{t('profile.dates.registration')}</p>
-              <p className="text-sm font-medium text-dark-text-primary">{new Date(user.created_at).toLocaleDateString(i18n.language, { day: 'numeric', month: 'long', year: 'numeric' })}</p>
+              <p className="text-xs text-zinc-500 mb-1">{t('profile.dates.registration')}</p>
+              <p className="text-sm font-medium text-white">{new Date(user.created_at).toLocaleDateString(i18n.language, { day: 'numeric', month: 'long', year: 'numeric' })}</p>
             </div>
             {user.last_login && (
               <div>
-                <p className="text-xs text-dark-text-tertiary mb-1">{t('profile.dates.lastLogin')}</p>
-                <p className="text-sm font-medium text-dark-text-primary">{new Date(user.last_login).toLocaleString(i18n.language, { day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' })}</p>
+                <p className="text-xs text-zinc-500 mb-1">{t('profile.dates.lastLogin')}</p>
+                <p className="text-sm font-medium text-white">{new Date(user.last_login).toLocaleString(i18n.language, { day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' })}</p>
               </div>
             )}
           </div>
@@ -229,43 +264,71 @@ function SecurityTab() {
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-      <div className="lg:col-span-2 glass-card p-6">
-        <h3 className="text-xl font-bold text-dark-text-primary mb-6 flex items-center gap-2"><Lock className="w-5 h-5 text-primary-500" />{t('profile.security.title')}</h3>
+      <div className="lg:col-span-2 bg-zinc-950 border border-zinc-800 rounded-3xl p-6">
+        <h3 className="text-xl font-bold text-white mb-6 flex items-center gap-2"><Lock className="w-5 h-5 text-primary-500" />{t('profile.security.title')}</h3>
         <form onSubmit={handleChangePassword} className="space-y-6">
-          {success && <div className="p-4 bg-success-500/10 border border-success-500/20 rounded-xl flex items-start gap-3"><CheckCircle className="w-5 h-5 text-success-500 flex-shrink-0 mt-0.5" /><p className="text-sm text-success-500">{success}</p></div>}
-          {error && <div className="p-4 bg-danger-500/10 border border-danger-500/20 rounded-xl flex items-start gap-3"><AlertCircle className="w-5 h-5 text-danger-500 flex-shrink-0 mt-0.5" /><p className="text-sm text-danger-500">{error}</p></div>}
+          {success && <div className="p-4 bg-green-950 border border-green-800 rounded-xl flex items-start gap-3"><CheckCircle className="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5" /><p className="text-sm text-green-400">{success}</p></div>}
+          {error && <div className="p-4 bg-red-950 border border-red-800 rounded-xl flex items-start gap-3"><AlertCircle className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" /><p className="text-sm text-red-400">{error}</p></div>}
           <div>
-            <label className="block text-sm font-medium text-dark-text-primary mb-2">{t('profile.security.currentPassword')}</label>
+            <label className="block text-sm font-medium text-white mb-2">{t('profile.security.currentPassword')}</label>
             <div className="relative">
-              <input type={showOldPassword ? 'text' : 'password'} value={passwords.old_password} onChange={(e) => setPasswords({ ...passwords, old_password: e.target.value })} className="input-field pr-12" placeholder="••••••••" required />
-              <button type="button" onClick={() => setShowOldPassword(!showOldPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 p-2 hover:bg-dark-hover rounded-lg transition-colors">{showOldPassword ? <EyeOff className="w-5 h-5 text-dark-text-tertiary" /> : <Eye className="w-5 h-5 text-dark-text-tertiary" />}</button>
+              <input
+                type={showOldPassword ? 'text' : 'password'}
+                value={passwords.old_password}
+                onChange={(e) => setPasswords({ ...passwords, old_password: e.target.value })}
+                className="w-full bg-zinc-900 border border-zinc-800 rounded-xl text-sm px-4 py-2.5 focus:outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500 transition-colors pr-12"
+                placeholder="••••••••"
+                required
+              />
+              <button type="button" onClick={() => setShowOldPassword(!showOldPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 p-2 hover:bg-zinc-900 rounded-lg transition-colors">{showOldPassword ? <EyeOff className="w-5 h-5 text-zinc-500" /> : <Eye className="w-5 h-5 text-zinc-500" />}</button>
             </div>
           </div>
           <div>
-            <label className="block text-sm font-medium text-dark-text-primary mb-2">{t('profile.security.newPassword')}</label>
+            <label className="block text-sm font-medium text-white mb-2">{t('profile.security.newPassword')}</label>
             <div className="relative">
-              <input type={showNewPassword ? 'text' : 'password'} value={passwords.new_password} onChange={(e) => setPasswords({ ...passwords, new_password: e.target.value })} className="input-field pr-12" placeholder="••••••••" required />
-              <button type="button" onClick={() => setShowNewPassword(!showNewPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 p-2 hover:bg-dark-hover rounded-lg transition-colors">{showNewPassword ? <EyeOff className="w-5 h-5 text-dark-text-tertiary" /> : <Eye className="w-5 h-5 text-dark-text-tertiary" />}</button>
+              <input
+                type={showNewPassword ? 'text' : 'password'}
+                value={passwords.new_password}
+                onChange={(e) => setPasswords({ ...passwords, new_password: e.target.value })}
+                className="w-full bg-zinc-900 border border-zinc-800 rounded-xl text-sm px-4 py-2.5 focus:outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500 transition-colors pr-12"
+                placeholder="••••••••"
+                required
+              />
+              <button type="button" onClick={() => setShowNewPassword(!showNewPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 p-2 hover:bg-zinc-900 rounded-lg transition-colors">{showNewPassword ? <EyeOff className="w-5 h-5 text-zinc-500" /> : <Eye className="w-5 h-5 text-zinc-500" />}</button>
             </div>
           </div>
           <div>
-            <label className="block text-sm font-medium text-dark-text-primary mb-2">{t('profile.security.confirmNewPassword')}</label>
+            <label className="block text-sm font-medium text-white mb-2">{t('profile.security.confirmNewPassword')}</label>
             <div className="relative">
-              <input type={showConfirmPassword ? 'text' : 'password'} value={passwords.new_password_confirm} onChange={(e) => setPasswords({ ...passwords, new_password_confirm: e.target.value })} className="input-field pr-12" placeholder="••••••••" required />
-              <button type="button" onClick={() => setShowConfirmPassword(!showConfirmPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 p-2 hover:bg-dark-hover rounded-lg transition-colors">{showConfirmPassword ? <EyeOff className="w-5 h-5 text-dark-text-tertiary" /> : <Eye className="w-5 h-5 text-dark-text-tertiary" />}</button>
+              <input
+                type={showConfirmPassword ? 'text' : 'password'}
+                value={passwords.new_password_confirm}
+                onChange={(e) => setPasswords({ ...passwords, new_password_confirm: e.target.value })}
+                className="w-full bg-zinc-900 border border-zinc-800 rounded-xl text-sm px-4 py-2.5 focus:outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500 transition-colors pr-12"
+                placeholder="••••••••"
+                required
+              />
+              <button type="button" onClick={() => setShowConfirmPassword(!showConfirmPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 p-2 hover:bg-zinc-900 rounded-lg transition-colors">{showConfirmPassword ? <EyeOff className="w-5 h-5 text-zinc-500" /> : <Eye className="w-5 h-5 text-zinc-500" />}</button>
             </div>
           </div>
-          <button type="submit" disabled={loading} className="btn-primary"><Lock className="w-5 h-5" />{loading ? t('profile.buttons.changing') : t('profile.buttons.changePassword')}</button>
+          <button
+            type="submit"
+            disabled={loading}
+            className="bg-primary-500 hover:bg-primary-600 rounded-xl text-white font-medium flex items-center justify-center gap-2 px-6 py-3 disabled:opacity-50 transition-colors"
+          >
+            <Lock className="w-5 h-5" />
+            {loading ? t('profile.buttons.changing') : t('profile.buttons.changePassword')}
+          </button>
         </form>
       </div>
       <div className="space-y-6">
-        <div className="glass-card p-6">
-          <h4 className="text-sm font-semibold text-dark-text-primary mb-4 flex items-center gap-2"><Shield className="w-4 h-4 text-primary-500" />{t('profile.tips.title')}</h4>
-          <ul className="space-y-3 text-sm text-dark-text-secondary">
-            <li className="flex items-start gap-2"><CheckCircle className="w-4 h-4 text-success-500 flex-shrink-0 mt-0.5" />{t('profile.tips.tip1')}</li>
-            <li className="flex items-start gap-2"><CheckCircle className="w-4 h-4 text-success-500 flex-shrink-0 mt-0.5" />{t('profile.tips.tip2')}</li>
-            <li className="flex items-start gap-2"><CheckCircle className="w-4 h-4 text-success-500 flex-shrink-0 mt-0.5" />{t('profile.tips.tip3')}</li>
-            <li className="flex items-start gap-2"><CheckCircle className="w-4 h-4 text-success-500 flex-shrink-0 mt-0.5" />{t('profile.tips.tip4')}</li>
+        <div className="bg-zinc-950 border border-zinc-800 rounded-3xl p-6">
+          <h4 className="text-sm font-semibold text-white mb-4 flex items-center gap-2"><Shield className="w-4 h-4 text-primary-500" />{t('profile.tips.title')}</h4>
+          <ul className="space-y-3 text-sm text-zinc-400">
+            <li className="flex items-start gap-2"><CheckCircle className="w-4 h-4 text-green-400 flex-shrink-0 mt-0.5" />{t('profile.tips.tip1')}</li>
+            <li className="flex items-start gap-2"><CheckCircle className="w-4 h-4 text-green-400 flex-shrink-0 mt-0.5" />{t('profile.tips.tip2')}</li>
+            <li className="flex items-start gap-2"><CheckCircle className="w-4 h-4 text-green-400 flex-shrink-0 mt-0.5" />{t('profile.tips.tip3')}</li>
+            <li className="flex items-start gap-2"><CheckCircle className="w-4 h-4 text-green-400 flex-shrink-0 mt-0.5" />{t('profile.tips.tip4')}</li>
           </ul>
         </div>
       </div>
@@ -277,25 +340,25 @@ function SecurityTab() {
 function ActivityTab({ user }: { user: any }) {
   const { t } = useTranslation();
   return (
-    <div className="glass-card p-6">
-      <h3 className="text-xl font-bold text-dark-text-primary mb-6 flex items-center gap-2"><TrendingUp className="w-5 h-5 text-primary-500" />{t('profile.activity.title')}</h3>
+    <div className="bg-zinc-950 border border-zinc-800 rounded-3xl p-6">
+      <h3 className="text-xl font-bold text-white mb-6 flex items-center gap-2"><TrendingUp className="w-5 h-5 text-primary-500" />{t('profile.activity.title')}</h3>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="stat-card">
+        <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-4">
           <Award className="w-8 h-8 text-primary-500 mb-3" />
-          <p className="text-sm text-dark-text-secondary mb-1">{t('profile.activity.level')}</p>
-          <p className="text-2xl font-bold text-dark-text-primary capitalize">{user.bot_type === 'premium' ? 'Premium' : user.bot_type === 'basic' ? 'Basic' : 'Standard'}</p>
+          <p className="text-sm text-zinc-400 mb-1">{t('profile.activity.level')}</p>
+          <p className="text-2xl font-bold text-white capitalize">{user.bot_type === 'premium' ? 'Premium' : user.bot_type === 'basic' ? 'Basic' : 'Standard'}</p>
         </div>
-        <div className="stat-card">
-          <Calendar className="w-8 h-8 text-success-500 mb-3" />
-          <p className="text-sm text-dark-text-secondary mb-1">{t('profile.activity.withUs')}</p>
-          <p className="text-2xl font-bold text-dark-text-primary">
+        <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-4">
+          <Calendar className="w-8 h-8 text-green-400 mb-3" />
+          <p className="text-sm text-zinc-400 mb-1">{t('profile.activity.withUs')}</p>
+          <p className="text-2xl font-bold text-white">
             {Math.floor((Date.now() - new Date(user.created_at).getTime()) / (1000 * 60 * 60 * 24))} {t('profile.activity.days')}
           </p>
         </div>
-        <div className="stat-card">
-          <Shield className="w-8 h-8 text-warning-500 mb-3" />
-          <p className="text-sm text-dark-text-secondary mb-1">{t('profile.activity.verification')}</p>
-          <p className="text-2xl font-bold text-dark-text-primary">{user.is_verified ? t('profile.status.yes') : t('profile.status.no')}</p>
+        <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-4">
+          <Shield className="w-8 h-8 text-yellow-400 mb-3" />
+          <p className="text-sm text-zinc-400 mb-1">{t('profile.activity.verification')}</p>
+          <p className="text-2xl font-bold text-white">{user.is_verified ? t('profile.status.yes') : t('profile.status.no')}</p>
         </div>
       </div>
     </div>

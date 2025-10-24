@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -6,51 +6,74 @@
 
 @layer base {
   * {
-    @apply border-dark-border;
+    @apply border-dark-border; /* Використовуємо новий колір рамки */
+  }
+
+  html {
+    scroll-behavior: smooth;
   }
 
   body {
-    @apply bg-dark-bg text-dark-text-primary antialiased;
-    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    @apply bg-dark-bg text-dark-text-primary antialiased; /* Використовуємо нові кольори */
+    font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
     margin: 0;
     padding: 0;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 
   input, textarea, select {
-    @apply text-dark-text-primary;
+    @apply text-dark-text-primary bg-transparent; /* Покращення для полів вводу */
+    outline: none; /* Забираємо стандартний outline */
+  }
+
+  input:-webkit-autofill,
+  input:-webkit-autofill:hover,
+  input:-webkit-autofill:focus,
+  textarea:-webkit-autofill,
+  textarea:-webkit-autofill:hover,
+  textarea:-webkit-autofill:focus,
+  select:-webkit-autofill,
+  select:-webkit-autofill:hover,
+  select:-webkit-autofill:focus {
+    -webkit-text-fill-color: theme('colors.dark-text-primary');
+    -webkit-box-shadow: 0 0 0px 1000px theme('colors.dark-card') inset;
+    transition: background-color 5000s ease-in-out 0s;
+    caret-color: theme('colors.dark-text-primary');
   }
 
   /* Custom scrollbar */
   ::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
+    width: 6px; /* Тонший */
+    height: 6px;
   }
 
   ::-webkit-scrollbar-track {
-    @apply bg-dark-bg;
+    @apply bg-dark-bg; /* Фон як у тіла */
   }
 
   ::-webkit-scrollbar-thumb {
-    @apply bg-dark-hover rounded-full;
+    @apply bg-dark-hover rounded-full; /* Новий колір */
   }
 
   ::-webkit-scrollbar-thumb:hover {
-    @apply bg-dark-border;
+    @apply bg-dark-border; /* Новий колір */
   }
 }
 
 @layer components {
   /* Glass Card Effect */
   .glass-card {
-    @apply bg-dark-card/80 backdrop-blur-xl rounded-2xl border border-dark-border/50 shadow-xl;
+    /* Насиченіший чорний, менш прозорий */
+    @apply bg-dark-card/90 backdrop-blur-lg rounded-3xl border border-dark-border/50 shadow-xl;
   }
 
   /* Buttons */
   .btn {
-    @apply font-semibold py-3 px-6 rounded-xl transition-all duration-300
+    @apply font-medium py-3 px-6 rounded-xl transition-all duration-300
            focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-dark-bg
-           disabled:opacity-50 disabled:cursor-not-allowed inline-flex items-center justify-center
-           transform hover:scale-105 active:scale-95;
+           disabled:opacity-50 disabled:cursor-not-allowed inline-flex items-center justify-center gap-2
+           transform active:scale-95;
   }
 
   .btn-primary {
@@ -69,21 +92,22 @@
   }
 
   .btn-secondary {
-    @apply btn bg-dark-hover hover:bg-dark-border text-dark-text-primary
-           border border-dark-border focus:ring-dark-border;
+    /* Змінено на темніший фон */
+    @apply btn bg-dark-hover hover:bg-dark-border text-dark-text-secondary hover:text-dark-text-primary
+           focus:ring-dark-border;
   }
 
   /* Input Fields */
   .input-field {
-    @apply w-full px-4 py-3 bg-dark-card border border-dark-border rounded-xl
-           focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500
+    @apply w-full px-5 py-3 bg-dark-card border border-dark-border rounded-xl /* Змінено фон */
+           focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500/50 /* Легший фокус */
            transition-all duration-300 placeholder:text-dark-text-tertiary text-dark-text-primary
-           hover:border-dark-hover;
+           hover:border-dark-hover; /* На hover темніший */
   }
 
   /* Stat Cards */
   .stat-card {
-    @apply glass-card p-6 hover:bg-dark-hover/80 transition-all duration-300
+    @apply glass-card p-6 hover:bg-dark-hover/90 transition-all duration-300 /* Змінено фон hover */
            hover:shadow-2xl hover:border-primary-500/30 cursor-pointer
            transform hover:-translate-y-1;
   }
@@ -91,161 +115,79 @@
   /* Navigation Pills */
   .nav-pill {
     @apply flex items-center gap-2 px-4 py-2.5 rounded-xl transition-all duration-300
-           font-medium whitespace-nowrap;
+           font-medium whitespace-nowrap text-sm; /* Зменшив розмір шрифту */
   }
 
   .nav-pill-active {
-    @apply nav-pill bg-gradient-to-r from-primary-500 to-primary-600 text-white shadow-lg shadow-primary-500/30;
+    @apply nav-pill bg-dark-hover text-dark-text-primary; /* Змінено стиль активного */
   }
 
   .nav-pill-inactive {
-    @apply nav-pill bg-dark-card text-dark-text-secondary hover:bg-dark-hover hover:text-dark-text-primary;
+    @apply nav-pill bg-transparent text-dark-text-secondary hover:bg-dark-hover hover:text-dark-text-primary; /* Змінено стиль неактивного */
   }
 
   /* Table */
-  .table-container {
-    @apply glass-card overflow-hidden;
-  }
-
   .table-row {
     @apply border-b border-dark-border hover:bg-dark-hover/50 transition-colors duration-200;
   }
 
   /* Badge */
   .badge {
-    @apply inline-flex items-center gap-1 px-3 py-1 rounded-lg text-xs font-semibold;
+    @apply inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold border; /* Додав border */
   }
 
   .badge-success {
-    @apply badge bg-success-500/10 text-success-500 border border-success-500/20;
+    @apply badge bg-success-900/50 text-success-300 border-success-700/50; /* Темніший зелений */
   }
 
   .badge-danger {
-    @apply badge bg-danger-500/10 text-danger-500 border border-danger-500/20;
+    @apply badge bg-danger-900/50 text-danger-300 border-danger-700/50; /* Темніший червоний */
   }
 
-  /* Trading Bot Specific Styles */
-  .bot-card {
-    @apply glass-card p-4 hover:bg-dark-card/90 transition-all duration-300;
+  .badge-warning {
+    @apply badge bg-warning-900/50 text-warning-300 border-warning-700/50; /* Темніший жовтий */
   }
 
-  .position-card {
-    @apply p-4 hover:bg-dark-hover/30 transition-colors duration-200;
+  /* Текстовий градієнт */
+  .text-gradient {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-primary-400 via-primary-500 to-primary-300; /* Змінив градієнт */
   }
-
-  .metric-card {
-    @apply bg-dark-card/60 p-4 rounded-lg border border-dark-border/30 hover:bg-dark-card/80 transition-colors;
+  .text-gradient-success {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-success-400 to-success-300;
   }
-
-  /* Range Slider Styles */
-  input[type="range"] {
-    -webkit-appearance: none;
-    background: transparent;
-    @apply w-full;
-  }
-
-  input[type="range"]::-webkit-slider-track {
-    @apply w-full h-2 bg-dark-card rounded-lg cursor-pointer;
-  }
-
-  input[type="range"]::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    @apply w-4 h-4 bg-primary-500 rounded-full cursor-pointer;
-    margin-top: -4px;
-  }
-
-  input[type="range"]::-moz-range-track {
-    @apply w-full h-2 bg-dark-card rounded-lg cursor-pointer border-0;
-  }
-
-  input[type="range"]::-moz-range-thumb {
-    @apply w-4 h-4 bg-primary-500 rounded-full cursor-pointer border-0;
-  }
-
-  /* Switch Styles for Headless UI */
-  .bot-switch {
-    @apply relative inline-flex h-6 w-11 items-center rounded-full transition-colors;
-  }
-
-  .bot-switch-thumb {
-    @apply inline-block h-4 w-4 transform rounded-full bg-white transition-transform;
+  .text-gradient-danger {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-danger-400 to-danger-300;
   }
 }
 
 @layer utilities {
-  .text-gradient {
-    @apply bg-clip-text text-transparent bg-gradient-to-r from-primary-400 via-primary-500 to-primary-600;
-  }
-
-  .text-gradient-success {
-    @apply bg-clip-text text-transparent bg-gradient-to-r from-success-400 to-success-600;
-  }
-
-  .text-gradient-danger {
-    @apply bg-clip-text text-transparent bg-gradient-to-r from-danger-400 to-danger-600;
-  }
-
   /* Animations */
   .animate-pulse-slow {
-    animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    animation: pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
   }
 
   /* Custom scrollbar for containers */
   .custom-scroll::-webkit-scrollbar {
-    width: 6px;
+    width: 4px; /* Ще тонший */
   }
 
   .custom-scroll::-webkit-scrollbar-track {
-    @apply bg-dark-card;
+    @apply bg-transparent; /* Прозорий фон */
   }
 
   .custom-scroll::-webkit-scrollbar-thumb {
-    @apply bg-dark-border rounded-full;
+    @apply bg-dark-hover rounded-full;
   }
 
   .custom-scroll::-webkit-scrollbar-thumb:hover {
-    @apply bg-dark-text-tertiary;
+    @apply bg-dark-border;
   }
 }
 
-/* Fix для PostCSS - замінюємо всі посилання на dark-surface */
-.bg-dark-surface {
-  @apply bg-dark-card;
-}
-
-.hover\:bg-dark-surface:hover {
-  @apply hover:bg-dark-card;
-}
-
-.hover\:bg-dark-surface\/50:hover {
-  @apply hover:bg-dark-card/50;
-}
-
-.hover\:bg-dark-surface-hover:hover {
-  @apply hover:bg-dark-hover;
-}
-
-.bg-dark-surface\/50 {
-  @apply bg-dark-card/50;
-}
-
-.border-dark-surface {
-  @apply border-dark-card;
-}
-
-/* Градієнт для accent кольорів */
-.bg-accent-600 {
-  @apply bg-primary-600;
-}
-
-.hover\:bg-accent-600:hover {
-  @apply hover:bg-primary-600;
-}
-
-/* Animation keyframes */
+/* Animation keyframes (без змін) */
 @keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.5; }
+  0%, 100% { opacity: 0.8; }
+  50% { opacity: 0.3; }
 }
 
 @keyframes fadeIn {
@@ -254,5 +196,9 @@
 }
 
 .animate-fade-in {
-  animation: fadeIn 0.3s ease-out;
+  animation: fadeIn 0.5s ease-out forwards; /* Додав forwards */
+}
+
+.animate-slide-in {
+   animation: slideIn 0.5s ease-out forwards;
 }

@@ -5,11 +5,13 @@ import { store } from '@/store/store';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { fetchUserProfile } from '@/store/slices/authSlice';
 import Header from '@/components/layout/Header';
+import Footer from '@/components/layout/Footer'; // 1. Імпортуємо Footer
 import ProtectedRoute from '@/routes/ProtectedRoute';
 import AdminProtectedRoute from '@/routes/AdminProtectedRoute';
 import { Loader2 } from 'lucide-react';
 import { useBalanceWebSocket } from '@/shared/hooks/useBalanceWebSocket';
 
+// Ледаче завантаження компонентів (без змін)
 const LoginPage = lazy(() => import('@/features/auth/LoginPage'));
 const DashboardLayout = lazy(() => import('@/features/dashboard/DashboardPage'));
 const DashboardHome = lazy(() => import('@/features/dashboard/DashboardHome'));
@@ -67,43 +69,49 @@ function AppContent() {
     }
   }
 
-
+  // 2. Використовуємо flex-структуру для "притискання" футера донизу
   return (
-    <div className="min-h-screen bg-gray-900">
+    <div className="min-h-screen flex flex-col bg-gray-900">
       <ScrollToTop />
       {!isLoginPage && !isAdminRoute && <Header />}
 
-      <Suspense fallback={<LoadingFallback />}>
-        <Routes>
-          <Route path="/login" element={<LoginPage />} />
+      {/* 3. Основний контент займає доступний простір */}
+      <main className="flex-grow">
+        <Suspense fallback={<LoadingFallback />}>
+          <Routes>
+            <Route path="/login" element={<LoginPage />} />
 
-          <Route element={<ProtectedRoute />}>
-            <Route path="/" element={<DashboardLayout />}>
-              <Route index element={<DashboardHome />} />
-              <Route path="trading" element={<TradingPage />} />
-              <Route path="bot-trading" element={<BotTradingPage />} />
-              <Route path="balance" element={<BalancePage />} />
-              <Route path="support" element={<SupportPage />} />
-              <Route path="profile" element={<ProfilePage />} />
+            <Route element={<ProtectedRoute />}>
+              <Route path="/" element={<DashboardLayout />}>
+                <Route index element={<DashboardHome />} />
+                <Route path="trading" element={<TradingPage />} />
+                <Route path="bot-trading" element={<BotTradingPage />} />
+                <Route path="balance" element={<BalancePage />} />
+                <Route path="support" element={<SupportPage />} />
+                <Route path="profile" element={<ProfilePage />} />
+              </Route>
             </Route>
-          </Route>
 
-          <Route path="/admin/login" element={<AdminLogin />} />
-          <Route element={<AdminProtectedRoute />}>
-            <Route path="/admin" element={<AdminLayout />}>
-              <Route index element={<Navigate to="/admin/dashboard" replace />} />
-              <Route path="dashboard" element={<AdminDashboard />} />
-              <Route path="users" element={<AdminUsers />} />
-              <Route path="transactions" element={<AdminTransactions />} />
-              <Route path="trades" element={<AdminTrades />} />
-              <Route path="support" element={<AdminSupportPage />} />
-              <Route path="payment-details" element={<AdminPaymentDetails />} />
+            <Route path="/admin/login" element={<AdminLogin />} />
+            <Route element={<AdminProtectedRoute />}>
+              <Route path="/admin" element={<AdminLayout />}>
+                <Route index element={<Navigate to="/admin/dashboard" replace />} />
+                <Route path="dashboard" element={<AdminDashboard />} />
+                <Route path="users" element={<AdminUsers />} />
+                <Route path="transactions" element={<AdminTransactions />} />
+                <Route path="trades" element={<AdminTrades />} />
+                <Route path="support" element={<AdminSupportPage />} />
+                <Route path="payment-details" element={<AdminPaymentDetails />} />
+              </Route>
             </Route>
-          </Route>
 
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
-      </Suspense>
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+        </Suspense>
+      </main>
+
+      {/* 4. Рендеримо Footer тут, застосовуючи ту ж умову */}
+      {!isLoginPage && !isAdminRoute && <Footer />}
     </div>
   );
 }
