@@ -1,5 +1,5 @@
 import { useEffect, useState, useMemo } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import { useAppSelector, useAppDispatch } from '@/store/hooks';
 import { fetchUserProfile } from '@/store/slices/authSlice';
 import { transactionService, Transaction, TransactionStats } from '@/services/transactionService';
@@ -88,6 +88,7 @@ function WithdrawModal({
             setLoading(true);
             await transactionService.requestWithdrawal({
                 amount: amountNum,
+                // @ts-ignore // TODO: Fix this type issue if needed
                 payment_details: userRequisites
             });
             onSuccess();
@@ -228,7 +229,7 @@ function WithdrawModal({
 export default function BalancePage() {
     const { t, i18n } = useTranslation();
     const dispatch = useAppDispatch();
-    const [searchParams, setSearchParams] = useSearchParams();
+    const location = useLocation(); // ДОДАНО отримання location
     const { user } = useAppSelector((state: RootState) => state.auth);
     const currencyState = useAppSelector((state: RootState) => state.currency);
     const [transactions, setTransactions] = useState<Transaction[]>([]);
@@ -283,12 +284,19 @@ export default function BalancePage() {
 
     useEffect(() => {
         loadData();
-        if (searchParams.get('deposit') === 'true') {
+        // ДОДАНО: Перевірка стану, переданого через navigate
+        const locationState = location.state as { openModal?: 'deposit' | 'withdraw' };
+        if (locationState?.openModal === 'deposit') {
             setShowDepositModal(true);
-            setSearchParams({});
+            // Очистити стан, щоб модальне вікно не відкривалося при оновленні сторінки
+            window.history.replaceState({}, document.title);
+        } else if (locationState?.openModal === 'withdraw') {
+            setShowWithdrawModal(true);
+            // Очистити стан
+            window.history.replaceState({}, document.title);
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [searchParams, setSearchParams]);
+    }, [location.state]); // ДОДАНО location.state як залежність
 
     const loadData = async () => {
         try {

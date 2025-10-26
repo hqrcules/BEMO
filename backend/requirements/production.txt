@@ -8,3 +8,5 @@ sentry-sdk==2.14.0
 
 # Security
 django-csp==3.8
+
+django-celery-beat==2.6.0

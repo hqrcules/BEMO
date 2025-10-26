@@ -70,3 +70,8 @@ class WithdrawalSerializer(serializers.ModelSerializer):
         # user.balance -= tx.total_amount()
         # user.save()
         return tx
+
+class BalanceHistorySerializer(serializers.Serializer):
+    """Serializer for balance history data points."""
+    timestamp = serializers.DateTimeField()
+    balance = serializers.DecimalField(max_digits=15, decimal_places=2)

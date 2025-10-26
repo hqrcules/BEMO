@@ -25,6 +25,11 @@ export interface TransactionStats {
   total_withdrawal_amount: string;
 }
 
+export interface BalanceHistoryEntry {
+  timestamp: string;
+  balance: number;
+}
+
 export const transactionService = {
   async getTransactions(): Promise<{ results: Transaction[]; count: number }> {
     const res = await api.get('/api/transactions/');
@@ -49,5 +54,12 @@ export const transactionService = {
   }> {
     const res = await api.post('/api/transactions/withdraw/', data);
     return res.data;
+  },
+    async getBalanceHistory(): Promise<BalanceHistoryEntry[]> {
+    const res = await api.get('/api/transactions/balance-history/');
+    return res.data.map((entry: any) => ({
+        ...entry,
+        balance: parseFloat(entry.balance)
+    }));
   },
 };

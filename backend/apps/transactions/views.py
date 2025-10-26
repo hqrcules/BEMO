@@ -3,8 +3,16 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from django.db import transaction as db_transaction
+from django.utils import timezone
+from datetime import timedelta
+from decimal import Decimal
 from .models import Transaction
-from .serializers import TransactionSerializer, DepositSerializer, WithdrawalSerializer
+from .serializers import (
+    TransactionSerializer,
+    DepositSerializer,
+    WithdrawalSerializer,
+    BalanceHistorySerializer
+)
 
 class TransactionViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = TransactionSerializer
@@ -13,7 +21,7 @@ class TransactionViewSet(viewsets.ReadOnlyModelViewSet):
     def get_queryset(self):
         return Transaction.objects.filter(user=self.request.user).select_related('user', 'processed_by').order_by('-created_at')
 
-    # GET /api/transactions/ — повертаємо {results, count}
+    # GET /api/transactions/
     def list(self, request, *args, **kwargs):
         qs = self.get_queryset()
         data = self.get_serializer(qs, many=True).data
@@ -52,11 +60,10 @@ class TransactionViewSet(viewsets.ReadOnlyModelViewSet):
             if not s.is_valid():
                 return Response(s.errors, status=status.HTTP_400_BAD_REQUEST)
             tx = s.save()
-            # Повертаємо уніфіковано, щоб фронт міг одразу оновити історію
             return Response({
                 'transaction': TransactionSerializer(tx).data,
                 'message': 'Deposit created. Awaiting admin approval.',
-                'user_balance': str(request.user.balance),  # наразі не змінюємо баланс до approve
+                'user_balance': str(request.user.balance),
             }, status=status.HTTP_201_CREATED)
 
     @action(detail=False, methods=['post'], serializer_class=WithdrawalSerializer)
@@ -66,10 +73,63 @@ class TransactionViewSet(viewsets.ReadOnlyModelViewSet):
             if not s.is_valid():
                 return Response(s.errors, status=status.HTTP_400_BAD_REQUEST)
             tx = s.save()
-            # У нас баланс для withdrawal списується в serializer (якщо ви так реалізували), тоді повертаємо оновлений
             request.user.refresh_from_db()
             return Response({
                 'transaction': TransactionSerializer(tx).data,
                 'message': 'Withdrawal request created.',
                 'user_balance': str(request.user.balance),
             }, status=status.HTTP_201_CREATED)
+
+    @action(detail=False, methods=['get'], url_path='balance-history')
+    def balance_history(self, request):
+        """
+        Returns the user's balance history for the last 30 days.
+        Calculates balance changes based on completed transactions.
+        """
+        user = request.user
+        thirty_days_ago = timezone.now() - timedelta(days=30)
+        history_data = []
+        current_balance = user.balance
+
+        transactions = Transaction.objects.filter(
+            user=user,
+            status='completed',
+            processed_at__gte=thirty_days_ago
+        ).order_by('-processed_at')
+
+        history_data.append({
+            "timestamp": timezone.now(),
+            "balance": current_balance
+        })
+
+        for tx in transactions:
+            if tx.transaction_type == 'deposit':
+                current_balance -= tx.amount
+            elif tx.transaction_type == 'withdrawal':
+                current_balance += tx.total_amount()
+            elif tx.transaction_type == 'bot_profit':
+                current_balance -= tx.amount
+            elif tx.transaction_type == 'bot_purchase':
+                current_balance += tx.amount
+
+            history_data.append({
+                "timestamp": tx.processed_at,
+                "balance": current_balance
+            })
+
+        if transactions.count() == 0:
+            history_data.append({
+                "timestamp": thirty_days_ago,
+                "balance": user.balance
+            })
+        else:
+            oldest_calculated_balance = history_data[-1]['balance']
+            history_data.append({
+                "timestamp": thirty_days_ago,
+                "balance": oldest_calculated_balance
+            })
+
+        history_data.reverse()
+
+        serializer = BalanceHistorySerializer(history_data, many=True)
+        return Response(serializer.data)

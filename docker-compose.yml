@@ -1,0 +1,110 @@
+services:
+  # Сервіс 'db' (PostgreSQL) повністю видалено
+
+  redis:
+    image: redis:7-alpine
+    container_name: bemo_redis_dev
+    ports:
+      - "6380:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: bemo_backend_dev
+    # Спрощена команда: тільки міграції та запуск сервера
+    command: >
+      sh -c "python manage.py migrate &&
+             python manage.py runserver 0.0.0.0:8000"
+    volumes:
+      # Монтуємо код, SQLite файл буде зберігатися всередині цього volume
+      - ./backend:/app/backend
+    ports:
+      - "8000:8000"
+    env_file:
+      - ./backend/.env # Завантажуємо інші налаштування з .env
+    # Видалено змінні DB_*
+    environment:
+      # Вказуємо Redis хост для Docker
+      - REDIS_URL=redis://redis:6379/0
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+      - DJANGO_SETTINGS_MODULE=config.settings.development
+    depends_on:
+      redis:
+        condition: service_healthy # Залежність тільки від Redis
+    # Видалено healthcheck для PostgreSQL
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: bemo_frontend_dev
+    volumes:
+      - ./frontend:/app/frontend
+      - /app/frontend/node_modules
+    ports:
+      - "3000:3000"
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+    depends_on:
+      - backend
+
+  celery_worker:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: bemo_celery_worker_dev
+    # Спрощена команда, видалено очікування БД
+    command: celery -A config worker --loglevel=info
+    volumes:
+      - ./backend:/app/backend
+    env_file:
+      - ./backend/.env
+    # Видалено змінні DB_*
+    environment:
+      - REDIS_URL=redis://redis:6379/0
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+      - DJANGO_SETTINGS_MODULE=config.settings.development
+    depends_on:
+      redis:
+        condition: service_healthy
+      # Залежність від backend більше не потрібна для запуску БД,
+      # але може бути корисна, щоб гарантувати наявність коду/міграцій
+      backend:
+        condition: service_started
+
+  celery_beat:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: bemo_celery_beat_dev
+    # Спрощена команда, видалено очікування БД
+    command: >
+      sh -c "rm -f /app/backend/celerybeat.pid &&
+             celery -A config beat -l info --scheduler django_celery_beat.schedulers:DatabaseScheduler"
+    volumes:
+      - ./backend:/app/backend
+    env_file:
+      - ./backend/.env
+    # Видалено змінні DB_*
+    environment:
+      - REDIS_URL=redis://redis:6379/0
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+      - DJANGO_SETTINGS_MODULE=config.settings.development
+    depends_on:
+      redis:
+        condition: service_healthy
+      # Залежність від backend (для коду/міграцій, якщо scheduler використовує БД Django)
+      backend:
+        condition: service_started
+
+# Видалено volume postgres_data_dev
+volumes: {} # Можна залишити порожнім або видалити секцію volumes, якщо більше немає іменованих volumes
