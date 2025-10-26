@@ -31,6 +31,10 @@ import {
 } from 'lucide-react';
 import { formatCurrency } from '@/shared/utils/formatCurrency';
 import { RootState } from '@/store/store';
+// --- Start of changes ---
+import { transactionService, BalanceHistoryEntry } from '@/services/transactionService';
+import { tradingService, TradingSession } from '@/services/tradingService';
+// --- End of changes ---
 
 function Spinner({ size = 'h-8 w-8' }: { size?: string }) {
     return (
@@ -88,25 +92,7 @@ function usePrevious(value: any) {
   return ref.current;
 }
 
-interface BalanceHistoryEntry {
-    timestamp: string;
-    balance: number;
-}
-
-const MOCK_DATA: BalanceHistoryEntry[] = [
-    { timestamp: '2023-10-01T00:00:00Z', balance: 10000 },
-    { timestamp: '2023-10-02T00:00:00Z', balance: 10150 },
-    { timestamp: '2023-10-03T00:00:00Z', balance: 9900 },
-    { timestamp: '2023-10-04T00:00:00Z', balance: 10300 },
-    { timestamp: '2023-10-05T00:00:00Z', balance: 10500 },
-    { timestamp: '2023-10-06T00:00:00Z', balance: 10450 },
-    { timestamp: '2023-10-07T00:00:00Z', balance: 10700 },
-    { timestamp: '2023-10-08T00:00:00Z', balance: 11000 },
-    { timestamp: '2023-10-09T00:00:00Z', balance: 10950 },
-    { timestamp: '2023-10-10T00:00:00Z', balance: 11200 },
-    { timestamp: '2023-10-11T00:00:00Z', balance: 11500 },
-    { timestamp: '2023-10-12T00:00:00Z', balance: 11350 },
-];
+// --- Removed MOCK_DATA ---
 
 const CustomTooltip = ({ active, payload, label, currencyState }: any) => {
     if (active && payload && payload.length) {
@@ -133,12 +119,54 @@ export default function DashboardHome() {
 
     const [currentTime, setCurrentTime] = useState(new Date());
     const [balanceVisible, setBalanceVisible] = useState(true);
-
     const [flashState, setFlashState] = useState<{[key: string]: 'up' | 'down'}>({});
 
-    const isCryptoLoading = !cryptoList || cryptoList.length === 0;
+    // --- Start of changes ---
+    const [balanceHistory, setBalanceHistory] = useState<BalanceHistoryEntry[]>([]);
+    const [activeSession, setActiveSession] = useState<TradingSession | null>(null);
+    const [loadingChart, setLoadingChart] = useState(true);
+    const [loadingBotStatus, setLoadingBotStatus] = useState(true);
+    // --- End of changes ---
 
+    const isCryptoLoading = !cryptoList || cryptoList.length === 0;
     const prevCryptoList = usePrevious(cryptoList);
+
+    // --- Start of changes ---
+    useEffect(() => {
+        const fetchBalanceHistory = async () => {
+            try {
+                setLoadingChart(true);
+                const history = await transactionService.getBalanceHistory();
+                setBalanceHistory(history);
+            } catch (error) {
+                console.error("Error fetching balance history:", error);
+                // Optionally set an error state
+            } finally {
+                setLoadingChart(false);
+            }
+        };
+
+        const fetchActiveSession = async () => {
+             if (user?.bot_type === 'none') {
+                 setLoadingBotStatus(false);
+                 return;
+             }
+            try {
+                setLoadingBotStatus(true);
+                const session = await tradingService.getActiveSession();
+                setActiveSession(session);
+            } catch (error) {
+                console.error("No active trading session found:", error);
+                setActiveSession(null); // Ensure session is null if fetch fails
+            } finally {
+                setLoadingBotStatus(false);
+            }
+        };
+
+        fetchBalanceHistory();
+        fetchActiveSession();
+    }, [user?.bot_type]); // Додано залежність від bot_type
+    // --- End of changes ---
 
     useEffect(() => {
         if (!prevCryptoList || (prevCryptoList as any[]).length === 0 || !cryptoList || cryptoList.length === 0) {
@@ -161,15 +189,12 @@ export default function DashboardHome() {
 
         if (Object.keys(newFlashState).length > 0) {
             setFlashState(newFlashState);
-
             const timer = setTimeout(() => {
                 setFlashState({});
             }, 1200);
-
             return () => clearTimeout(timer);
         }
     }, [cryptoList, prevCryptoList]);
-
 
     useEffect(() => {
         const timer = setInterval(() => setCurrentTime(new Date()), 1000);
@@ -203,13 +228,18 @@ export default function DashboardHome() {
             .slice(0, 5);
     }, [cryptoList, isCryptoLoading]);
 
-    const balanceHistory = MOCK_DATA;
+    // --- Start of changes ---
     const chartData = useMemo(() => {
+        if (!balanceHistory || balanceHistory.length === 0) {
+            // Return placeholder data or an empty array if loading or no data
+            return [];
+        }
         return balanceHistory.map(entry => ({
-            date: entry.timestamp,
+            date: entry.timestamp, // Assuming timestamp is a string like "2023-10-01T00:00:00Z"
             balance: entry.balance,
         }));
     }, [balanceHistory]);
+    // --- End of changes ---
 
     const balanceBorderAnimation = marketStats.avgChange >= 0
         ? 'animate-pulse-border-green'
@@ -256,6 +286,7 @@ export default function DashboardHome() {
 
                     <div className="lg:col-span-8 flex flex-col gap-6">
 
+                        {/* Balance Card */}
                         <div className={`bg-zinc-950 border rounded-3xl p-6 relative overflow-hidden transition-all duration-1000 ${
                             isCryptoLoading ? 'border-zinc-800' : balanceBorderAnimation
                         }`}>
@@ -300,14 +331,14 @@ export default function DashboardHome() {
                                     </div>
                                     <div className="flex flex-col sm:flex-row justify-start lg:justify-end gap-3">
                                         <button
-                                            onClick={() => navigate('/dashboard/balance', { state: { openDeposit: true } })}
+                                            onClick={() => navigate('/balance', { state: { openModal: 'deposit' } })} // Змінено для BalancePage
                                             className="btn-primary w-full sm:w-auto px-6 py-3 text-sm"
                                         >
                                             <Plus className="w-4 h-4" />
                                             {t('dashboard.deposit')}
                                         </button>
                                         <button
-                                            onClick={() => navigate('/dashboard/balance')}
+                                            onClick={() => navigate('/balance')} // Змінено для BalancePage
                                             className="btn-secondary w-full sm:w-auto px-6 py-3 text-sm"
                                         >
                                             <Minus className="w-4 h-4" />
@@ -318,52 +349,70 @@ export default function DashboardHome() {
                             </div>
                         </div>
 
+                         {/* Balance Chart */}
                         <div className="bg-zinc-950 border border-zinc-800 rounded-3xl p-6 h-[21.6rem]">
-                            <h3 className="text-lg font-light text-white mb-4">Balance Overview</h3>
-                            <ResponsiveContainer width="100%" height="90%">
-                                <AreaChart
-                                    data={chartData}
-                                    margin={{
-                                        top: 5,
-                                        right: 0,
-                                        left: 0,
-                                        bottom: 0,
-                                    }}
-                                >
-                                    <defs>
-                                        <linearGradient id="colorBalance" x1="0" y1="0" x2="0" y2="1">
-                                            <stop offset="5%" stopColor="#0ea5e9" stopOpacity={0.7}/>
-                                            <stop offset="95%" stopColor="#0ea5e9" stopOpacity={0}/>
-                                        </linearGradient>
-                                    </defs>
-                                    <XAxis
-                                        dataKey="date"
-                                        tickFormatter={(str) => new Date(str).toLocaleDateString('en-US', { day: 'numeric', month: 'short' })}
-                                        stroke="#7A7A7A"
-                                        fontSize={12}
-                                        tickLine={false}
-                                        axisLine={false}
-                                    />
-                                    <YAxis
-                                        domain={['dataMin - 100', 'dataMax + 100']}
-                                        hide={true}
-                                    />
-                                    <Tooltip
-                                        content={<CustomTooltip currencyState={currencyState} />}
-                                        cursor={{ stroke: '#3A3A3A', strokeWidth: 1, strokeDasharray: "5 5" }}
-                                    />
-                                    <Area
-                                        type="monotone"
-                                        dataKey="balance"
-                                        stroke="#0ea5e9"
-                                        strokeWidth={2}
-                                        fillOpacity={1}
-                                        fill="url(#colorBalance)"
-                                    />
-                                </AreaChart>
-                            </ResponsiveContainer>
+                            <h3 className="text-lg font-light text-white mb-4">Balance Overview (Last 30 days)</h3>
+                            {/* --- Start of changes --- */}
+                            {loadingChart ? (
+                                <div className="flex justify-center items-center h-[80%]">
+                                    <Spinner size="h-10 w-10" />
+                                </div>
+                            ) : chartData.length > 1 ? ( // Ensure there are at least 2 data points
+                                <ResponsiveContainer width="100%" height="90%">
+                                    <AreaChart
+                                        data={chartData}
+                                        margin={{
+                                            top: 5,
+                                            right: 0,
+                                            left: 0,
+                                            bottom: 0,
+                                        }}
+                                    >
+                                        <defs>
+                                            <linearGradient id="colorBalance" x1="0" y1="0" x2="0" y2="1">
+                                                <stop offset="5%" stopColor="#0ea5e9" stopOpacity={0.7}/>
+                                                <stop offset="95%" stopColor="#0ea5e9" stopOpacity={0}/>
+                                            </linearGradient>
+                                        </defs>
+                                        <XAxis
+                                            dataKey="date"
+                                            tickFormatter={(str) => new Date(str).toLocaleDateString('en-US', { day: 'numeric', month: 'short' })}
+                                            stroke="#7A7A7A"
+                                            fontSize={12}
+                                            tickLine={false}
+                                            axisLine={false}
+                                            interval="preserveStartEnd" // Show first and last labels
+                                            minTickGap={30} // Adjust gap between ticks
+                                        />
+                                        <YAxis
+                                            // Calculate domain dynamically based on data
+                                            domain={['dataMin - (dataMax-dataMin)*0.1', 'dataMax + (dataMax-dataMin)*0.1']}
+                                            hide={true}
+                                        />
+                                        <Tooltip
+                                            content={<CustomTooltip currencyState={currencyState} />}
+                                            cursor={{ stroke: '#3A3A3A', strokeWidth: 1, strokeDasharray: "5 5" }}
+                                        />
+                                        <Area
+                                            type="monotone"
+                                            dataKey="balance"
+                                            stroke="#0ea5e9"
+                                            strokeWidth={2}
+                                            fillOpacity={1}
+                                            fill="url(#colorBalance)"
+                                        />
+                                    </AreaChart>
+                                </ResponsiveContainer>
+                            ) : (
+                                <div className="flex justify-center items-center h-[80%] text-zinc-500 text-sm">
+                                    Not enough data for chart.
+                                </div>
+                            )}
+                            {/* --- End of changes --- */}
                         </div>
 
+                        {/* Top Gainers/Losers (без змін) */}
+                        {/* ... код для Top Gainers ... */}
                         <div className="bg-zinc-950 border border-zinc-800 rounded-3xl overflow-hidden">
                             <div className="flex items-center justify-between p-5 border-b border-zinc-800">
                                 <h3 className="text-lg font-light text-white flex items-center gap-2.5">
@@ -371,7 +420,7 @@ export default function DashboardHome() {
                                     {t('dashboard.topGainers')}
                                 </h3>
                                 <button
-                                    onClick={() => navigate('/dashboard/trading')}
+                                    onClick={() => navigate('/trading')}
                                     className="text-sm text-zinc-500 hover:text-zinc-300 flex items-center gap-1.5 transition-colors duration-300"
                                 >
                                     {t('dashboard.viewAll')}
@@ -398,7 +447,7 @@ export default function DashboardHome() {
                                                 <div
                                                     key={crypto.id}
                                                     className={`flex items-center justify-between p-3 rounded-xl transition-all duration-300 cursor-pointer group ${flashClass} hover:bg-zinc-900`}
-                                                    onClick={() => navigate('/dashboard/trading')}
+                                                    onClick={() => navigate('/trading')}
                                                 >
                                                     <div className="flex items-center gap-3.5">
                                                         <span className="text-zinc-600 font-mono text-sm w-5 group-hover:text-zinc-400 transition-colors">
@@ -434,15 +483,15 @@ export default function DashboardHome() {
                                 )}
                             </div>
                         </div>
-
-                        <div className="bg-zinc-950 border border-zinc-800 rounded-3xl overflow-hidden">
+                        {/* ... код для Top Losers ... */}
+                         <div className="bg-zinc-950 border border-zinc-800 rounded-3xl overflow-hidden">
                             <div className="flex items-center justify-between p-5 border-b border-zinc-800">
                                 <h3 className="text-lg font-light text-white flex items-center gap-2.5">
                                     <TrendingDown className="w-5 h-5 text-red-400" />
                                     {t('dashboard.topLosers')}
                                 </h3>
                                 <button
-                                    onClick={() => navigate('/dashboard/trading')}
+                                    onClick={() => navigate('/trading')}
                                     className="text-sm text-zinc-500 hover:text-zinc-300 flex items-center gap-1.5 transition-colors duration-300"
                                 >
                                     {t('dashboard.viewAll')}
@@ -469,7 +518,7 @@ export default function DashboardHome() {
                                                 <div
                                                     key={crypto.id}
                                                     className={`flex items-center justify-between p-3 rounded-xl transition-all duration-300 cursor-pointer group ${flashClass} hover:bg-zinc-900`}
-                                                    onClick={() => navigate('/dashboard/trading')}
+                                                    onClick={() => navigate('/trading')}
                                                 >
                                                     <div className="flex items-center gap-3.5">
                                                         <span className="text-zinc-600 font-mono text-sm w-5 group-hover:text-zinc-400 transition-colors">
@@ -505,17 +554,20 @@ export default function DashboardHome() {
                                 )}
                             </div>
                         </div>
+
                     </div>
 
+                    {/* Right Column */}
                     <div className="lg:col-span-4 flex flex-col gap-6">
 
+                        {/* Quick Actions (без змін) */}
                         <div className="bg-zinc-950 border border-zinc-800 rounded-3xl p-6">
                             <h3 className="text-lg font-light mb-6 text-white text-center">
                                 {t('dashboard.quickActions')}
                             </h3>
                             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-4 max-w-4xl mx-auto">
                                 <button
-                                    onClick={() => navigate('/dashboard/balance', { state: { openDeposit: true } })}
+                                    onClick={() => navigate('/balance', { state: { openModal: 'deposit' } })} // Змінено для BalancePage
                                     className="flex flex-col items-center gap-3 p-4 bg-green-950/20 border border-green-800/50 rounded-2xl hover:bg-green-950/40 transition-all duration-300 group"
                                 >
                                     <Plus className="w-9 h-9 text-green-400 group-hover:scale-110 transition-transform animate-pulse" />
@@ -523,7 +575,7 @@ export default function DashboardHome() {
                                     <p className="text-zinc-500 text-center text-xs">Add funds to your account</p>
                                 </button>
                                 <button
-                                    onClick={() => navigate('/dashboard/balance')}
+                                    onClick={() => navigate('/balance')} // Змінено для BalancePage
                                     className="flex flex-col items-center gap-3 p-4 border border-zinc-700 rounded-2xl hover:bg-zinc-900 transition-all duration-300 group"
                                 >
                                     <Minus className="w-9 h-9 text-zinc-400 group-hover:scale-110 transition-transform" />
@@ -531,7 +583,7 @@ export default function DashboardHome() {
                                     <p className="text-zinc-500 text-center text-xs">Withdraw your earnings</p>
                                 </button>
                                 <button
-                                    onClick={() => navigate('/dashboard/trading')}
+                                    onClick={() => navigate('/trading')} // Змінено для TradingPage
                                     className="flex flex-col items-center gap-3 p-4 border border-zinc-700 rounded-2xl hover:bg-zinc-900 transition-all duration-300 group"
                                 >
                                     <Activity className="w-9 h-9 text-purple-400 group-hover:scale-110 transition-transform" />
@@ -541,39 +593,78 @@ export default function DashboardHome() {
                             </div>
                         </div>
 
+                         {/* Trading Bot Status */}
+                        {/* --- Start of changes --- */}
                         <div className="bg-zinc-950 border border-zinc-800 rounded-3xl p-6">
                             <div className="flex items-center justify-between mb-5">
                                 <h3 className="text-lg font-light text-white flex items-center gap-2.5">
                                     <Bot className="w-5 h-5 text-purple-400" />
                                     Trading Bot Status
                                 </h3>
-                                <span className="flex items-center gap-2 text-xs font-medium text-green-400">
-                                    <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                                    Active
-                                </span>
+                                {user.bot_type !== 'none' && (
+                                    <span className={`flex items-center gap-2 text-xs font-medium ${activeSession?.is_active ? 'text-green-400' : 'text-zinc-500'}`}>
+                                        <div className={`w-2 h-2 rounded-full ${activeSession?.is_active ? 'bg-green-500 animate-pulse' : 'bg-zinc-600'}`}></div>
+                                        {activeSession?.is_active ? 'Active' : 'Inactive'}
+                                    </span>
+                                )}
                             </div>
-                            <div className="space-y-4">
-                                <div>
-                                    <p className="text-zinc-500 text-sm mb-1">Bot Name</p>
-                                    <p className="text-base font-medium text-white">GridMaster v1.2</p>
+                            {loadingBotStatus ? (
+                                <div className="flex justify-center items-center h-32">
+                                    <Spinner size="h-6 w-6"/>
                                 </div>
-                                <div>
-                                    <p className="text-zinc-500 text-sm mb-1">Uptime</p>
-                                    <p className="text-base font-mono text-white">7d 4h 15m</p>
+                            ) : user.bot_type === 'none' ? (
+                                <div className="text-center py-4">
+                                    <p className="text-zinc-500 text-sm mb-4">You don't have an active bot.</p>
+                                    <button
+                                         onClick={() => navigate('/bot-trading')}
+                                         className="btn-primary text-sm"
+                                    >
+                                        Activate Bot
+                                    </button>
                                 </div>
-                                <div>
-                                    <p className="text-zinc-500 text-sm mb-1">Current P/L</p>
-                                    <p className="text-base font-mono text-green-400">
-                                        + {formatCurrency(120.50, currencyState)}
-                                    </p>
+                            ) : activeSession ? (
+                                <div className="space-y-4">
+                                    <div>
+                                        <p className="text-zinc-500 text-sm mb-1">Bot Type</p>
+                                        <p className="text-base font-medium text-white capitalize">{activeSession.bot_type}</p>
+                                    </div>
+                                    <div>
+                                        <p className="text-zinc-500 text-sm mb-1">Session Start</p>
+                                        <p className="text-base font-mono text-white">
+                                            {new Date(activeSession.started_at).toLocaleString()}
+                                        </p>
+                                    </div>
+                                    <div>
+                                        <p className="text-zinc-500 text-sm mb-1">Session P/L</p>
+                                        <p className={`text-base font-mono ${parseFloat(activeSession.total_profit) >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                                            {parseFloat(activeSession.total_profit) >= 0 ? '+' : ''}
+                                            {formatCurrency(activeSession.total_profit, currencyState)}
+                                        </p>
+                                    </div>
+                                    <button
+                                         onClick={() => navigate('/bot-trading')}
+                                         className="btn-secondary w-full text-sm mt-2"
+                                    >
+                                        <Settings className="w-4 h-4" />
+                                        Manage Bot
+                                    </button>
                                 </div>
-                                <button className="btn-secondary w-full text-sm mt-2">
-                                    <Settings className="w-4 h-4" />
-                                    Manage Bot
-                                </button>
-                            </div>
+                            ) : (
+                                <div className="text-center py-4">
+                                    <p className="text-zinc-500 text-sm mb-4">No active trading session found.</p>
+                                     <button
+                                         onClick={() => navigate('/bot-trading')}
+                                         className="btn-primary text-sm"
+                                    >
+                                        Start Bot Session
+                                    </button>
+                                </div>
+                            )}
                         </div>
+                         {/* --- End of changes --- */}
 
+                        {/* Market Stats Cards (без змін) */}
+                        {/* ... код для Volume ... */}
                         <div className="bg-zinc-950 border border-zinc-800 rounded-3xl p-6 hover:border-zinc-700 transition-all duration-300 transform hover:-translate-y-1">
                             <div className="flex items-center justify-between mb-5">
                                 <div className="p-2.5 bg-blue-950 rounded-xl">
@@ -592,7 +683,7 @@ export default function DashboardHome() {
                                 {isCryptoLoading ? <span className="text-zinc-700">Loading...</span> : formatCurrency(marketStats.totalVolume, currencyState, { notation: 'compact', maximumFractionDigits: 1 })}
                             </p>
                         </div>
-
+                        {/* ... код для Gainers/Losers ... */}
                         <div className="bg-zinc-950 border border-zinc-800 rounded-3xl p-6 hover:border-zinc-700 transition-all duration-300 transform hover:-translate-y-1">
                             <div className="flex items-center justify-between mb-5">
                                 <div className="p-2.5 bg-green-950 rounded-xl">
