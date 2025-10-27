@@ -1,6 +1,5 @@
 // frontend/src/features/dashboard/DashboardHome.tsx
-
-import { useState, useMemo, useEffect, useRef } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAppSelector } from '@/store/hooks';
 import { useWebSocket } from '@/shared/hooks/useWebSocket';
@@ -94,10 +93,10 @@ function usePrevious(value: any) {
 }
 
 
-const CustomTooltip = ({ active, payload, label, currencyState }: any) => {
-    if (active && payload && payload.length) {
-        const dateLabel = new Date(label).toLocaleDateString('en-US', {
-            year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'
+const CustomTooltip = ({ active, payload, label, currencyState, i18nInstance }: any) => {
+    if (active && payload && payload.length && typeof label === 'number') {
+        const dateLabel = new Date(label).toLocaleString(i18nInstance.language || 'en-US', {
+            year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit'
         });
         return (
             <div className="bg-zinc-900 border border-zinc-700 rounded-lg p-3 shadow-lg">
@@ -113,7 +112,7 @@ const CustomTooltip = ({ active, payload, label, currencyState }: any) => {
 
 export default function DashboardHome() {
     const navigate = useNavigate();
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
     const { user } = useAppSelector((state: RootState) => state.auth);
     const { cryptoList, connected } = useAppSelector((state: RootState) => state.websocket);
     const currencyState = useAppSelector((state: RootState) => state.currency);
@@ -140,6 +139,7 @@ export default function DashboardHome() {
             try {
                 setLoadingChart(true);
                 const history = await transactionService.getBalanceHistory();
+                console.log("Fetched Balance History:", history);
                 setBalanceHistory(history);
             } catch (error) {
                 console.error("Error fetching balance history:", error);
@@ -232,21 +232,58 @@ export default function DashboardHome() {
     }, [cryptoList, isCryptoLoading]);
 
 
-    const { chartData, chartDomain } = useMemo(() => {
+    const { chartData, chartDomain, yDomain } = useMemo(() => {
         if (!balanceHistory || balanceHistory.length === 0) {
-            return { chartData: [], chartDomain: { min: 0, max: 0 } };
+             const now = Date.now();
+             const thirtyDaysAgo = now - 30 * 24 * 60 * 60 * 1000;
+             return {
+                 chartData: [{ timeValue: thirtyDaysAgo, balance: 0 }, { timeValue: now, balance: 0 }],
+                 chartDomain: { min: thirtyDaysAgo, max: now },
+                 yDomain: { min: 0, max: 100 }
+             };
         }
+
         const data = balanceHistory.map(entry => ({
             timeValue: new Date(entry.timestamp).getTime(),
             balance: entry.balance,
         }));
 
-        const domain = {
-            min: data[0]?.timeValue || 0,
-            max: data[data.length - 1]?.timeValue || Date.now()
-        };
+        data.sort((a, b) => a.timeValue - b.timeValue);
 
-        return { chartData: data, chartDomain: domain };
+        console.log("Processed Chart Data:", data);
+
+        const times = data.map(d => d.timeValue);
+        const balances = data.map(d => d.balance);
+
+        const minTime = times.length > 0 ? Math.min(...times) : Date.now() - 30*24*60*60*1000;
+        const maxTime = times.length > 0 ? Math.max(...times) : Date.now();
+
+        const thirtyDaysAgoTs = Date.now() - 30 * 24 * 60 * 60 * 1000;
+        const domainMin = Math.min(minTime, thirtyDaysAgoTs);
+        const domainMax = Math.max(maxTime, Date.now());
+
+        let yMin = balances.length > 0 ? Math.min(...balances) : 0;
+        let yMax = balances.length > 0 ? Math.max(...balances) : 100;
+
+        const yPadding = (yMax - yMin) * 0.1;
+        yMin = Math.max(0, yMin - yPadding);
+        yMax = yMax + yPadding;
+
+        if (yMin === yMax) {
+           yMin = Math.max(0, yMin - Math.max(50, yMin * 0.1));
+           yMax = yMax + Math.max(50, yMax * 0.1);
+        }
+        if (yMin >= yMax) {
+           yMax = yMin + 100;
+        }
+
+        console.log("Y Domain:", { min: yMin, max: yMax });
+
+        return {
+          chartData: data,
+          chartDomain: { min: domainMin, max: domainMax },
+          yDomain: { min: yMin, max: yMax }
+        };
     }, [balanceHistory]);
 
 
@@ -255,6 +292,18 @@ export default function DashboardHome() {
         : 'animate-pulse-border-red';
 
     if (!user) return null;
+
+     const xAxisTickFormatter = (unixTime: number): string => {
+         const date = new Date(unixTime);
+         const now = new Date();
+         const diffDays = (now.getTime() - date.getTime()) / (1000 * 3600 * 24);
+
+         if (diffDays <= 2) { // Show time if within the last 48 hours
+             return date.toLocaleTimeString(i18n.language || 'en-US', { hour: '2-digit', minute: '2-digit' });
+         } else { // Show date otherwise
+             return date.toLocaleDateString(i18n.language || 'en-US', { day: 'numeric', month: 'short' });
+         }
+     };
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-black via-zinc-950 to-black text-white [background-size:200%_200%] animate-background-pan">
@@ -372,7 +421,7 @@ export default function DashboardHome() {
                                         data={chartData}
                                         margin={{
                                             top: 5,
-                                            right: 0,
+                                            right: 5,
                                             left: 0,
                                             bottom: 0,
                                         }}
@@ -387,31 +436,31 @@ export default function DashboardHome() {
                                             dataKey="timeValue"
                                             type="number"
                                             domain={[chartDomain.min, chartDomain.max]}
-                                            tickFormatter={(unixTime) => new Date(unixTime).toLocaleDateString('en-US', { day: 'numeric', month: 'short' })}
+                                            tickFormatter={xAxisTickFormatter}
                                             stroke="#7A7A7A"
                                             fontSize={12}
                                             tickLine={false}
                                             axisLine={false}
                                             interval="preserveStartEnd"
-                                            minTickGap={40}
+                                            minTickGap={30}
                                         />
                                         <YAxis
-                                            domain={['dataMin - (dataMax-dataMin)*0.1', 'dataMax + (dataMax-dataMin)*0.1']}
+                                            domain={[yDomain.min, yDomain.max]}
                                             hide={true}
                                         />
                                         <Tooltip
-                                            content={<CustomTooltip currencyState={currencyState} />}
+                                            content={<CustomTooltip currencyState={currencyState} i18nInstance={i18n}/>}
                                             cursor={{ stroke: '#3A3A3A', strokeWidth: 1, strokeDasharray: "5 5" }}
-                                            labelFormatter={(label) => new Date(label).toISOString()} // Pass ISO string to tooltip
+                                            labelFormatter={(label) => label}
                                         />
                                         <Area
                                             type="monotone"
                                             dataKey="balance"
                                             stroke="#0ea5e9"
-                                            strokeWidth={2}
+                                            strokeWidth={1.5}
                                             fillOpacity={1}
                                             fill="url(#colorBalance)"
-                                            isAnimationActive={false} // Можна вимкнути анімацію для плавності
+                                            isAnimationActive={false}
                                         />
                                     </AreaChart>
                                 </ResponsiveContainer>

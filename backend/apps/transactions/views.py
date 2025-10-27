@@ -1,3 +1,7 @@
+# backend/apps/transactions/views.py
+
+from datetime import timedelta
+from decimal import Decimal
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -5,16 +9,17 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.pagination import PageNumberPagination
 from django.db import transaction as db_transaction
 from django.utils import timezone
-from django.core.cache import cache
-from datetime import timedelta
-from decimal import Decimal
+from django.db.models import Q, Sum, Count, Case, When, Value, F, DecimalField
+from django.db.models.functions import Coalesce
 from .models import Transaction
 from .serializers import (
     TransactionSerializer,
     DepositSerializer,
     WithdrawalSerializer,
-    BalanceHistorySerializer
+    BalanceHistorySerializer # Можливо, вже не потрібен
 )
+from .services import TransactionService # Імпортуємо сервіс
+
 
 class StandardResultsSetPagination(PageNumberPagination):
     page_size = 20
@@ -25,151 +30,137 @@ class TransactionViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = TransactionSerializer
     permission_classes = [IsAuthenticated]
     pagination_class = StandardResultsSetPagination
+    transaction_service = TransactionService() # Екземпляр сервісу
 
     def get_queryset(self):
+        # Базовий queryset для користувача
         return Transaction.objects.filter(user=self.request.user).select_related('user', 'processed_by').order_by('-created_at')
 
-    def list(self, request, *args, **kwargs):
+    def _get_filtered_queryset(self, request):
+        # Допоміжний метод для фільтрації
         queryset = self.get_queryset()
+        ttype = request.query_params.get('type')
+        status_filter = request.query_params.get('status')
+        if ttype:
+            queryset = queryset.filter(transaction_type=ttype)
+        if status_filter:
+            queryset = queryset.filter(status=status_filter)
+        return queryset
+
+    def list(self, request, *args, **kwargs):
+        # Використовуємо фільтрований queryset
+        queryset = self._get_filtered_queryset(request)
         page = self.paginate_queryset(queryset)
         if page is not None:
             serializer = self.get_serializer(page, many=True)
             return self.get_paginated_response(serializer.data)
 
         serializer = self.get_serializer(queryset, many=True)
-        return Response({'results': serializer.data, 'count': queryset.count()})
+        # Повертаємо count з пагінатора або queryset напряму, якщо немає сторінок
+        count = self.paginator.count if hasattr(self, 'paginator') and self.paginator else queryset.count()
+        return Response({'results': serializer.data, 'count': count})
+
 
     @action(detail=False, methods=['get'])
     def history(self, request):
-        qs = self.get_queryset()
-        ttype = request.query_params.get('type')
-        status_filter = request.query_params.get('status')
-        if ttype:
-            qs = qs.filter(transaction_type=ttype)
-        if status_filter:
-            qs = qs.filter(status=status_filter)
+        # Просто викликаємо list, бо логіка фільтрації вже там
+        return self.list(request)
 
-        page = self.paginate_queryset(qs)
-        if page is not None:
-            serializer = self.get_serializer(page, many=True)
-            return self.get_paginated_response(serializer.data)
-
-        serializer = self.get_serializer(qs, many=True)
-        return Response({'results': serializer.data, 'count': qs.count()})
 
     @action(detail=False, methods=['get'])
     def stats(self, request):
-        from django.db.models import Sum, Count, Q
-        qs = self.get_queryset()
-        dep = qs.filter(transaction_type='deposit', status='completed').aggregate(cnt=Count('id'), total=Sum('amount'))
-        wd = qs.filter(transaction_type='withdrawal', status='completed').aggregate(cnt=Count('id'), total=Sum('amount'))
+        # Оптимізований запит статистики
+        user = request.user
+        stats_data = Transaction.objects.filter(
+            user=user,
+            # Враховуємо тільки завершені для сум, всі для pending
+        ).aggregate(
+            total_deposits_count=Count('id', filter=Q(transaction_type=Transaction.TypeChoices.DEPOSIT, status=Transaction.StatusChoices.COMPLETED)),
+            total_withdrawals_count=Count('id', filter=Q(transaction_type=Transaction.TypeChoices.WITHDRAWAL, status=Transaction.StatusChoices.COMPLETED)),
+            pending_transactions_count=Count('id', filter=Q(status=Transaction.StatusChoices.PENDING)),
+            total_deposit_amount=Coalesce(Sum('amount', filter=Q(transaction_type=Transaction.TypeChoices.DEPOSIT, status=Transaction.StatusChoices.COMPLETED)), Decimal(0)),
+            # Сумуємо total_amount для виводів
+            total_withdrawal_amount=Coalesce(Sum('total_amount', filter=Q(transaction_type=Transaction.TypeChoices.WITHDRAWAL, status=Transaction.StatusChoices.COMPLETED)), Decimal(0)),
+        )
+
         return Response({
-            'total_deposits': dep['cnt'] or 0,
-            'total_withdrawals': wd['cnt'] or 0,
-            'pending_transactions': qs.filter(status='pending').count(),
-            'total_deposit_amount': str(dep['total'] or 0),
-            'total_withdrawal_amount': str(wd['total'] or 0),
+            'total_deposits': stats_data['total_deposits_count'],
+            'total_withdrawals': stats_data['total_withdrawals_count'],
+            'pending_transactions': stats_data['pending_transactions_count'],
+            'total_deposit_amount': str(stats_data['total_deposit_amount']),
+            'total_withdrawal_amount': str(stats_data['total_withdrawal_amount']),
         })
 
     @action(detail=False, methods=['post'], serializer_class=DepositSerializer)
     def deposit(self, request):
-        with db_transaction.atomic():
-            s = DepositSerializer(data=request.data, context={'request': request})
-            if not s.is_valid():
-                return Response(s.errors, status=status.HTTP_400_BAD_REQUEST)
-            tx = s.save()
-            cache_key = f'balance_history_{request.user.id}'
-            cache.delete(cache_key)
-            return Response({
-                'transaction': TransactionSerializer(tx).data,
-                'message': 'Deposit created. Awaiting admin approval.',
-                'user_balance': str(request.user.balance),
-            }, status=status.HTTP_201_CREATED)
+        serializer = DepositSerializer(data=request.data, context={'request': request})
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        validated_data = serializer.validated_data
+        try:
+            with db_transaction.atomic():
+                tx = self.transaction_service.create_transaction(
+                    user=request.user,
+                    amount=validated_data['amount'],
+                    transaction_type=Transaction.TypeChoices.DEPOSIT,
+                    payment_method=validated_data.get('payment_method') # Передаємо метод оплати
+                )
+                # Баланс не змінюється тут, тому кеш не інвалідуємо
+                return Response({
+                    'transaction': TransactionSerializer(tx).data,
+                    'message': 'Deposit request created. Awaiting admin approval.',
+                    'user_balance': str(request.user.balance), # Показуємо поточний баланс
+                }, status=status.HTTP_201_CREATED)
+        except ValueError as e:
+             return Response({'detail': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+             # Log the exception e
+             return Response({'detail': 'An unexpected error occurred.'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
 
     @action(detail=False, methods=['post'], serializer_class=WithdrawalSerializer)
     def withdraw(self, request):
-        with db_transaction.atomic():
-            s = WithdrawalSerializer(data=request.data, context={'request': request})
-            if not s.is_valid():
-                return Response(s.errors, status=status.HTTP_400_BAD_REQUEST)
-            tx = s.save()
-            request.user.refresh_from_db()
-            cache_key = f'balance_history_{request.user.id}'
-            cache.delete(cache_key)
-            return Response({
-                'transaction': TransactionSerializer(tx).data,
-                'message': 'Withdrawal request created.',
-                'user_balance': str(request.user.balance),
-            }, status=status.HTTP_201_CREATED)
+        serializer = WithdrawalSerializer(data=request.data, context={'request': request})
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        validated_data = serializer.validated_data
+        amount = validated_data['amount']
+        # Розрахунок комісії (приклад, логіка може бути складнішою)
+        fee = amount * Decimal('0.01') # Наприклад, 1% комісія
+
+        try:
+            with db_transaction.atomic():
+                tx = self.transaction_service.create_transaction(
+                    user=request.user,
+                    amount=amount,
+                    fee=fee,
+                    transaction_type=Transaction.TypeChoices.WITHDRAWAL,
+                    payment_method=validated_data.get('payment_method') # Може бути інфо про гаманець і т.д.
+                )
+                # Баланс користувача оновлюється в сервісі *до* створення транзакції
+                request.user.refresh_from_db() # Оновлюємо дані користувача з бази
+                # Інвалідція кешу тут не потрібна, бо статус PENDING
+                return Response({
+                    'transaction': TransactionSerializer(tx).data,
+                    'message': 'Withdrawal request created.',
+                    'user_balance': str(request.user.balance), # Показуємо оновлений баланс
+                }, status=status.HTTP_201_CREATED)
+        except ValueError as e:
+             return Response({'detail': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+             # Log the exception e
+             return Response({'detail': 'An unexpected error occurred.'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
 
     @action(detail=False, methods=['get'], url_path='balance-history')
     def balance_history(self, request):
+        """Повертає історію балансу користувача за останні 30 днів."""
         user = request.user
-        cache_key = f'balance_history_{user.id}'
-        cached_data = cache.get(cache_key)
-
-        if cached_data:
-            return Response(cached_data)
-
-        thirty_days_ago = timezone.now() - timedelta(days=30)
-        history_data = []
-        current_balance = user.balance
-
-        transactions = Transaction.objects.filter(
-            user=user,
-            status='completed',
-            processed_at__gte=thirty_days_ago
-        ).order_by('-processed_at')
-
-        history_data.append({
-            "timestamp": timezone.now(),
-            "balance": current_balance
-        })
-
-        for tx in transactions:
-            processed_at_safe = tx.processed_at or tx.created_at
-            if processed_at_safe < thirty_days_ago:
-                continue
-
-            balance_before_tx = current_balance
-            if tx.transaction_type == 'deposit':
-                balance_before_tx -= tx.amount
-            elif tx.transaction_type == 'withdrawal':
-                balance_before_tx += tx.total_amount()
-            elif tx.transaction_type == 'bot_profit':
-                balance_before_tx -= tx.amount
-            elif tx.transaction_type == 'bot_purchase':
-                balance_before_tx += tx.amount
-            history_data.append({
-                "timestamp": processed_at_safe,
-                "balance": balance_before_tx
-            })
-            current_balance = balance_before_tx
-
-
-        balance_30_days_ago = current_balance
-        oldest_tx = transactions.last()
-        if not oldest_tx or (oldest_tx.processed_at and oldest_tx.processed_at > thirty_days_ago):
-             pass
-
-        history_data.append({
-            "timestamp": thirty_days_ago,
-            "balance": balance_30_days_ago
-        })
-
-        history_data.sort(key=lambda x: x['timestamp'])
-
-        max_points = 100
-        if len(history_data) > max_points:
-            step = len(history_data) // max_points
-            sampled_data = history_data[::step]
-            if history_data[-1] not in sampled_data:
-                sampled_data.append(history_data[-1])
-            history_data = sampled_data
-
-        serializer = BalanceHistorySerializer(history_data, many=True)
-        serialized_data = serializer.data
-
-        cache.set(cache_key, serialized_data, timeout=3600)
-
-        return Response(serialized_data)
+        try:
+            history_data = self.transaction_service.get_balance_history(user, days=30)
+            return Response(history_data)
+        except Exception as e:
+            # Log exception e
+            return Response({"detail": "Failed to retrieve balance history."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
