@@ -1,9 +1,9 @@
-import { useState, FormEvent } from 'react';
+import { useState, FormEvent, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { loginUser, clearError } from '@/store/slices/authSlice';
 import { useTranslation } from 'react-i18next';
-import { Lock, Mail, AlertCircle, Loader2, TrendingUp, Shield, Award, Zap, Globe } from 'lucide-react';
+import { Lock, Mail, AlertCircle, Loader2, TrendingUp, Shield, Award, Zap, Globe, ChevronDown } from 'lucide-react';
 
 const languages = [
   { code: 'en', name: 'English' },
@@ -30,6 +30,22 @@ export default function LoginPage() {
     password: '',
   });
 
+  const [isLangDropdownOpen, setIsLangDropdownOpen] = useState(false);
+  const langDropdownRef = useRef<HTMLDivElement>(null);
+
+  // Handle clicks outside the dropdown to close it
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (langDropdownRef.current && !langDropdownRef.current.contains(event.target as Node)) {
+        setIsLangDropdownOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     const result = await dispatch(loginUser(formData));
@@ -48,27 +64,19 @@ export default function LoginPage() {
     }
   };
 
-  const handleLanguageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    i18n.changeLanguage(e.target.value);
-  };
-
-  const quickLogin = (email: string, password: string) => {
-    setFormData({ email, password });
-    dispatch(loginUser({ email, password })).then((result) => {
-      if (loginUser.fulfilled.match(result)) {
-        navigate('/dashboard');
-      }
-    });
+  const handleLangSelect = (code: string) => {
+    i18n.changeLanguage(code);
+    setIsLangDropdownOpen(false);
   };
 
   return (
     <div className="min-h-screen bg-dark-bg relative overflow-hidden">
       {/* Animated Background */}
       <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute top-0 -left-40 w-80 h-80 bg-primary-500/30 rounded-full blur-3xl animate-pulse-slow"></div>
-        <div className="absolute bottom-0 -right-40 w-80 h-80 bg-success-500/20 rounded-full blur-3xl animate-pulse-slow" style={{ animationDelay: '1s' }}></div>
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-primary-600/10 rounded-full blur-3xl animate-pulse-slow" style={{ animationDelay: '2s' }}></div>
-        <div className="absolute inset-0 bg-[linear-gradient(rgba(14,165,233,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(14,165,233,0.05)_1px,transparent_1px)] bg-[size:50px_50px]"></div>
+        <div className="absolute top-0 -left-40 w-80 h-80 bg-primary-500/10 rounded-full blur-3xl animate-pulse-slow"></div>
+        <div className="absolute bottom-0 -right-40 w-80 h-80 bg-success-500/10 rounded-full blur-3xl animate-pulse-slow" style={{ animationDelay: '1s' }}></div>
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-primary-600/05 rounded-full blur-3xl animate-pulse-slow" style={{ animationDelay: '2s' }}></div>
+        <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:50px_50px]"></div>
       </div>
 
       <div className="relative z-10 min-h-screen flex items-center justify-center px-4 py-12">
@@ -81,14 +89,14 @@ export default function LoginPage() {
                   <TrendingUp className="w-8 h-8 text-white" />
                 </div>
                 <div>
-                  <h1 className="text-4xl font-black text-gradient">Bemo Investment</h1>
+                  <h1 className="text-4xl font-black text-primary-500">Bemo Investment</h1>
                   <p className="text-dark-text-secondary text-sm">{t('auth.platformSlogan')}</p>
                 </div>
               </div>
               <h2 className="text-5xl font-bold text-dark-text-primary leading-tight">
                 {t('auth.hero.title1')}
                 <br />
-                <span className="text-gradient">{t('auth.hero.title2')}</span>
+                <span className="text-primary-500">{t('auth.hero.title2')}</span>
               </h2>
               <p className="text-lg text-dark-text-secondary">{t('auth.hero.subtitle')}</p>
             </div>
@@ -116,9 +124,9 @@ export default function LoginPage() {
               </div>
             </div>
             <div className="grid grid-cols-3 gap-4 pt-6">
-              <div className="text-center"><div className="text-3xl font-bold text-gradient-success mb-1">1000+</div><div className="text-xs text-dark-text-secondary">{t('auth.stats.users')}</div></div>
-              <div className="text-center"><div className="text-3xl font-bold text-gradient mb-1">€2.5M</div><div className="text-xs text-dark-text-secondary">{t('auth.stats.volume')}</div></div>
-              <div className="text-center"><div className="text-3xl font-bold text-gradient-success mb-1">24/7</div><div className="text-xs text-dark-text-secondary">{t('auth.stats.support')}</div></div>
+              <div className="text-center"><div className="text-3xl font-bold text-success-500 mb-1">1000+</div><div className="text-xs text-dark-text-secondary">{t('auth.stats.users')}</div></div>
+              <div className="text-center"><div className="text-3xl font-bold text-primary-500 mb-1">€2.5M</div><div className="text-xs text-dark-text-secondary">{t('auth.stats.volume')}</div></div>
+              <div className="text-center"><div className="text-3xl font-bold text-success-500 mb-1">24/7</div><div className="text-xs text-dark-text-secondary">{t('auth.stats.support')}</div></div>
             </div>
           </div>
 
@@ -126,24 +134,43 @@ export default function LoginPage() {
           <div className="animate-slide-in">
             <div className="glass-card p-8 lg:p-10 max-w-md mx-auto relative">
 
+              {/* === MODIFIED LANGUAGE SELECTOR === */}
               <div className="absolute top-4 right-4 z-20">
-                <div className="relative group">
-                  <Globe className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-dark-text-tertiary pointer-events-none" />
-                  <select
-                    onChange={handleLanguageChange}
-                    value={i18n.language}
-                    className="pl-9 pr-4 py-2 bg-dark-card border border-dark-border rounded-lg text-sm text-dark-text-secondary focus:outline-none focus:border-primary-500/50 appearance-none transition-colors cursor-pointer"
+                <div className="relative" ref={langDropdownRef}>
+                  <button
+                    type="button"
+                    onClick={() => setIsLangDropdownOpen(!isLangDropdownOpen)}
+                    className="pl-9 pr-4 py-2 bg-dark-card border border-dark-border/50 rounded-lg text-sm text-dark-text-secondary focus:outline-none focus:border-primary-500/50 transition-colors cursor-pointer hover:border-dark-border w-full flex items-center justify-between gap-2"
                   >
-                    {languages.map(lang => (
-                      <option key={lang.code} value={lang.code}>{lang.name}</option>
-                    ))}
-                  </select>
+                    <Globe className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-dark-text-tertiary pointer-events-none" />
+                    <span className="truncate">
+                      {languages.find(l => l.code === i18n.language)?.name}
+                    </span>
+                    <ChevronDown className={`w-4 h-4 text-dark-text-tertiary flex-shrink-0 transition-transform duration-200 ${isLangDropdownOpen ? 'rotate-180' : 'rotate-0'}`} />
+                  </button>
+
+                  {isLangDropdownOpen && (
+                    <div className="absolute top-full right-0 mt-2 w-48 bg-dark-card border border-dark-border rounded-lg shadow-lg overflow-y-auto max-h-60 z-30 animate-fade-in">
+                      <ul className="py-1">
+                        {languages.map(lang => (
+                          <li
+                            key={lang.code}
+                            onClick={() => handleLangSelect(lang.code)}
+                            className="px-4 py-2 text-sm text-dark-text-secondary hover:bg-dark-hover hover:text-dark-text-primary cursor-pointer transition-colors"
+                          >
+                            {lang.name}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
                 </div>
               </div>
+              {/* === END MODIFIED BLOCK === */}
 
               <div className="lg:hidden flex items-center justify-center gap-3 mb-8">
                 <div className="w-12 h-12 bg-gradient-to-br from-primary-500 to-primary-600 rounded-xl flex items-center justify-center shadow-lg shadow-primary-500/50"><TrendingUp className="w-7 h-7 text-white" /></div>
-                <h1 className="text-3xl font-bold text-gradient">Bemo Investment</h1>
+                <h1 className="text-3xl font-bold text-primary-500">Bemo Investment</h1>
               </div>
 
               <div className="mb-8">
@@ -180,24 +207,6 @@ export default function LoginPage() {
                   {isLoading ? (<><Loader2 className="w-5 h-5 animate-spin" />{t('auth.loggingIn')}</>) : (<>{t('auth.loginButton')}<TrendingUp className="w-5 h-5" /></>)}
                 </button>
               </form>
-
-              <div className="mt-8 p-5 bg-primary-500/5 border border-primary-500/20 rounded-xl">
-                <div className="flex items-center gap-2 mb-3">
-                  <Zap className="w-4 h-4 text-primary-500" />
-                  <p className="text-sm font-semibold text-dark-text-primary">{t('auth.demo.title')}</p>
-                </div>
-                <div className="space-y-2">
-                  <button onClick={() => quickLogin('client1@exchange.com', 'Pass123!')} disabled={isLoading} className="w-full text-left px-4 py-3 bg-dark-card hover:bg-dark-hover rounded-lg transition-all duration-200 group border border-dark-border hover:border-primary-500/50">
-                    <div className="flex items-center justify-between"><div><p className="text-sm font-medium text-dark-text-primary group-hover:text-primary-500 transition-colors">Client One</p><p className="text-xs text-dark-text-tertiary mt-0.5">Basic Bot • €250</p></div><div className="badge-success">Basic</div></div>
-                  </button>
-                  <button onClick={() => quickLogin('client2@exchange.com', 'Pass123!')} disabled={isLoading} className="w-full text-left px-4 py-3 bg-dark-card hover:bg-dark-hover rounded-lg transition-all duration-200 group border border-dark-border hover:border-success-500/50">
-                    <div className="flex items-center justify-between"><div><p className="text-sm font-medium text-dark-text-primary group-hover:text-success-500 transition-colors">Client Two</p><p className="text-xs text-dark-text-tertiary mt-0.5">Premium Bot • €500 • Verified</p></div><div className="badge bg-gradient-to-r from-primary-500 to-primary-600 text-white border-0">Premium</div></div>
-                  </button>
-                  <button onClick={() => quickLogin('demo@exchange.com', 'demo123')} disabled={isLoading} className="w-full text-left px-4 py-3 bg-dark-card hover:bg-dark-hover rounded-lg transition-all duration-200 group border border-dark-border hover:border-dark-text-secondary/50">
-                    <div className="flex items-center justify-between"><div><p className="text-sm font-medium text-dark-text-primary group-hover:text-dark-text-secondary transition-colors">Demo User</p><p className="text-xs text-dark-text-tertiary mt-0.5">No Bot • €0</p></div><div className="badge bg-dark-hover text-dark-text-secondary border-dark-border">Demo</div></div>
-                  </button>
-                </div>
-              </div>
             </div>
 
             <p className="text-center text-sm text-dark-text-tertiary mt-6">{t('auth.footer')}</p>

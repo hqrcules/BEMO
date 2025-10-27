@@ -1,5 +1,4 @@
-// frontend/src/features/dashboard/DashboardHome.tsx
-import React, { useState, useMemo, useEffect, useRef } from 'react';
+import { useState, useMemo, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAppSelector } from '@/store/hooks';
 import { useWebSocket } from '@/shared/hooks/useWebSocket';
@@ -10,7 +9,8 @@ import {
     XAxis,
     YAxis,
     Tooltip,
-    ResponsiveContainer
+    ResponsiveContainer,
+    ReferenceLine
 } from 'recharts';
 import {
     TrendingUp,
@@ -96,10 +96,10 @@ function usePrevious(value: any) {
 const CustomTooltip = ({ active, payload, label, currencyState, i18nInstance }: any) => {
     if (active && payload && payload.length && typeof label === 'number') {
         const dateLabel = new Date(label).toLocaleString(i18nInstance.language || 'en-US', {
-            year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit'
+            year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'
         });
         return (
-            <div className="bg-zinc-900 border border-zinc-700 rounded-lg p-3 shadow-lg">
+            <div className="bg-zinc-900 border border-zinc-700 rounded-lg p-3 shadow-lg backdrop-blur-sm bg-opacity-80">
                 <p className="text-xs text-zinc-400 mb-1">{dateLabel}</p>
                 <p className="text-sm font-bold text-white">
                     {formatCurrency(payload[0].value, currencyState)}
@@ -109,6 +109,16 @@ const CustomTooltip = ({ active, payload, label, currencyState, i18nInstance }: 
     }
     return null;
 };
+
+const CHART_TIME_RANGES = {
+    '1D': 1,
+    '7D': 7,
+    '1M': 30,
+    '3M': 90,
+    'ALL': Infinity,
+};
+
+type ChartTimeRange = keyof typeof CHART_TIME_RANGES;
 
 export default function DashboardHome() {
     const navigate = useNavigate();
@@ -123,27 +133,23 @@ export default function DashboardHome() {
     const [balanceVisible, setBalanceVisible] = useState(true);
     const [flashState, setFlashState] = useState<{[key: string]: 'up' | 'down'}>({});
 
-
     const [balanceHistory, setBalanceHistory] = useState<BalanceHistoryEntry[]>([]);
     const [activeSession, setActiveSession] = useState<TradingSession | null>(null);
     const [loadingChart, setLoadingChart] = useState(true);
     const [loadingBotStatus, setLoadingBotStatus] = useState(true);
-
+    const [activeTimeRange, setActiveTimeRange] = useState<ChartTimeRange>('1M');
 
     const isCryptoLoading = !cryptoList || cryptoList.length === 0;
     const prevCryptoList = usePrevious(cryptoList);
-
 
     useEffect(() => {
         const fetchBalanceHistory = async () => {
             try {
                 setLoadingChart(true);
                 const history = await transactionService.getBalanceHistory();
-                console.log("Fetched Balance History:", history);
                 setBalanceHistory(history);
             } catch (error) {
                 console.error("Error fetching balance history:", error);
-
             } finally {
                 setLoadingChart(false);
             }
@@ -169,7 +175,6 @@ export default function DashboardHome() {
         fetchBalanceHistory();
         fetchActiveSession();
     }, [user?.bot_type]);
-
 
     useEffect(() => {
         if (!prevCryptoList || (prevCryptoList as any[]).length === 0 || !cryptoList || cryptoList.length === 0) {
@@ -231,39 +236,60 @@ export default function DashboardHome() {
             .slice(0, 5);
     }, [cryptoList, isCryptoLoading]);
 
+    const { chartData, chartDomain, yDomain, timeRangeChange } = useMemo(() => {
+        const now = Date.now();
+        const daysToShow = CHART_TIME_RANGES[activeTimeRange];
+        const rangeStartTs = (daysToShow === Infinity) ? 0 : now - daysToShow * 24 * 60 * 60 * 1000;
 
-    const { chartData, chartDomain, yDomain } = useMemo(() => {
-        if (!balanceHistory || balanceHistory.length === 0) {
-             const now = Date.now();
-             const thirtyDaysAgo = now - 30 * 24 * 60 * 60 * 1000;
+        let processedData = balanceHistory.map(entry => ({
+            timeValue: new Date(entry.timestamp).getTime(),
+            balance: entry.balance,
+        })).sort((a, b) => a.timeValue - b.timeValue);
+
+        if (processedData.length === 0) {
+             const defaultStart = (daysToShow === Infinity) ? now - 30 * 24 * 60 * 60 * 1000 : rangeStartTs;
              return {
-                 chartData: [{ timeValue: thirtyDaysAgo, balance: 0 }, { timeValue: now, balance: 0 }],
-                 chartDomain: { min: thirtyDaysAgo, max: now },
-                 yDomain: { min: 0, max: 100 }
+                 chartData: [{ timeValue: defaultStart, balance: 0 }, { timeValue: now, balance: 0 }],
+                 chartDomain: { min: defaultStart, max: now },
+                 yDomain: { min: 0, max: 100 },
+                 timeRangeChange: { value: 0, percent: 0 }
              };
         }
 
-        const data = balanceHistory.map(entry => ({
-            timeValue: new Date(entry.timestamp).getTime(),
-            balance: entry.balance,
-        }));
+        const firstEntry = processedData[0];
+        if (firstEntry.timeValue > rangeStartTs && daysToShow !== Infinity) {
+             processedData.unshift({ timeValue: rangeStartTs, balance: firstEntry.balance });
+        }
 
-        data.sort((a, b) => a.timeValue - b.timeValue);
+        const lastEntry = processedData[processedData.length - 1];
+        if (lastEntry.timeValue < now) {
+            processedData.push({ timeValue: now, balance: lastEntry.balance });
+        }
 
-        console.log("Processed Chart Data:", data);
+        const filteredData = processedData.filter(d => d.timeValue >= rangeStartTs);
 
-        const times = data.map(d => d.timeValue);
-        const balances = data.map(d => d.balance);
+        if (filteredData.length === 0) {
+            const lastAvailable = processedData[processedData.length - 1];
+            const balance = lastAvailable ? lastAvailable.balance : 0;
+            return {
+                 chartData: [{ timeValue: rangeStartTs, balance: balance }, { timeValue: now, balance: balance }],
+                 chartDomain: { min: rangeStartTs, max: now },
+                 yDomain: { min: Math.max(0, balance - 50), max: balance + 50 },
+                 timeRangeChange: { value: 0, percent: 0 }
+            }
+        }
 
-        const minTime = times.length > 0 ? Math.min(...times) : Date.now() - 30*24*60*60*1000;
-        const maxTime = times.length > 0 ? Math.max(...times) : Date.now();
+        const firstDataPointInRange = filteredData[0];
+        const lastDataPointInRange = filteredData[filteredData.length - 1];
 
-        const thirtyDaysAgoTs = Date.now() - 30 * 24 * 60 * 60 * 1000;
-        const domainMin = Math.min(minTime, thirtyDaysAgoTs);
-        const domainMax = Math.max(maxTime, Date.now());
+        const changeValue = lastDataPointInRange.balance - firstDataPointInRange.balance;
+        const changePercent = (firstDataPointInRange.balance === 0)
+            ? (changeValue > 0 ? 100 : 0)
+            : (changeValue / firstDataPointInRange.balance) * 100;
 
-        let yMin = balances.length > 0 ? Math.min(...balances) : 0;
-        let yMax = balances.length > 0 ? Math.max(...balances) : 100;
+        const balances = filteredData.map(d => d.balance);
+        let yMin = Math.min(...balances);
+        let yMax = Math.max(...balances);
 
         const yPadding = (yMax - yMin) * 0.1;
         yMin = Math.max(0, yMin - yPadding);
@@ -277,15 +303,17 @@ export default function DashboardHome() {
            yMax = yMin + 100;
         }
 
-        console.log("Y Domain:", { min: yMin, max: yMax });
+        const domainMin = (activeTimeRange === 'ALL' && filteredData.length > 0) ? filteredData[0].timeValue : rangeStartTs;
 
         return {
-          chartData: data,
-          chartDomain: { min: domainMin, max: domainMax },
-          yDomain: { min: yMin, max: yMax }
+          chartData: filteredData,
+          chartDomain: { min: domainMin, max: now },
+          yDomain: { min: yMin, max: yMax },
+          timeRangeChange: { value: changeValue, percent: changePercent }
         };
-    }, [balanceHistory]);
+    }, [balanceHistory, activeTimeRange]);
 
+    const isChartPositive = timeRangeChange.value >= 0;
 
     const balanceBorderAnimation = marketStats.avgChange >= 0
         ? 'animate-pulse-border-green'
@@ -295,14 +323,17 @@ export default function DashboardHome() {
 
      const xAxisTickFormatter = (unixTime: number): string => {
          const date = new Date(unixTime);
-         const now = new Date();
-         const diffDays = (now.getTime() - date.getTime()) / (1000 * 3600 * 24);
+         const daysToShow = CHART_TIME_RANGES[activeTimeRange];
 
-         if (diffDays <= 2) { // Show time if within the last 48 hours
-             return date.toLocaleTimeString(i18n.language || 'en-US', { hour: '2-digit', minute: '2-digit' });
-         } else { // Show date otherwise
-             return date.toLocaleDateString(i18n.language || 'en-US', { day: 'numeric', month: 'short' });
+         const lang = i18n.language || 'en-US';
+
+         if (daysToShow <= 2) {
+             return date.toLocaleTimeString(lang, { hour: '2-digit', minute: '2-digit' });
          }
+         if (daysToShow <= 90) {
+             return date.toLocaleDateString(lang, { day: 'numeric', month: 'short' });
+         }
+         return date.toLocaleDateString(lang, { month: 'short', year: 'numeric' });
      };
 
     return (
@@ -343,7 +374,6 @@ export default function DashboardHome() {
                 <div className="w-full px-6 py-8 grid grid-cols-1 lg:grid-cols-12 gap-6">
 
                     <div className="lg:col-span-8 flex flex-col gap-6">
-
 
                         <div className={`bg-zinc-950 border rounded-3xl p-6 relative overflow-hidden transition-all duration-1000 ${
                             isCryptoLoading ? 'border-zinc-800' : balanceBorderAnimation
@@ -407,16 +437,44 @@ export default function DashboardHome() {
                             </div>
                         </div>
 
-
-                        <div className="bg-zinc-950 border border-zinc-800 rounded-3xl p-6 h-[21.6rem]">
-                            <h3 className="text-lg font-light text-white mb-4">Balance Overview (Last 30 days)</h3>
+                        <div className="bg-zinc-950 border border-zinc-800 rounded-3xl p-6 h-[25rem]">
+                            <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4 mb-4">
+                                <div>
+                                    <p className="text-zinc-400 text-sm">Balance Overview</p>
+                                    <div className="flex items-end gap-3">
+                                        <h3 className="text-2xl font-light text-white">
+                                            {formatCurrency(user.balance, currencyState)}
+                                        </h3>
+                                        <div className={`flex items-center gap-1 text-sm font-medium ${isChartPositive ? 'text-green-400' : 'text-red-400'}`}>
+                                            {isChartPositive ? <ArrowUpRight size={16} /> : <ArrowDownRight size={16} />}
+                                            {formatCurrency(timeRangeChange.value, currencyState)}
+                                            <span className="text-xs">({timeRangeChange.percent.toFixed(2)}%)</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="flex items-center gap-1 bg-zinc-900 border border-zinc-800 rounded-lg p-1">
+                                    {(Object.keys(CHART_TIME_RANGES) as ChartTimeRange[]).map(range => (
+                                        <button
+                                            key={range}
+                                            onClick={() => setActiveTimeRange(range)}
+                                            className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors ${
+                                                activeTimeRange === range 
+                                                    ? 'bg-zinc-700 text-white' 
+                                                    : 'text-zinc-400 hover:text-white'
+                                            }`}
+                                        >
+                                            {range}
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
 
                             {loadingChart ? (
                                 <div className="flex justify-center items-center h-[80%]">
                                     <Spinner size="h-10 w-10" />
                                 </div>
                             ) : chartData.length > 1 ? (
-                                <ResponsiveContainer width="100%" height="90%">
+                                <ResponsiveContainer width="100%" height="80%">
                                     <AreaChart
                                         data={chartData}
                                         margin={{
@@ -442,7 +500,7 @@ export default function DashboardHome() {
                                             tickLine={false}
                                             axisLine={false}
                                             interval="preserveStartEnd"
-                                            minTickGap={30}
+                                            minTickGap={40}
                                         />
                                         <YAxis
                                             domain={[yDomain.min, yDomain.max]}
@@ -453,6 +511,14 @@ export default function DashboardHome() {
                                             cursor={{ stroke: '#3A3A3A', strokeWidth: 1, strokeDasharray: "5 5" }}
                                             labelFormatter={(label) => label}
                                         />
+                                        {chartData.length > 0 && (
+                                            <ReferenceLine
+                                                y={chartData[0].balance}
+                                                stroke="#7A7A7A"
+                                                strokeDasharray="3 3"
+                                                strokeWidth={1}
+                                            />
+                                        )}
                                         <Area
                                             type="monotone"
                                             dataKey="balance"
@@ -471,7 +537,6 @@ export default function DashboardHome() {
                             )}
 
                         </div>
-
 
                         <div className="bg-zinc-950 border border-zinc-800 rounded-3xl overflow-hidden">
                             <div className="flex items-center justify-between p-5 border-b border-zinc-800">
@@ -617,9 +682,7 @@ export default function DashboardHome() {
 
                     </div>
 
-
                     <div className="lg:col-span-4 flex flex-col gap-6">
-
 
                         <div className="bg-zinc-950 border border-zinc-800 rounded-3xl p-6">
                             <h3 className="text-lg font-light mb-6 text-white text-center">
@@ -652,8 +715,6 @@ export default function DashboardHome() {
                                 </button>
                             </div>
                         </div>
-
-
 
                         <div className="bg-zinc-950 border border-zinc-800 rounded-3xl p-6">
                             <div className="flex items-center justify-between mb-5">
@@ -721,8 +782,6 @@ export default function DashboardHome() {
                                 </div>
                             )}
                         </div>
-
-
 
                         <div className="bg-zinc-950 border border-zinc-800 rounded-3xl p-6 hover:border-zinc-700 transition-all duration-300 transform hover:-translate-y-1">
                             <div className="flex items-center justify-between mb-5">
