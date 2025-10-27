@@ -2,8 +2,10 @@ from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.pagination import PageNumberPagination
 from django.db import transaction as db_transaction
 from django.utils import timezone
+from django.core.cache import cache
 from datetime import timedelta
 from decimal import Decimal
 from .models import Transaction
@@ -14,18 +16,28 @@ from .serializers import (
     BalanceHistorySerializer
 )
 
+class StandardResultsSetPagination(PageNumberPagination):
+    page_size = 20
+    page_size_query_param = 'page_size'
+    max_page_size = 100
+
 class TransactionViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = TransactionSerializer
     permission_classes = [IsAuthenticated]
+    pagination_class = StandardResultsSetPagination
 
     def get_queryset(self):
         return Transaction.objects.filter(user=self.request.user).select_related('user', 'processed_by').order_by('-created_at')
 
-    # GET /api/transactions/
     def list(self, request, *args, **kwargs):
-        qs = self.get_queryset()
-        data = self.get_serializer(qs, many=True).data
-        return Response({'results': data, 'count': qs.count()})
+        queryset = self.get_queryset()
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+
+        serializer = self.get_serializer(queryset, many=True)
+        return Response({'results': serializer.data, 'count': queryset.count()})
 
     @action(detail=False, methods=['get'])
     def history(self, request):
@@ -36,8 +48,14 @@ class TransactionViewSet(viewsets.ReadOnlyModelViewSet):
             qs = qs.filter(transaction_type=ttype)
         if status_filter:
             qs = qs.filter(status=status_filter)
-        data = self.get_serializer(qs, many=True).data
-        return Response({'results': data, 'count': qs.count()})
+
+        page = self.paginate_queryset(qs)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+
+        serializer = self.get_serializer(qs, many=True)
+        return Response({'results': serializer.data, 'count': qs.count()})
 
     @action(detail=False, methods=['get'])
     def stats(self, request):
@@ -60,6 +78,8 @@ class TransactionViewSet(viewsets.ReadOnlyModelViewSet):
             if not s.is_valid():
                 return Response(s.errors, status=status.HTTP_400_BAD_REQUEST)
             tx = s.save()
+            cache_key = f'balance_history_{request.user.id}'
+            cache.delete(cache_key)
             return Response({
                 'transaction': TransactionSerializer(tx).data,
                 'message': 'Deposit created. Awaiting admin approval.',
@@ -74,6 +94,8 @@ class TransactionViewSet(viewsets.ReadOnlyModelViewSet):
                 return Response(s.errors, status=status.HTTP_400_BAD_REQUEST)
             tx = s.save()
             request.user.refresh_from_db()
+            cache_key = f'balance_history_{request.user.id}'
+            cache.delete(cache_key)
             return Response({
                 'transaction': TransactionSerializer(tx).data,
                 'message': 'Withdrawal request created.',
@@ -82,11 +104,13 @@ class TransactionViewSet(viewsets.ReadOnlyModelViewSet):
 
     @action(detail=False, methods=['get'], url_path='balance-history')
     def balance_history(self, request):
-        """
-        Returns the user's balance history for the last 30 days.
-        Calculates balance changes based on completed transactions.
-        """
         user = request.user
+        cache_key = f'balance_history_{user.id}'
+        cached_data = cache.get(cache_key)
+
+        if cached_data:
+            return Response(cached_data)
+
         thirty_days_ago = timezone.now() - timedelta(days=30)
         history_data = []
         current_balance = user.balance
@@ -103,33 +127,49 @@ class TransactionViewSet(viewsets.ReadOnlyModelViewSet):
         })
 
         for tx in transactions:
+            processed_at_safe = tx.processed_at or tx.created_at
+            if processed_at_safe < thirty_days_ago:
+                continue
+
+            balance_before_tx = current_balance
             if tx.transaction_type == 'deposit':
-                current_balance -= tx.amount
+                balance_before_tx -= tx.amount
             elif tx.transaction_type == 'withdrawal':
-                current_balance += tx.total_amount()
+                balance_before_tx += tx.total_amount()
             elif tx.transaction_type == 'bot_profit':
-                current_balance -= tx.amount
+                balance_before_tx -= tx.amount
             elif tx.transaction_type == 'bot_purchase':
-                current_balance += tx.amount
-
+                balance_before_tx += tx.amount
             history_data.append({
-                "timestamp": tx.processed_at,
-                "balance": current_balance
+                "timestamp": processed_at_safe,
+                "balance": balance_before_tx
             })
+            current_balance = balance_before_tx
 
-        if transactions.count() == 0:
-            history_data.append({
-                "timestamp": thirty_days_ago,
-                "balance": user.balance
-            })
-        else:
-            oldest_calculated_balance = history_data[-1]['balance']
-            history_data.append({
-                "timestamp": thirty_days_ago,
-                "balance": oldest_calculated_balance
-            })
 
-        history_data.reverse()
+        balance_30_days_ago = current_balance
+        oldest_tx = transactions.last()
+        if not oldest_tx or (oldest_tx.processed_at and oldest_tx.processed_at > thirty_days_ago):
+             pass
+
+        history_data.append({
+            "timestamp": thirty_days_ago,
+            "balance": balance_30_days_ago
+        })
+
+        history_data.sort(key=lambda x: x['timestamp'])
+
+        max_points = 100
+        if len(history_data) > max_points:
+            step = len(history_data) // max_points
+            sampled_data = history_data[::step]
+            if history_data[-1] not in sampled_data:
+                sampled_data.append(history_data[-1])
+            history_data = sampled_data
 
         serializer = BalanceHistorySerializer(history_data, many=True)
-        return Response(serializer.data)
+        serialized_data = serializer.data
+
+        cache.set(cache_key, serialized_data, timeout=3600)
+
+        return Response(serialized_data)

@@ -1,3 +1,5 @@
+// frontend/src/features/dashboard/DashboardHome.tsx
+
 import { useState, useMemo, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAppSelector } from '@/store/hooks';
@@ -31,10 +33,9 @@ import {
 } from 'lucide-react';
 import { formatCurrency } from '@/shared/utils/formatCurrency';
 import { RootState } from '@/store/store';
-// --- Start of changes ---
 import { transactionService, BalanceHistoryEntry } from '@/services/transactionService';
 import { tradingService, TradingSession } from '@/services/tradingService';
-// --- End of changes ---
+
 
 function Spinner({ size = 'h-8 w-8' }: { size?: string }) {
     return (
@@ -92,13 +93,15 @@ function usePrevious(value: any) {
   return ref.current;
 }
 
-// --- Removed MOCK_DATA ---
 
 const CustomTooltip = ({ active, payload, label, currencyState }: any) => {
     if (active && payload && payload.length) {
+        const dateLabel = new Date(label).toLocaleDateString('en-US', {
+            year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'
+        });
         return (
             <div className="bg-zinc-900 border border-zinc-700 rounded-lg p-3 shadow-lg">
-                <p className="text-xs text-zinc-400 mb-1">{new Date(label).toLocaleDateString()}</p>
+                <p className="text-xs text-zinc-400 mb-1">{dateLabel}</p>
                 <p className="text-sm font-bold text-white">
                     {formatCurrency(payload[0].value, currencyState)}
                 </p>
@@ -121,17 +124,17 @@ export default function DashboardHome() {
     const [balanceVisible, setBalanceVisible] = useState(true);
     const [flashState, setFlashState] = useState<{[key: string]: 'up' | 'down'}>({});
 
-    // --- Start of changes ---
+
     const [balanceHistory, setBalanceHistory] = useState<BalanceHistoryEntry[]>([]);
     const [activeSession, setActiveSession] = useState<TradingSession | null>(null);
     const [loadingChart, setLoadingChart] = useState(true);
     const [loadingBotStatus, setLoadingBotStatus] = useState(true);
-    // --- End of changes ---
+
 
     const isCryptoLoading = !cryptoList || cryptoList.length === 0;
     const prevCryptoList = usePrevious(cryptoList);
 
-    // --- Start of changes ---
+
     useEffect(() => {
         const fetchBalanceHistory = async () => {
             try {
@@ -140,7 +143,7 @@ export default function DashboardHome() {
                 setBalanceHistory(history);
             } catch (error) {
                 console.error("Error fetching balance history:", error);
-                // Optionally set an error state
+
             } finally {
                 setLoadingChart(false);
             }
@@ -157,7 +160,7 @@ export default function DashboardHome() {
                 setActiveSession(session);
             } catch (error) {
                 console.error("No active trading session found:", error);
-                setActiveSession(null); // Ensure session is null if fetch fails
+                setActiveSession(null);
             } finally {
                 setLoadingBotStatus(false);
             }
@@ -165,8 +168,8 @@ export default function DashboardHome() {
 
         fetchBalanceHistory();
         fetchActiveSession();
-    }, [user?.bot_type]); // Додано залежність від bot_type
-    // --- End of changes ---
+    }, [user?.bot_type]);
+
 
     useEffect(() => {
         if (!prevCryptoList || (prevCryptoList as any[]).length === 0 || !cryptoList || cryptoList.length === 0) {
@@ -228,18 +231,24 @@ export default function DashboardHome() {
             .slice(0, 5);
     }, [cryptoList, isCryptoLoading]);
 
-    // --- Start of changes ---
-    const chartData = useMemo(() => {
+
+    const { chartData, chartDomain } = useMemo(() => {
         if (!balanceHistory || balanceHistory.length === 0) {
-            // Return placeholder data or an empty array if loading or no data
-            return [];
+            return { chartData: [], chartDomain: { min: 0, max: 0 } };
         }
-        return balanceHistory.map(entry => ({
-            date: entry.timestamp, // Assuming timestamp is a string like "2023-10-01T00:00:00Z"
+        const data = balanceHistory.map(entry => ({
+            timeValue: new Date(entry.timestamp).getTime(),
             balance: entry.balance,
         }));
+
+        const domain = {
+            min: data[0]?.timeValue || 0,
+            max: data[data.length - 1]?.timeValue || Date.now()
+        };
+
+        return { chartData: data, chartDomain: domain };
     }, [balanceHistory]);
-    // --- End of changes ---
+
 
     const balanceBorderAnimation = marketStats.avgChange >= 0
         ? 'animate-pulse-border-green'
@@ -286,7 +295,7 @@ export default function DashboardHome() {
 
                     <div className="lg:col-span-8 flex flex-col gap-6">
 
-                        {/* Balance Card */}
+
                         <div className={`bg-zinc-950 border rounded-3xl p-6 relative overflow-hidden transition-all duration-1000 ${
                             isCryptoLoading ? 'border-zinc-800' : balanceBorderAnimation
                         }`}>
@@ -331,14 +340,14 @@ export default function DashboardHome() {
                                     </div>
                                     <div className="flex flex-col sm:flex-row justify-start lg:justify-end gap-3">
                                         <button
-                                            onClick={() => navigate('/balance', { state: { openModal: 'deposit' } })} // Змінено для BalancePage
+                                            onClick={() => navigate('/balance', { state: { openModal: 'deposit' } })}
                                             className="btn-primary w-full sm:w-auto px-6 py-3 text-sm"
                                         >
                                             <Plus className="w-4 h-4" />
                                             {t('dashboard.deposit')}
                                         </button>
                                         <button
-                                            onClick={() => navigate('/balance')} // Змінено для BalancePage
+                                            onClick={() => navigate('/balance')}
                                             className="btn-secondary w-full sm:w-auto px-6 py-3 text-sm"
                                         >
                                             <Minus className="w-4 h-4" />
@@ -349,15 +358,15 @@ export default function DashboardHome() {
                             </div>
                         </div>
 
-                         {/* Balance Chart */}
+
                         <div className="bg-zinc-950 border border-zinc-800 rounded-3xl p-6 h-[21.6rem]">
                             <h3 className="text-lg font-light text-white mb-4">Balance Overview (Last 30 days)</h3>
-                            {/* --- Start of changes --- */}
+
                             {loadingChart ? (
                                 <div className="flex justify-center items-center h-[80%]">
                                     <Spinner size="h-10 w-10" />
                                 </div>
-                            ) : chartData.length > 1 ? ( // Ensure there are at least 2 data points
+                            ) : chartData.length > 1 ? (
                                 <ResponsiveContainer width="100%" height="90%">
                                     <AreaChart
                                         data={chartData}
@@ -375,23 +384,25 @@ export default function DashboardHome() {
                                             </linearGradient>
                                         </defs>
                                         <XAxis
-                                            dataKey="date"
-                                            tickFormatter={(str) => new Date(str).toLocaleDateString('en-US', { day: 'numeric', month: 'short' })}
+                                            dataKey="timeValue"
+                                            type="number"
+                                            domain={[chartDomain.min, chartDomain.max]}
+                                            tickFormatter={(unixTime) => new Date(unixTime).toLocaleDateString('en-US', { day: 'numeric', month: 'short' })}
                                             stroke="#7A7A7A"
                                             fontSize={12}
                                             tickLine={false}
                                             axisLine={false}
-                                            interval="preserveStartEnd" // Show first and last labels
-                                            minTickGap={30} // Adjust gap between ticks
+                                            interval="preserveStartEnd"
+                                            minTickGap={40}
                                         />
                                         <YAxis
-                                            // Calculate domain dynamically based on data
                                             domain={['dataMin - (dataMax-dataMin)*0.1', 'dataMax + (dataMax-dataMin)*0.1']}
                                             hide={true}
                                         />
                                         <Tooltip
                                             content={<CustomTooltip currencyState={currencyState} />}
                                             cursor={{ stroke: '#3A3A3A', strokeWidth: 1, strokeDasharray: "5 5" }}
+                                            labelFormatter={(label) => new Date(label).toISOString()} // Pass ISO string to tooltip
                                         />
                                         <Area
                                             type="monotone"
@@ -400,6 +411,7 @@ export default function DashboardHome() {
                                             strokeWidth={2}
                                             fillOpacity={1}
                                             fill="url(#colorBalance)"
+                                            isAnimationActive={false} // Можна вимкнути анімацію для плавності
                                         />
                                     </AreaChart>
                                 </ResponsiveContainer>
@@ -408,11 +420,10 @@ export default function DashboardHome() {
                                     Not enough data for chart.
                                 </div>
                             )}
-                            {/* --- End of changes --- */}
+
                         </div>
 
-                        {/* Top Gainers/Losers (без змін) */}
-                        {/* ... код для Top Gainers ... */}
+
                         <div className="bg-zinc-950 border border-zinc-800 rounded-3xl overflow-hidden">
                             <div className="flex items-center justify-between p-5 border-b border-zinc-800">
                                 <h3 className="text-lg font-light text-white flex items-center gap-2.5">
@@ -483,7 +494,7 @@ export default function DashboardHome() {
                                 )}
                             </div>
                         </div>
-                        {/* ... код для Top Losers ... */}
+
                          <div className="bg-zinc-950 border border-zinc-800 rounded-3xl overflow-hidden">
                             <div className="flex items-center justify-between p-5 border-b border-zinc-800">
                                 <h3 className="text-lg font-light text-white flex items-center gap-2.5">
@@ -557,17 +568,17 @@ export default function DashboardHome() {
 
                     </div>
 
-                    {/* Right Column */}
+
                     <div className="lg:col-span-4 flex flex-col gap-6">
 
-                        {/* Quick Actions (без змін) */}
+
                         <div className="bg-zinc-950 border border-zinc-800 rounded-3xl p-6">
                             <h3 className="text-lg font-light mb-6 text-white text-center">
                                 {t('dashboard.quickActions')}
                             </h3>
                             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-4 max-w-4xl mx-auto">
                                 <button
-                                    onClick={() => navigate('/balance', { state: { openModal: 'deposit' } })} // Змінено для BalancePage
+                                    onClick={() => navigate('/balance', { state: { openModal: 'deposit' } })}
                                     className="flex flex-col items-center gap-3 p-4 bg-green-950/20 border border-green-800/50 rounded-2xl hover:bg-green-950/40 transition-all duration-300 group"
                                 >
                                     <Plus className="w-9 h-9 text-green-400 group-hover:scale-110 transition-transform animate-pulse" />
@@ -575,7 +586,7 @@ export default function DashboardHome() {
                                     <p className="text-zinc-500 text-center text-xs">Add funds to your account</p>
                                 </button>
                                 <button
-                                    onClick={() => navigate('/balance')} // Змінено для BalancePage
+                                    onClick={() => navigate('/balance')}
                                     className="flex flex-col items-center gap-3 p-4 border border-zinc-700 rounded-2xl hover:bg-zinc-900 transition-all duration-300 group"
                                 >
                                     <Minus className="w-9 h-9 text-zinc-400 group-hover:scale-110 transition-transform" />
@@ -583,7 +594,7 @@ export default function DashboardHome() {
                                     <p className="text-zinc-500 text-center text-xs">Withdraw your earnings</p>
                                 </button>
                                 <button
-                                    onClick={() => navigate('/trading')} // Змінено для TradingPage
+                                    onClick={() => navigate('/trading')}
                                     className="flex flex-col items-center gap-3 p-4 border border-zinc-700 rounded-2xl hover:bg-zinc-900 transition-all duration-300 group"
                                 >
                                     <Activity className="w-9 h-9 text-purple-400 group-hover:scale-110 transition-transform" />
@@ -593,8 +604,8 @@ export default function DashboardHome() {
                             </div>
                         </div>
 
-                         {/* Trading Bot Status */}
-                        {/* --- Start of changes --- */}
+
+
                         <div className="bg-zinc-950 border border-zinc-800 rounded-3xl p-6">
                             <div className="flex items-center justify-between mb-5">
                                 <h3 className="text-lg font-light text-white flex items-center gap-2.5">
@@ -661,10 +672,9 @@ export default function DashboardHome() {
                                 </div>
                             )}
                         </div>
-                         {/* --- End of changes --- */}
 
-                        {/* Market Stats Cards (без змін) */}
-                        {/* ... код для Volume ... */}
+
+
                         <div className="bg-zinc-950 border border-zinc-800 rounded-3xl p-6 hover:border-zinc-700 transition-all duration-300 transform hover:-translate-y-1">
                             <div className="flex items-center justify-between mb-5">
                                 <div className="p-2.5 bg-blue-950 rounded-xl">
@@ -683,7 +693,7 @@ export default function DashboardHome() {
                                 {isCryptoLoading ? <span className="text-zinc-700">Loading...</span> : formatCurrency(marketStats.totalVolume, currencyState, { notation: 'compact', maximumFractionDigits: 1 })}
                             </p>
                         </div>
-                        {/* ... код для Gainers/Losers ... */}
+
                         <div className="bg-zinc-950 border border-zinc-800 rounded-3xl p-6 hover:border-zinc-700 transition-all duration-300 transform hover:-translate-y-1">
                             <div className="flex items-center justify-between mb-5">
                                 <div className="p-2.5 bg-green-950 rounded-xl">
