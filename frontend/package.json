@@ -13,6 +13,7 @@
     "@tsparticles/react": "^3.0.0",
     "flag-icons": "^7.5.0",
     "i18next-browser-languagedetector": "^8.2.0",
+    "lightweight-charts": "^5.0.9",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
     "react-tsparticles": "^2.12.2",

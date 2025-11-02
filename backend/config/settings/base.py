@@ -8,8 +8,6 @@ SECRET_KEY = config('SECRET_KEY', default='django-insecure-change-this-in-produc
 DEBUG = config('DEBUG', default=False, cast=bool)
 ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='localhost,127.0.0.1', cast=lambda v: [s.strip() for s in v.split(',')])
 
-FINNHUB_API_KEY = config('FINNHUB_API_KEY', default='')
-
 INSTALLED_APPS = [
     'daphne',
     'django.contrib.admin',

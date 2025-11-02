@@ -8,7 +8,11 @@ export default function DashboardLayout() {
 
   return (
     <div className="min-h-screen bg-dark-bg">
-      <div className="animate-fade-in">
+      {/* Клас "animate-fade-in" було видалено звідси,
+        оскільки він використовував 'transform' і ламав
+        'position: fixed' у дочірніх модальних вікнах.
+      */}
+      <div>
         <Outlet />
       </div>
     </div>

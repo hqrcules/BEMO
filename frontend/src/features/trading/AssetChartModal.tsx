@@ -73,13 +73,36 @@ export default function AssetChartModal({ asset, onClose }: AssetChartModalProps
     fetchChartData();
   }, [asset.symbol, interval]);
 
+  useEffect(() => {
+    // Блокуємо скрол 'body' поки модалка відкрита
+    document.body.style.overflow = 'hidden';
+    return () => {
+        document.body.style.overflow = 'auto';
+    };
+  }, []);
+
   const yDomain = chartData.length > 0 ? [Math.min(...chartData.map(d => d.value)) * 0.95, Math.max(...chartData.map(d => d.value)) * 1.05] : [0, 100];
   const chartColor = isPositive ? '#22c55e' : '#ef4444';
   const chartGradient = isPositive ? 'url(#colorPositive)' : 'url(#colorNegative)';
 
   return (
-    <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-fade-in" onClick={onClose}>
-      <div className="bg-zinc-950 border border-zinc-800 rounded-3xl max-w-3xl w-full p-6 my-auto" onClick={(e) => e.stopPropagation()}>
+    // 1. Зовнішній контейнер (Overlay):
+    //    'fixed' - позиціонує відносно екрану
+    //    'flex items-center justify-center' - центрує дочірній елемент (модалку)
+    <div
+      className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-fade-in"
+      onClick={onClose}
+    >
+      {/* 2. Внутрішній контейнер (Модальне вікно):
+            'max-h-[90vh]' - обмежує висоту (90% висоти екрану)
+            'overflow-y-auto' - додає внутрішній скрол, якщо вміст не влазить
+      */}
+      <div
+        className="bg-zinc-950 border border-zinc-800 rounded-3xl max-w-3xl w-full p-6 max-h-[90vh] overflow-y-auto"
+        onClick={(e) => e.stopPropagation()}
+      >
+
+        {/* Шапка модального вікна */}
         <div className="flex items-start justify-between mb-6">
           <div className="flex items-center gap-4">
             {asset.image.startsWith('http') ? (
@@ -99,6 +122,7 @@ export default function AssetChartModal({ asset, onClose }: AssetChartModalProps
           </button>
         </div>
 
+        {/* Вміст модального вікна (який може скролитись) */}
         <div className="flex items-center justify-center gap-1 bg-zinc-900 border border-zinc-800 rounded-lg p-1 mb-6 w-fit mx-auto">
           {intervals.map(int => (
             <button
@@ -115,6 +139,7 @@ export default function AssetChartModal({ asset, onClose }: AssetChartModalProps
           ))}
         </div>
 
+        {/* Контейнер графіка */}
         <div className="h-80 w-full">
           {loading && (
             <div className="flex justify-center items-center h-full">
