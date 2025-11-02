@@ -1,74 +1,85 @@
-import { CheckCircle, Bot, TrendingUp, Shield, Bell } from 'lucide-react';
+import { Bot, Shield, Zap, Clock, ArrowRight } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 export default function BotInfo() {
+  const navigate = useNavigate();
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-dark-bg via-dark-bg to-dark-surface/20 flex items-center justify-center p-4">
-      <div className="max-w-2xl mx-auto text-center">
-        <div className="glass-card p-8">
-          <Bot className="w-24 h-24 text-primary-500 mx-auto mb-6" />
+    <div className="min-h-screen bg-[#0b0c10] flex items-center justify-center p-8">
+      <div className="max-w-5xl w-full space-y-12">
 
-          <h1 className="text-3xl font-bold text-dark-text-primary mb-4">
-            Торговельний бот недоступний
-          </h1>
+        {/* Hero */}
+        <div className="text-center space-y-6">
+          <div className="inline-flex items-center justify-center w-20 h-20 rounded-xl bg-[#121317] border border-[#1f2128] shadow-[0_0_20px_rgba(59,130,246,0.08)]">
+            <Bot className="w-10 h-10 text-[#8ab4f8]" strokeWidth={1.4} />
+          </div>
 
-          <p className="text-dark-text-secondary mb-8 text-lg">
-            Для доступу до автоматичної торгівлі вам потрібно активувати торговельного бота.
+          <div className="space-y-2">
+            <h1 className="text-4xl font-bold text-white tracking-tight">
+              Automated Trading Bot
+            </h1>
+            <p className="text-gray-400 text-lg max-w-2xl mx-auto leading-relaxed">
+              Execute strategies with precision. Trade 24/7. Secure. Adaptive. Efficient.
+            </p>
+          </div>
+
+          <button
+            onClick={() => navigate('/balance')}
+            className="inline-flex items-center gap-2 px-8 py-3.5 bg-[#16171b] hover:bg-[#1b1c21]
+                       text-white font-medium rounded-lg border border-[#2a2b31]
+                       transition-all duration-200 hover:shadow-[0_0_12px_rgba(138,180,248,0.15)]"
+          >
+            Open Balance
+            <ArrowRight className="w-5 h-5 text-[#8ab4f8]" />
+          </button>
+        </div>
+
+        {/* Features */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-5">
+          <Feature
+            icon={<Clock className="w-7 h-7 text-[#8ab4f8]" strokeWidth={1.4} />}
+            title="24/7 Trading"
+            text="Constant market monitoring"
+          />
+          <Feature
+            icon={<Shield className="w-7 h-7 text-[#9de0b5]" strokeWidth={1.4} />}
+            title="Risk Control"
+            text="Automated capital protection"
+          />
+          <Feature
+            icon={<Zap className="w-7 h-7 text-[#f5d97e]" strokeWidth={1.4} />}
+            title="Fast Execution"
+            text="Latency under 100 ms"
+          />
+          <Feature
+            icon={<Bot className="w-7 h-7 text-[#c59cff]" strokeWidth={1.4} />}
+            title="Adaptive AI"
+            text="Smart trade logic"
+          />
+        </div>
+
+        {/* Info */}
+        <div className="bg-[#121317] border border-[#1f2128] rounded-xl p-8 text-center shadow-[0_0_30px_rgba(0,0,0,0.35)]">
+          <p className="text-gray-300 text-base leading-relaxed max-w-3xl mx-auto">
+            This trading system eliminates emotional decisions by leveraging autonomous algorithms.
+            Built for accuracy and stability — it analyzes, reacts, and executes continuously
+            under any market condition, protecting your assets while maximizing opportunity.
           </p>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-            <div className="flex flex-col items-center p-4 bg-dark-surface/50 rounded-lg">
-              <TrendingUp className="w-8 h-8 text-green-500 mb-2" />
-              <h3 className="font-semibold text-dark-text-primary mb-1">Автоматичні угоди</h3>
-              <p className="text-sm text-dark-text-secondary text-center">24/7 торгівля без вашої участі</p>
-            </div>
-
-            <div className="flex flex-col items-center p-4 bg-dark-surface/50 rounded-lg">
-              <Shield className="w-8 h-8 text-blue-500 mb-2" />
-              <h3 className="font-semibold text-dark-text-primary mb-1">Керування ризиком</h3>
-              <p className="text-sm text-dark-text-secondary text-center">Автоматичний стоп-лосс і тейк-профіт</p>
-            </div>
-
-            <div className="flex flex-col items-center p-4 bg-dark-surface/50 rounded-lg">
-              <Bell className="w-8 h-8 text-yellow-500 mb-2" />
-              <h3 className="font-semibold text-dark-text-primary mb-1">Сповіщення</h3>
-              <p className="text-sm text-dark-text-secondary text-center">Миттєві оповіщення про угоди</p>
-            </div>
-          </div>
-
-          <div className="space-y-4">
-            <button className="w-full py-3 px-6 bg-gradient-to-r from-primary-600 to-primary-500
-                             hover:from-primary-700 hover:to-primary-600 text-white font-semibold
-                             rounded-lg transition-all duration-300 transform hover:scale-105
-                             shadow-lg hover:shadow-xl">
-              Активувати базовий бот
-            </button>
-
-            <button className="w-full py-3 px-6 bg-dark-surface border border-primary-500/50
-                             text-primary-500 font-semibold rounded-lg transition-colors
-                             hover:bg-primary-500/10">
-              Обрати стратегію
-            </button>
-          </div>
-
-          <div className="mt-8 p-4 bg-dark-card/50 rounded-lg border border-dark-border/50">
-            <h4 className="font-semibold text-dark-text-primary mb-2">Доступні стратегії:</h4>
-            <div className="space-y-2 text-sm text-dark-text-secondary">
-              <div className="flex items-center">
-                <CheckCircle className="w-4 h-4 text-green-500 mr-2" />
-                <span>Базова стратегія - безкоштовно</span>
-              </div>
-              <div className="flex items-center">
-                <CheckCircle className="w-4 h-4 text-blue-500 mr-2" />
-                <span>Преміум стратегія - підвищена прибутковість</span>
-              </div>
-              <div className="flex items-center">
-                <CheckCircle className="w-4 h-4 text-purple-500 mr-2" />
-                <span>Спеціаліст стратегія - максимальний контроль</span>
-              </div>
-            </div>
-          </div>
         </div>
       </div>
+    </div>
+  );
+}
+
+function Feature({ icon, title, text }: { icon: JSX.Element; title: string; text: string }) {
+  return (
+    <div className="p-6 rounded-lg border border-[#1f2128] bg-[#101114]
+                    hover:bg-[#141519] hover:border-[#2a2b31]
+                    transition-all text-center shadow-[inset_0_0_0_rgba(0,0,0,0)]
+                    hover:shadow-[0_0_12px_rgba(59,130,246,0.08)]">
+      <div className="mb-3">{icon}</div>
+      <h3 className="text-sm font-semibold text-white mb-1">{title}</h3>
+      <p className="text-xs text-gray-500">{text}</p>
     </div>
   );
 }

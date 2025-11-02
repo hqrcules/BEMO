@@ -11,6 +11,8 @@ export default defineConfig({
   },
   server: {
     port: 3000,
+    host: true,
+    allowedHosts: ['corinna-diagnosable-spiritlessly.ngrok-free.dev'],
     proxy: {
       '/api': {
         target: 'http://backend:8000',

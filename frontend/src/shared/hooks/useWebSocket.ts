@@ -1,6 +1,6 @@
 import { useEffect, useRef, useCallback } from 'react';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
-import { updatePrices, setCryptoList, setConnected, setError } from '@/store/slices/websocketSlice';
+import { marketUpdate, setConnected, setError } from '@/store/slices/websocketSlice';
 import { RootState } from '@/store/store';
 
 interface UseWebSocketProps {
@@ -53,9 +53,6 @@ export function useWebSocket({
         dispatch(setConnected(true));
         reconnectAttempts.current = 0;
         isConnecting.current = false;
-        if (ws.current && ws.current.readyState === WebSocket.OPEN && url.includes('/ws/market/')) {
-          ws.current.send(JSON.stringify({ type: 'get_crypto_list' }));
-        }
       };
 
       ws.current.onmessage = (event) => {
@@ -65,15 +62,11 @@ export function useWebSocket({
             onMessage(message);
           }
           if (url.includes('/ws/market/')) {
-            if (message.type === 'price_update') {
-              dispatch(updatePrices(message.data));
-            }
-            if (message.type === 'crypto_list') {
-              dispatch(setCryptoList(message.data));
+            if (message.type === 'market_update') {
+              dispatch(marketUpdate(message.data));
             }
           }
         } catch (err) {
-            // Error handling removed
         }
       };
 
@@ -118,7 +111,7 @@ export function useWebSocket({
     }
     isConnecting.current = false;
     reconnectAttempts.current = 0;
-  }, [dispatch, url]);
+  }, []);
 
   const send = useCallback((data: any) => {
     if (ws.current?.readyState === WebSocket.OPEN) {

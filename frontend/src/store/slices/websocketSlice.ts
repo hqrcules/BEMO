@@ -1,85 +1,87 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-// Define PriceData and CryptoInfo interfaces here as they belong to the slice's state shape
-interface PriceData {
-  price: number;
-  change: number;
-  changePercent: number;
-  image?: string;
-  name?: string;
-  volume?: number;
-}
+export type AssetCategory = 'crypto' | 'stocks' | 'forex' | 'commodities';
 
-interface CryptoInfo {
+export interface AssetItem {
   id: string;
   symbol: string;
   name: string;
   image: string;
+  category: AssetCategory;
   price: number;
   change_24h: number;
   change_percent_24h: number;
-  market_cap: number;
   volume: number;
+  isFavorite?: boolean;
 }
 
-// Define WebSocketState interface
-interface WebSocketState {
-  prices: Record<string, PriceData>;
-  cryptoList: CryptoInfo[];
+export interface WebSocketState {
+  assets: Record<string, AssetItem>;
   connected: boolean;
   lastUpdate: string | null;
   error: string | null;
+  loading: boolean;
 }
 
 const initialState: WebSocketState = {
-  prices: {},
-  cryptoList: [],
+  assets: {},
   connected: false,
   lastUpdate: null,
   error: null,
+  loading: true,
 };
 
 const websocketSlice = createSlice({
   name: 'websocket',
   initialState,
   reducers: {
-    updatePrices: (state, action: PayloadAction<Record<string, PriceData>>) => {
-      state.prices = { ...state.prices, ...action.payload };
+    marketUpdate: (state, action: PayloadAction<AssetItem[]>) => {
+      const newAssets: Record<string, AssetItem> = {};
+
+      for (const asset of action.payload) {
+        const existing = state.assets[asset.symbol];
+        newAssets[asset.symbol] = {
+          ...asset,
+          isFavorite: existing?.isFavorite || false,
+        };
+      }
+
+      state.assets = newAssets;
       state.lastUpdate = new Date().toISOString();
+      state.loading = false;
     },
-    setCryptoList: (state, action: PayloadAction<CryptoInfo[]>) => {
-      state.cryptoList = action.payload;
+    toggleFavorite: (state, action: PayloadAction<string>) => {
+      const symbol = action.payload;
+      if (state.assets[symbol]) {
+        state.assets[symbol].isFavorite = !state.assets[symbol].isFavorite;
+      }
     },
     setConnected: (state, action: PayloadAction<boolean>) => {
       state.connected = action.payload;
       if (!action.payload) {
-        // Optionally clear prices or handle disconnect state further
-        // state.prices = {}; // Uncomment if you want to clear prices on disconnect
+        state.loading = true;
       }
     },
-    setError: (state, action: PayloadAction<string | null>) => { // Allow null to clear error
+    setError: (state, action: PayloadAction<string | null>) => {
       state.error = action.payload;
+      state.loading = false;
     },
     clearData: (state) => {
-      state.prices = {};
-      state.cryptoList = [];
+      state.assets = {};
       state.lastUpdate = null;
       state.error = null;
-      state.connected = false; // Also reset connected status if needed
+      state.connected = false;
+      state.loading = true;
     },
   },
 });
 
 export const {
-  updatePrices,
-  setCryptoList,
+  marketUpdate,
+  toggleFavorite,
   setConnected,
   setError,
   clearData,
 } = websocketSlice.actions;
 
-// Export the reducer as default
 export default websocketSlice.reducer;
-
-// Export the state type if needed elsewhere, though RootState from store is preferred
-export type { WebSocketState, PriceData, CryptoInfo };

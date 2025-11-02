@@ -3,211 +3,427 @@ import asyncio
 import aiohttp
 import random
 from datetime import datetime
+from decimal import Decimal
+from django.conf import settings
 from channels.generic.websocket import AsyncWebsocketConsumer
 from .utils.crypto_fetcher import CryptoDataFetcher
 
 
 class MarketConsumer(AsyncWebsocketConsumer):
-    """WebSocket consumer with dynamic crypto loading"""
+    running = False
 
-    # Cache for crypto data (refreshed every 5 minutes)
-    crypto_cache = []
+    TICKER_CACHE = {}
+    CACHE_LIFETIME = 20
     last_cache_update = 0
-    CACHE_LIFETIME = 300  # 5 minutes
+
+    BINANCE_URL = "https://api.binance.com/api/v3/ticker/24hr"
+
+    ASSET_MAP = {
+        'crypto': [
+            {'id': 'bitcoin', 'symbol': 'BTC', 'binance_id': 'BTCUSDT', 'name': 'Bitcoin',
+             'image': 'https://assets.coingecko.com/coins/images/1/large/bitcoin.png'},
+            {'id': 'ethereum', 'symbol': 'ETH', 'binance_id': 'ETHUSDT', 'name': 'Ethereum',
+             'image': 'https://assets.coingecko.com/coins/images/279/large/ethereum.png'},
+            {'id': 'binancecoin', 'symbol': 'BNB', 'binance_id': 'BNBUSDT', 'name': 'BNB',
+             'image': 'https://assets.coingecko.com/coins/images/825/large/bnb-icon2_2x.png'},
+            {'id': 'solana', 'symbol': 'SOL', 'binance_id': 'SOLUSDT', 'name': 'Solana',
+             'image': 'https://assets.coingecko.com/coins/images/4128/large/solana.png'},
+            {'id': 'ripple', 'symbol': 'XRP', 'binance_id': 'XRPUSDT', 'name': 'XRP',
+             'image': 'https://assets.coingecko.com/coins/images/44/large/xrp-symbol-white-128.png'},
+            {'id': 'dogecoin', 'symbol': 'DOGE', 'binance_id': 'DOGEUSDT', 'name': 'Dogecoin',
+             'image': 'https://assets.coingecko.com/coins/images/5/large/dogecoin.png'},
+            {'id': 'cardano', 'symbol': 'ADA', 'binance_id': 'ADAUSDT', 'name': 'Cardano',
+             'image': 'https://assets.coingecko.com/coins/images/975/large/cardano.png'},
+            {'id': 'avalanche-2', 'symbol': 'AVAX', 'binance_id': 'AVAXUSDT', 'name': 'Avalanche',
+             'image': 'https://assets.coingecko.com/coins/images/12559/large/avalanche-avax-logo.png'},
+            {'id': 'chainlink', 'symbol': 'LINK', 'binance_id': 'LINKUSDT', 'name': 'Chainlink',
+             'image': 'https://assets.coingecko.com/coins/images/877/large/chainlink-new-logo.png'},
+            {'id': 'polkadot', 'symbol': 'DOT', 'binance_id': 'DOTUSDT', 'name': 'Polkadot',
+             'image': 'https://assets.coingecko.com/coins/images/12171/large/polkadot.png'},
+            {'id': 'uniswap', 'symbol': 'UNI', 'binance_id': 'UNIUSDT', 'name': 'Uniswap',
+             'image': 'https://assets.coingecko.com/coins/images/12504/large/uniswap-uni.png'},
+            {'id': 'litecoin', 'symbol': 'LTC', 'binance_id': 'LTCUSDT', 'name': 'Litecoin',
+             'image': 'https://assets.coingecko.com/coins/images/2/large/litecoin.png'},
+            {'id': 'bitcoin-cash', 'symbol': 'BCH', 'binance_id': 'BCHUSDT', 'name': 'Bitcoin Cash',
+             'image': 'https://assets.coingecko.com/coins/images/780/large/bitcoin-cash-circle.png'},
+            {'id': 'stellar', 'symbol': 'XLM', 'binance_id': 'XLMUSDT', 'name': 'Stellar',
+             'image': 'https://assets.coingecko.com/coins/images/100/large/Stellar_symbol_black_RGB.png'},
+            {'id': 'ethereum-classic', 'symbol': 'ETC', 'binance_id': 'ETCUSDT', 'name': 'Ethereum Classic',
+             'image': 'https://assets.coingecko.com/coins/images/453/large/ethereum-classic-logo.png'},
+            {'id': 'monero', 'symbol': 'XMR', 'binance_id': 'XMRUSDT', 'name': 'Monero',
+             'image': 'https://assets.coingecko.com/coins/images/69/large/monero_logo.png'},
+            {'id': 'aave', 'symbol': 'AAVE', 'binance_id': 'AAVEUSDT', 'name': 'Aave',
+             'image': 'https://assets.coingecko.com/coins/images/12645/large/AAVE.png'},
+            {'id': 'cosmos', 'symbol': 'ATOM', 'binance_id': 'ATOMUSDT', 'name': 'Cosmos',
+             'image': 'https://assets.coingecko.com/coins/images/1481/large/atom.png'},
+            {'id': 'filecoin', 'symbol': 'FIL', 'binance_id': 'FILUSDT', 'name': 'Filecoin',
+             'image': 'https://assets.coingecko.com/coins/images/12817/large/filecoin.png'},
+            {'id': 'matic-network', 'symbol': 'MATIC', 'binance_id': 'MATICUSDT', 'name': 'Polygon',
+             'image': 'https://assets.coingecko.com/coins/images/4713/large/matic-token-icon.png'},
+            {'id': 'shiba-inu', 'symbol': 'SHIB', 'binance_id': 'SHIBUSDT', 'name': 'Shiba Inu',
+             'image': 'https://assets.coingecko.com/coins/images/11939/large/shiba.png'},
+            {'id': 'tron', 'symbol': 'TRX', 'binance_id': 'TRXUSDT', 'name': 'TRON',
+             'image': 'https://assets.coingecko.com/coins/images/1094/large/tron-logo.png'},
+            {'id': 'near', 'symbol': 'NEAR', 'binance_id': 'NEARUSDT', 'name': 'NEAR Protocol',
+             'image': 'https://assets.coingecko.com/coins/images/10365/large/near.png'},
+            {'id': 'algorand', 'symbol': 'ALGO', 'binance_id': 'ALGOUSDT', 'name': 'Algorand',
+             'image': 'https://assets.coingecko.com/coins/images/4380/large/download.png'},
+            {'id': 'fantom', 'symbol': 'FTM', 'binance_id': 'FTMUSDT', 'name': 'Fantom',
+             'image': 'https://assets.coingecko.com/coins/images/4001/large/Fantom_round.png'},
+            {'id': 'hedera-hashgraph', 'symbol': 'HBAR', 'binance_id': 'HBARUSDT', 'name': 'Hedera',
+             'image': 'https://assets.coingecko.com/coins/images/3688/large/hbar.png'},
+            {'id': 'internet-computer', 'symbol': 'ICP', 'binance_id': 'ICPUSDT', 'name': 'Internet Computer',
+             'image': 'https://assets.coingecko.com/coins/images/14495/large/internet_computer_logo.png'},
+            {'id': 'tezos', 'symbol': 'XTZ', 'binance_id': 'XTZUSDT', 'name': 'Tezos',
+             'image': 'https://assets.coingecko.com/coins/images/2011/large/Tezos-logo.png'},
+            {'id': 'the-sandbox', 'symbol': 'SAND', 'binance_id': 'SANDUSDT', 'name': 'The Sandbox',
+             'image': 'https://assets.coingecko.com/coins/images/12129/large/sandbox_logo.jpg'},
+            {'id': 'decentraland', 'symbol': 'MANA', 'binance_id': 'MANAUSDT', 'name': 'Decentraland',
+             'image': 'https://assets.coingecko.com/coins/images/878/large/decentraland-mana.png'},
+            {'id': 'eos', 'symbol': 'EOS', 'binance_id': 'EOSUSDT', 'name': 'EOS',
+             'image': 'https://assets.coingecko.com/coins/images/738/large/eos-eos-logo.png'},
+            {'id': 'iota', 'symbol': 'IOTA', 'binance_id': 'IOTAUSDT', 'name': 'IOTA',
+             'image': 'https://assets.coingecko.com/coins/images/692/large/IOTA_Swirl.png'},
+            {'id': 'neo', 'symbol': 'NEO', 'binance_id': 'NEOUSDT', 'name': 'NEO',
+             'image': 'https://assets.coingecko.com/coins/images/760/large/neo.png'},
+            {'id': 'maker', 'symbol': 'MKR', 'binance_id': 'MKRUSDT', 'name': 'Maker',
+             'image': 'https://assets.coingecko.com/coins/images/1364/large/Mark_Maker.png'},
+            {'id': 'zcash', 'symbol': 'ZEC', 'binance_id': 'ZECUSDT', 'name': 'Zcash',
+             'image': 'https://assets.coingecko.com/coins/images/486/large/circle-zcash-color.png'},
+            {'id': 'dash', 'symbol': 'DASH', 'binance_id': 'DASHUSDT', 'name': 'Dash',
+             'image': 'https://assets.coingecko.com/coins/images/19/large/dash-logo.png'},
+            {'id': 'bittorrent', 'symbol': 'BTT', 'binance_id': 'BTTUSDT', 'name': 'BitTorrent',
+             'image': 'https://assets.coingecko.com/coins/images/7595/large/BTT_Token_Graphic.png'},
+            {'id': 'compound', 'symbol': 'COMP', 'binance_id': 'COMPUSDT', 'name': 'Compound',
+             'image': 'https://assets.coingecko.com/coins/images/10775/large/COMP.png'},
+            {'id': 'sushi', 'symbol': 'SUSHI', 'binance_id': 'SUSHIUSDT', 'name': 'SushiSwap',
+             'image': 'https://assets.coingecko.com/coins/images/12271/large/sushi-logo.png'},
+            {'id': 'yearn-finance', 'symbol': 'YFI', 'binance_id': 'YFIUSDT', 'name': 'yearn.finance',
+             'image': 'https://assets.coingecko.com/coins/images/11849/large/yfi-192x192.png'},
+            {'id': 'pepe', 'symbol': 'PEPE', 'binance_id': 'PEPEUSDT', 'name': 'Pepe',
+             'image': 'https://assets.coingecko.com/coins/images/29850/large/pepe.jpeg'},
+            {'id': 'worldcoin-wld', 'symbol': 'WLD', 'binance_id': 'WLDUSDT', 'name': 'Worldcoin',
+             'image': 'https://assets.coingecko.com/coins/images/31069/large/worldcoin.jpeg'},
+            {'id': 'arbitrum', 'symbol': 'ARB', 'binance_id': 'ARBUSDT', 'name': 'Arbitrum',
+             'image': 'https://assets.coingecko.com/coins/images/16547/large/photo_2023-03-29_21.47.00.jpeg'},
+            {'id': 'optimism', 'symbol': 'OP', 'binance_id': 'OPUSDT', 'name': 'Optimism',
+             'image': 'https://assets.coingecko.com/coins/images/25244/large/Optimism.png'},
+            {'id': 'the-graph', 'symbol': 'GRT', 'binance_id': 'GRTUSDT', 'name': 'The Graph',
+             'image': 'https://assets.coingecko.com/coins/images/13397/large/Graph-GRT-logo.png'},
+            {'id': 'render-token', 'symbol': 'RNDR', 'binance_id': 'RNDRUSDT', 'name': 'Render Token',
+             'image': 'https://assets.coingecko.com/coins/images/11636/large/rndr.png'},
+            {'id': 'vechain', 'symbol': 'VET', 'binance_id': 'VETUSDT', 'name': 'VeChain',
+             'image': 'https://assets.coingecko.com/coins/images/1167/large/VET_Token_Icon.png'},
+            {'id': 'thorchain', 'symbol': 'RUNE', 'binance_id': 'RUNEUSDT', 'name': 'THORChain',
+             'image': 'https://assets.coingecko.com/coins/images/6595/large/RUNE.png'},
+            {'id': 'injective-protocol', 'symbol': 'INJ', 'binance_id': 'INJUSDT', 'name': 'Injective',
+             'image': 'https://assets.coingecko.com/coins/images/12882/large/INJ.png'},
+            {'id': 'quant-network', 'symbol': 'QNT', 'binance_id': 'QNTUSDT', 'name': 'Quant',
+             'image': 'https://assets.coingecko.com/coins/images/3370/large/quant-network-qnt-logo.png'},
+            {'id': 'gala', 'symbol': 'GALA', 'binance_id': 'GALAUSDT', 'name': 'Gala',
+             'image': 'https://assets.coingecko.com/coins/images/12493/large/GALA-01.png'},
+            {'id': 'kava', 'symbol': 'KAVA', 'binance_id': 'KAVAUSDT', 'name': 'Kava',
+             'image': 'https://assets.coingecko.com/coins/images/9761/large/kava.png'},
+            {'id': 'ecash', 'symbol': 'XEC', 'binance_id': 'XECUSDT', 'name': 'eCash',
+             'image': 'https://assets.coingecko.com/coins/images/16646/large/Logo_final-22.png'},
+            {'id': 'flow', 'symbol': 'FLOW', 'binance_id': 'FLOWUSDT', 'name': 'Flow',
+             'image': 'https://assets.coingecko.com/coins/images/13446/large/5f62e4c0c75c3b0004c43310_Flow_Wordmark.png'},
+            {'id': 'chiliz', 'symbol': 'CHZ', 'binance_id': 'CHZUSDT', 'name': 'Chiliz',
+             'image': 'https://assets.coingecko.com/coins/images/8834/large/Chiliz.png'},
+            {'id': 'axie-infinity', 'symbol': 'AXS', 'binance_id': 'AXSUSDT', 'name': 'Axie Infinity',
+             'image': 'https://assets.coingecko.com/coins/images/13029/large/axie_infinity_logo.png'},
+            {'id': 'kucoin-token', 'symbol': 'KCS', 'binance_id': 'KCSUSDT', 'name': 'KuCoin Token',
+             'image': 'https://assets.coingecko.com/coins/images/1042/large/KCS.png'},
+            {'id': 'klay-token', 'symbol': 'KLAY', 'binance_id': 'KLAYUSDT', 'name': 'Klaytn',
+             'image': 'https://assets.coingecko.com/coins/images/9672/large/klaytn-logo.png'},
+            {'id': 'bittensor', 'symbol': 'TAO', 'binance_id': 'TAOUSDT', 'name': 'Bittensor',
+             'image': 'https://assets.coingecko.com/coins/images/28452/large/TAO.png'},
+            {'id': 'fetch-ai', 'symbol': 'FET', 'binance_id': 'FETUSDT', 'name': 'Fetch.ai',
+             'image': 'https://assets.coingecko.com/coins/images/5681/large/Fetch.ai_Open_Graph.png'},
+            {'id': 'singularitynet', 'symbol': 'AGIX', 'binance_id': 'AGIXUSDT', 'name': 'SingularityNET',
+             'image': 'https://assets.coingecko.com/coins/images/2139/large/singularitynet.png'},
+            {'id': 'oasis-network', 'symbol': 'ROSE', 'binance_id': 'ROSEUSDT', 'name': 'Oasis Network',
+             'image': 'https://assets.coingecko.com/coins/images/13162/large/rose.png'},
+            {'id': 'arweave', 'symbol': 'AR', 'binance_id': 'ARUSDT', 'name': 'Arweave',
+             'image': 'https://assets.coingecko.com/coins/images/4343/large/o_L-T_400x400.jpg'},
+            {'id': 'mina-protocol', 'symbol': 'MINA', 'binance_id': 'MINAUSDT', 'name': 'Mina Protocol',
+             'image': 'https://assets.coingecko.com/coins/images/15628/large/Mina_Coin.png'},
+            {'id': '1inch', 'symbol': '1INCH', 'binance_id': '1INCHUSDT', 'name': '1inch',
+             'image': 'https://assets.coingecko.com/coins/images/13469/large/1inch-token.png'},
+            {'id': 'loopring', 'symbol': 'LRC', 'binance_id': 'LRCUSDT', 'name': 'Loopring',
+             'image': 'https://assets.coingecko.com/coins/images/991/large/LRC.png'},
+            {'id': 'enjincoin', 'symbol': 'ENJ', 'binance_id': 'ENJUSDT', 'name': 'Enjin Coin',
+             'image': 'https://assets.coingecko.com/coins/images/1102/large/enjin-coin-logo.png'},
+            {'id': 'basic-attention-token', 'symbol': 'BAT', 'binance_id': 'BATUSDT', 'name': 'Basic Attention Token',
+             'image': 'https://assets.coingecko.com/coins/images/697/large/Basic-Attention-Token-icon.png'},
+            {'id': 'zilliqa', 'symbol': 'ZIL', 'binance_id': 'ZILUSDT', 'name': 'Zilliqa',
+             'image': 'https://assets.coingecko.com/coins/images/2687/large/Zilliqa-logo.png'},
+            {'id': 'gnosis', 'symbol': 'GNO', 'binance_id': 'GNOUSDT', 'name': 'Gnosis',
+             'image': 'https://assets.coingecko.com/coins/images/662/large/Gnosis-GNO-token-logo.png'},
+            {'id': 'curve-dao-token', 'symbol': 'CRV', 'binance_id': 'CRVUSDT', 'name': 'Curve DAO Token',
+             'image': 'https://assets.coingecko.com/coins/images/12124/large/Curve.png'},
+            {'id': 'qtum', 'symbol': 'QTUM', 'binance_id': 'QTUMUSDT', 'name': 'Qtum',
+             'image': 'https://assets.coingecko.com/coins/images/684/large/qtum.png'},
+            {'id': 'theta-token', 'symbol': 'THETA', 'binance_id': 'THETAUSDT', 'name': 'Theta Network',
+             'image': 'https://assets.coingecko.com/coins/images/2538/large/theta-token-logo.png'},
+            {'id': 'ontology', 'symbol': 'ONT', 'binance_id': 'ONTUSDT', 'name': 'Ontology',
+             'image': 'https://assets.coingecko.com/coins/images/3447/large/ONT.png'},
+            {'id': 'waves', 'symbol': 'WAVES', 'binance_id': 'WAVESUSDT', 'name': 'Waves',
+             'image': 'https://assets.coingecko.com/coins/images/425/large/waves.png'},
+            {'id': 'tether-gold', 'symbol': 'XAUT', 'binance_id': 'XAUTUSDT', 'name': 'Tether Gold',
+             'image': 'https://assets.coingecko.com/coins/images/10481/large/Tether_Gold.png'},
+            {'id': 'pancakeswap-token', 'symbol': 'CAKE', 'binance_id': 'CAKEUSDT', 'name': 'PancakeSwap',
+             'image': 'https://assets.coingecko.com/coins/images/12632/large/pancakeswap-cake-logo.png'},
+            {'id': 'convex-finance', 'symbol': 'CVX', 'binance_id': 'CVXUSDT', 'name': 'Convex Finance',
+             'image': 'https://assets.coingecko.com/coins/images/15585/large/convex.png'},
+            {'id': 'celo', 'symbol': 'CELO', 'binance_id': 'CELOUSDT', 'name': 'Celo',
+             'image': 'https://assets.coingecko.com/coins/images/11090/large/icon-celo-CELO-color-f.png'},
+            {'id': 'trust-wallet-token', 'symbol': 'TWT', 'binance_id': 'TWTUSDT', 'name': 'Trust Wallet Token',
+             'image': 'https://assets.coingecko.com/coins/images/11085/large/Trust_Wallet_Token_Logo.png'},
+            {'id': 'biconomy', 'symbol': 'BICO', 'binance_id': 'BICOUSDT', 'name': 'Biconomy',
+             'image': 'https://assets.coingecko.com/coins/images/17288/large/biconomy_logo.png'},
+            {'id': 'dydx', 'symbol': 'DYDX', 'binance_id': 'DYDXUSDT', 'name': 'dYdX',
+             'image': 'https://assets.coingecko.com/coins/images/17500/large/hjnIm9bV.png'},
+            {'id': 'ankr', 'symbol': 'ANKR', 'binance_id': 'ANKRUSDT', 'name': 'Ankr',
+             'image': 'https://assets.coingecko.com/coins/images/4324/large/ankr-ankr-logo.png'},
+            {'id': '0x', 'symbol': 'ZRX', 'binance_id': 'ZRXUSDT', 'name': '0x',
+             'image': 'https://assets.coingecko.com/coins/images/863/large/0x.png'},
+            {'id': 'audius', 'symbol': 'AUDIO', 'binance_id': 'AUDIOUSDT', 'name': 'Audius',
+             'image': 'https://assets.coingecko.com/coins/images/12913/large/AUDIUS-LOGO-1-Black.png'},
+            {'id': 'golem', 'symbol': 'GLM', 'binance_id': 'GLMUSDT', 'name': 'Golem',
+             'image': 'https://assets.coingecko.com/coins/images/545/large/Golem-Logo-Full-Color-Straight-scaled.png'},
+            {'id': 'illuvium', 'symbol': 'ILV', 'binance_id': 'ILVUSDT', 'name': 'Illuvium',
+             'image': 'https://assets.coingecko.com/coins/images/14468/large/ILV.png'},
+            {'id': 'iotex', 'symbol': 'IOTX', 'binance_id': 'IOTXUSDT', 'name': 'IoTeX',
+             'image': 'https://assets.coingecko.com/coins/images/3334/large/iotex-logo.png'},
+            {'id': 'livepeer', 'symbol': 'LPT', 'binance_id': 'LPTUSDT', 'name': 'Livepeer',
+             'image': 'https://assets.coingecko.com/coins/images/3352/large/livepeer.png'},
+            {'id': 'mask-network', 'symbol': 'MASK', 'binance_id': 'MASKUSDT', 'name': 'Mask Network',
+             'image': 'https://assets.coingecko.com/coins/images/14051/large/Mask_Network.png'},
+            {'id': 'ocean-protocol', 'symbol': 'OCEAN', 'binance_id': 'OCEANUSDT', 'name': 'Ocean Protocol',
+             'image': 'https://assets.coingecko.com/coins/images/3687/large/ocean-protocol-logo.png'},
+            {'id': 'storj', 'symbol': 'STORJ', 'binance_id': 'STORJUSDT', 'name': 'Storj',
+             'image': 'https://assets.coingecko.com/coins/images/949/large/storj.png'},
+            {'id': 'sui', 'symbol': 'SUI', 'binance_id': 'SUIUSDT', 'name': 'Sui',
+             'image': 'https://assets.coingecko.com/coins/images/26375/large/sui-sui-logo.png'},
+            {'id': 'sei-network', 'symbol': 'SEI', 'binance_id': 'SEIUSDT', 'name': 'Sei',
+             'image': 'https://assets.coingecko.com/coins/images/28205/large/sei-logo.png'},
+            {'id': 'aptos', 'symbol': 'APT', 'binance_id': 'APTUSDT', 'name': 'Aptos',
+             'image': 'https://assets.coingecko.com/coins/images/26455/large/aptos_round.png'},
+            {'id': 'blur', 'symbol': 'BLUR', 'binance_id': 'BLURUSDT', 'name': 'Blur',
+             'image': 'https://assets.coingecko.com/coins/images/28339/large/blur.png'},
+            {'id': 'bonk', 'symbol': 'BONK', 'binance_id': 'BONKUSDT', 'name': 'Bonk',
+             'image': 'https://assets.coingecko.com/coins/images/28600/large/bonk.png'},
+            {'id': 'casper-network', 'symbol': 'CSPR', 'binance_id': 'CSPRUSDT', 'name': 'Casper Network',
+             'image': 'https://assets.coingecko.com/coins/images/15286/large/casper-logo.png'},
+            {'id': 'frax-share', 'symbol': 'FXS', 'binance_id': 'FXSUSDT', 'name': 'Frax Share',
+             'image': 'https://assets.coingecko.com/coins/images/13422/large/frax_share.png'},
+            {'id': 'immutable-x', 'symbol': 'IMX', 'binance_id': 'IMXUSDT', 'name': 'Immutable X',
+             'image': 'https://assets.coingecko.com/coins/images/17233/large/imx.png'},
+            {'id': 'lido-dao', 'symbol': 'LDO', 'binance_id': 'LDOUSDT', 'name': 'Lido DAO',
+             'image': 'https://assets.coingecko.com/coins/images/13573/large/Lido_DAO.png'},
+            {'id': 'rocket-pool', 'symbol': 'RPL', 'binance_id': 'RPLUSDT', 'name': 'Rocket Pool',
+             'image': 'https://assets.coingecko.com/coins/images/2090/large/rocket-pool-logo.png'},
+            {'id': 'rocket-pool-eth', 'symbol': 'RETH', 'binance_id': 'RETHUSDT', 'name': 'Rocket Pool ETH',
+             'image': 'https://assets.coingecko.com/coins/images/20764/large/reth.png'},
+            {'id': 'terra-luna', 'symbol': 'LUNC', 'binance_id': 'LUNCUSDT', 'name': 'Terra Luna Classic',
+             'image': 'https://assets.coingecko.com/coins/images/8284/large/01_LunaClassic_color.png'},
+            {'id': 'terrausd', 'symbol': 'USTC', 'binance_id': 'USTCUSDT', 'name': 'TerraClassicUSD',
+             'image': 'https://assets.coingecko.com/coins/images/12942/large/USTC.png'},
+        ],
+        'stocks': [
+            {'id': 'apple', 'symbol': 'AAPL', 'name': 'Apple Inc.', 'image': 'https://logo.clearbit.com/apple.com'},
+            {'id': 'microsoft', 'symbol': 'MSFT', 'name': 'Microsoft Corp.',
+             'image': 'https://logo.clearbit.com/microsoft.com'},
+            {'id': 'google', 'symbol': 'GOOGL', 'name': 'Alphabet Inc.',
+             'image': 'https://logo.clearbit.com/google.com'},
+            {'id': 'tesla', 'symbol': 'TSLA', 'name': 'Tesla, Inc.', 'image': 'https://logo.clearbit.com/tesla.com'},
+            {'id': 'nvidia', 'symbol': 'NVDA', 'name': 'NVIDIA Corp.', 'image': 'https://logo.clearbit.com/nvidia.com'},
+            {'id': 'meta', 'symbol': 'META', 'name': 'Meta Platforms', 'image': 'https://logo.clearbit.com/meta.com'},
+            {'id': 'amazon', 'symbol': 'AMZN', 'name': 'Amazon.com, Inc.',
+             'image': 'https://logo.clearbit.com/amazon.com'},
+            {'id': 'netflix', 'symbol': 'NFLX', 'name': 'Netflix, Inc.',
+             'image': 'https://logo.clearbit.com/netflix.com'},
+            {'id': 'jpmorgan', 'symbol': 'JPM', 'name': 'JPMorgan Chase & Co.',
+             'image': 'https://logo.clearbit.com/jpmorgan.com'},
+            {'id': 'johnsonjohnson', 'symbol': 'JNJ', 'name': 'Johnson & Johnson',
+             'image': 'https://logo.clearbit.com/jnj.com'},
+            {'id': 'walmart', 'symbol': 'WMT', 'name': 'Walmart Inc.',
+             'image': 'https://logo.clearbit.com/walmart.com'},
+            {'id': 'proctergamble', 'symbol': 'PG', 'name': 'Procter & Gamble',
+             'image': 'https://logo.clearbit.com/pg.com'},
+            {'id': 'cocacola', 'symbol': 'KO', 'name': 'Coca-Cola Co.',
+             'image': 'https://logo.clearbit.com/coca-cola.com'},
+        ],
+        'forex': [
+            {'id': 'eurusd', 'symbol': 'EUR/USD', 'name': 'EUR to USD', 'image': '🇪🇺🇺🇸'},
+            {'id': 'gbpusd', 'symbol': 'GBP/USD', 'name': 'GBP to USD', 'image': '🇬🇧🇺🇸'},
+            {'id': 'usdjpy', 'symbol': 'USD/JPY', 'name': 'USD to JPY', 'image': '🇺🇸🇯🇵'},
+            {'id': 'audusd', 'symbol': 'AUD/USD', 'name': 'AUD to USD', 'image': '🇦🇺🇺🇸'},
+            {'id': 'usdcad', 'symbol': 'USD/CAD', 'name': 'USD to CAD', 'image': '🇺🇸🇨🇦'},
+            {'id': 'usdchf', 'symbol': 'USD/CHF', 'name': 'USD to CHF', 'image': '🇺🇸🇨🇭'},
+            {'id': 'eurgbp', 'symbol': 'EUR/GBP', 'name': 'EUR to GBP', 'image': '🇪🇺🇬🇧'},
+            {'id': 'eurjpy', 'symbol': 'EUR/JPY', 'name': 'EUR to JPY', 'image': '🇪🇺🇯🇵'},
+        ],
+        'commodities': [
+            {'id': 'gold', 'symbol': 'XAU', 'binance_id': 'XAUUSDT', 'name': 'Gold (Ounce)', 'image': '🪙'},
+            {'id': 'silver', 'symbol': 'XAG', 'binance_id': 'XAGUSDT', 'name': 'Silver (Ounce)', 'image': '🥈'},
+            {'id': 'brent', 'symbol': 'BRENT', 'name': 'Brent Crude Oil', 'image': '🛢️'},
+            {'id': 'wti', 'symbol': 'WTI', 'name': 'WTI Crude Oil', 'image': '🛢️'},
+            {'id': 'natgas', 'symbol': 'NG', 'name': 'Natural Gas', 'image': '🔥'},
+            {'id': 'copper', 'symbol': 'HG', 'name': 'Copper', 'image': '🟤'},
+        ]
+    }
 
     async def connect(self):
         await self.accept()
         self.running = True
-
-        # Load crypto data on first connection
-        if not MarketConsumer.crypto_cache:
-            await self.refresh_crypto_cache()
-
-        # Start price updates
         self.price_task = asyncio.create_task(self.fetch_real_prices())
-
         print(f"✅ WebSocket connected: {self.channel_name}")
 
     async def disconnect(self, close_code):
         self.running = False
-
         if hasattr(self, 'price_task') and not self.price_task.done():
             self.price_task.cancel()
             try:
                 await self.price_task
             except asyncio.CancelledError:
                 pass
-
         print(f"❌ WebSocket disconnected (code: {close_code})")
 
-    async def refresh_crypto_cache(self):
-        """Refresh the list of cryptocurrencies from CoinGecko"""
-
-        current_time = asyncio.get_event_loop().time()
-
-        # Check if cache is still valid
-        if (current_time - MarketConsumer.last_cache_update) < MarketConsumer.CACHE_LIFETIME:
-            return
-
-        print("🔄 Refreshing crypto data from CoinGecko...")
-
-        # Fetch top 50 coins by market cap
-        coins = await CryptoDataFetcher.get_top_coins(limit=103)
-
-        if coins:
-            MarketConsumer.crypto_cache = coins
-            MarketConsumer.last_cache_update = current_time
-            print(f"✅ Loaded {len(coins)} cryptocurrencies with logos")
-        else:
-            print("⚠️ Failed to load crypto data, using cached data")
-
-    async def fetch_real_prices(self):
-        """Fetch real-time prices from Binance + dynamic crypto list"""
+    async def _fetch_binance_tickers(self, session):
+        binance_symbols_we_want = {
+            asset['binance_id']
+            for category in self.ASSET_MAP.values()
+            for asset in category
+            if 'binance_id' in asset
+        }
 
         try:
-            async with aiohttp.ClientSession() as session:
-                while self.running:
-                    # Refresh cache if needed (every 5 minutes)
-                    await self.refresh_crypto_cache()
+            async with session.get(self.BINANCE_URL, timeout=10) as response:
+                response.raise_for_status()
+                data = await response.json()
 
-                    updated_prices = {}
-
-                    # ===== CRYPTO: Fetch from Binance API =====
-                    try:
-                        url = 'https://api.binance.com/api/v3/ticker/24hr'
-
-                        async with session.get(url, timeout=5) as response:
-                            if response.status == 200:
-                                binance_data = await response.json()
-
-                                # Create lookup dictionary
-                                binance_prices = {
-                                    ticker['symbol']: ticker
-                                    for ticker in binance_data
-                                }
-
-                                # Match with our cached crypto list
-                                for coin in MarketConsumer.crypto_cache:
-                                    symbol = coin['symbol']
-                                    binance_symbol = f"{symbol}USDT"
-
-                                    if binance_symbol in binance_prices:
-                                        ticker = binance_prices[binance_symbol]
-
-                                        current_price = float(ticker['lastPrice'])
-                                        price_change = float(ticker['priceChange'])
-                                        price_change_percent = float(ticker['priceChangePercent'])
-
-                                        # Dynamic precision
-                                        if current_price < 0.0001:
-                                            precision = 8
-                                        elif current_price < 0.01:
-                                            precision = 6
-                                        elif current_price < 1:
-                                            precision = 5
-                                        elif current_price < 10:
-                                            precision = 4
-                                        elif current_price < 100:
-                                            precision = 3
-                                        else:
-                                            precision = 2
-
-                                        updated_prices[symbol] = {
-                                            'price': round(current_price, precision),
-                                            'change': round(price_change, precision),
-                                            'changePercent': round(price_change_percent, 3),
-                                            'image': coin['image'],  # Logo URL from CoinGecko
-                                            'name': coin['name'],
-                                        }
-
-                    except Exception as e:
-                        print(f"❌ Error fetching Binance data: {e}")
-
-                    # ===== STOCKS: Mock data =====
-                    stock_prices = {
-                        'AAPL': 178.45, 'MSFT': 412.33, 'TSLA': 245.67,
-                        'GOOGL': 142.50, 'NVDA': 185.05, 'NFLX': 1191.06,
-                    }
-
-                    for symbol, base_price in stock_prices.items():
-                        fluctuation = base_price * random.uniform(-0.0015, 0.0015)
-                        new_price = base_price + fluctuation
-                        change_percent = (fluctuation / base_price) * 100
-
-                        updated_prices[symbol] = {
-                            'price': round(new_price, 2),
-                            'change': round(fluctuation, 2),
-                            'changePercent': round(change_percent, 3)
-                        }
-
-                    # ===== COMMODITIES: Mock data =====
-                    commodity_prices = {
-                        'GOLD': 2034.50, 'SILVER': 24.15, 'OIL': 78.45,
-                    }
-
-                    for symbol, base_price in commodity_prices.items():
-                        fluctuation = base_price * random.uniform(-0.002, 0.002)
-                        new_price = base_price + fluctuation
-                        change_percent = (fluctuation / base_price) * 100
-
-                        updated_prices[symbol] = {
-                            'price': round(new_price, 2),
-                            'change': round(fluctuation, 2),
-                            'changePercent': round(change_percent, 3)
-                        }
-
-                    # ===== FOREX: Mock data =====
-                    forex_prices = {
-                        'EURUSD': 1.0856, 'GBPUSD': 1.2634, 'USDJPY': 149.87,
-                    }
-
-                    for symbol, base_price in forex_prices.items():
-                        fluctuation = base_price * random.uniform(-0.0002, 0.0002)
-                        new_price = base_price + fluctuation
-                        change_percent = (fluctuation / base_price) * 100
-
-                        updated_prices[symbol] = {
-                            'price': round(new_price, 5),
-                            'change': round(fluctuation, 5),
-                            'changePercent': round(change_percent, 3)
-                        }
-
-                    # Send to WebSocket
-                    await self.send(text_data=json.dumps({
-                        'type': 'price_update',
-                        'data': updated_prices,
-                        'timestamp': datetime.now().isoformat()
-                    }))
-
-                    crypto_count = len(
-                        [k for k in updated_prices if k in [c['symbol'] for c in MarketConsumer.crypto_cache]])
-                    print(f"📊 Sent prices: {len(updated_prices)} total ({crypto_count} crypto from Binance)")
-
-                    await asyncio.sleep(2)
-
-        except asyncio.CancelledError:
-            print("🛑 Price update task cancelled")
-            raise
+                filtered_tickers = {
+                    ticker['symbol']: ticker
+                    for ticker in data
+                    if ticker['symbol'] in binance_symbols_we_want
+                }
+                return filtered_tickers
         except Exception as e:
-            print(f"❌ Error: {e}")
-            import traceback
-            traceback.print_exc()
+            print(f"❌ Error fetching Binance tickers: {e}")
+            return {}
+
+    def _get_mock_ticker(self, asset, category):
+        symbol = asset['symbol']
+
+        last_price_data = self.TICKER_CACHE.get(symbol, {})
+        last_price_str = last_price_data.get('price')
+
+        if last_price_str:
+            last_price = Decimal(last_price_str)
+        else:
+            if category == 'forex':
+                last_price = Decimal(random.uniform(0.9, 1.2))
+            elif category == 'stocks':
+                last_price = Decimal(random.uniform(100.0, 500.0))
+            else:
+                last_price = Decimal(random.uniform(50.0, 150.0))
+
+        change_percent = Decimal(random.uniform(-3.5, 3.5))
+        new_price = last_price * (1 + change_percent / 100)
+        change_24h = new_price - last_price
+        volume = Decimal(random.uniform(1000000, 50000000))
+
+        self.TICKER_CACHE[symbol] = {'price': str(new_price)}
+
+        return {
+            'id': asset['id'],
+            'symbol': asset['symbol'],
+            'name': asset['name'],
+            'image': asset['image'],
+            'category': category,
+            'price': float(new_price),
+            'change_percent_24h': float(change_percent),
+            'change_24h': float(change_24h),
+            'volume': float(volume),
+        }
+
+    async def fetch_real_prices(self):
+        async with aiohttp.ClientSession() as session:
+            while self.running:
+                current_time = asyncio.get_event_loop().time()
+
+                if (current_time - self.last_cache_update) < self.CACHE_LIFETIME:
+                    await asyncio.sleep(5)
+                    continue
+
+                print("Updating all tickers (Binance + Mock)...")
+
+                binance_tickers = await self._fetch_binance_tickers(session)
+
+                all_assets = []
+
+                for asset in self.ASSET_MAP['crypto']:
+                    ticker = binance_tickers.get(asset['binance_id'])
+                    if not ticker:
+                        continue
+
+                    all_assets.append({
+                        'id': asset['id'],
+                        'symbol': asset['symbol'],
+                        'name': asset['name'],
+                        'image': asset['image'],
+                        'category': 'crypto',
+                        'price': float(ticker.get('lastPrice', 0)),
+                        'change_percent_24h': float(ticker.get('priceChangePercent', 0)),
+                        'change_24h': float(ticker.get('priceChange', 0)),
+                        'volume': float(ticker.get('volume', 0)),
+                    })
+
+                for asset in self.ASSET_MAP['commodities']:
+                    if 'binance_id' in asset:
+                        ticker = binance_tickers.get(asset['binance_id'])
+                        if not ticker:
+                            continue
+                        all_assets.append({
+                            'id': asset['id'],
+                            'symbol': asset['symbol'],
+                            'name': asset['name'],
+                            'image': asset['image'],
+                            'category': 'commodities',
+                            'price': float(ticker.get('lastPrice', 0)),
+                            'change_percent_24h': float(ticker.get('priceChangePercent', 0)),
+                            'change_24h': float(ticker.get('priceChange', 0)),
+                            'volume': float(ticker.get('volume', 0)),
+                        })
+                    else:
+                        all_assets.append(self._get_mock_ticker(asset, 'commodities'))
+
+                for asset in self.ASSET_MAP['stocks']:
+                    all_assets.append(self._get_mock_ticker(asset, 'stocks'))
+
+                for asset in self.ASSET_MAP['forex']:
+                    all_assets.append(self._get_mock_ticker(asset, 'forex'))
+
+                await self.send(text_data=json.dumps({
+                    'type': 'market_update',
+                    'data': all_assets,
+                    'timestamp': datetime.now().isoformat()
+                }))
+
+                print(f"📊 Sent {len(all_assets)} asset updates.")
+                self.last_cache_update = current_time
+                await asyncio.sleep(self.CACHE_LIFETIME)
+
+        print("🛑 Price update task stopped")
 
     async def receive(self, text_data):
-        """Handle incoming WebSocket messages"""
         try:
             data = json.loads(text_data)
             message_type = data.get('type')
 
-            if message_type == 'get_crypto_list':
-                # Send full crypto list with logos
-                await self.send(text_data=json.dumps({
-                    'type': 'crypto_list',
-                    'data': MarketConsumer.crypto_cache,
-                    'timestamp': datetime.now().isoformat()
-                }))
-
-            elif message_type == 'ping':
+            if message_type == 'ping':
                 await self.send(text_data=json.dumps({
                     'type': 'pong',
                     'timestamp': datetime.now().isoformat()
@@ -220,8 +436,6 @@ class MarketConsumer(AsyncWebsocketConsumer):
 
 
 class BalanceConsumer(AsyncWebsocketConsumer):
-    """Balance WebSocket consumer"""
-
     async def connect(self):
         self.user = self.scope['user']
 
@@ -245,7 +459,6 @@ class BalanceConsumer(AsyncWebsocketConsumer):
             print(f"❌ Balance WebSocket disconnected for user: {self.user.email}")
 
     async def receive(self, text_data):
-        """Handle balance requests"""
         try:
             data = json.loads(text_data)
             message_type = data.get('type')
@@ -263,7 +476,6 @@ class BalanceConsumer(AsyncWebsocketConsumer):
             print(f"❌ Error: {e}")
 
     async def balance_update(self, event):
-        """Handler for balance_update messages from channel layer"""
         await self.send(text_data=json.dumps({
             'type': 'balance_update',
             'balance': event['balance'],

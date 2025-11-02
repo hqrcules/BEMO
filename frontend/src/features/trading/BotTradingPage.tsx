@@ -1,5 +1,5 @@
-import { useEffect, useState, useMemo, useRef } from 'react';
-import { tradingService, BotTrade, TradingStats, TradingSession } from '@/services/tradingService';
+import { useEffect, useState,} from 'react';
+import { tradingService, BotTrade, TradingStats,} from '@/services/tradingService';
 import BotActivity from './BotActivity';
 import { useAppSelector } from '@/store/hooks';
 import BotInfo from './BotInfo';
@@ -23,7 +23,7 @@ interface BotState {
 
 const getBaseSymbol = (pair: string): string => pair.split('/')[0];
 
-const CustomTooltip = ({ active, payload, label, currencyState, i18nInstance }: any) => {
+const CustomTooltip = ({ active, payload, label, currencyState, }: any) => {
     if (active && payload && payload.length) {
         const timeLabel = label;
         return (
@@ -46,7 +46,7 @@ export default function BotTradingPage() {
   const { user } = useAppSelector((state: RootState) => state.auth);
   const currencyState = useAppSelector((state: RootState) => state.currency);
   const { prices } = useAppSelector((state: RootState) => state.websocket);
-  const { t, i18n } = useTranslation();
+  const { i18n } = useTranslation();
 
   const initialPair = 'BTC/USDT';
   const initialSymbol = getBaseSymbol(initialPair);
@@ -215,7 +215,7 @@ export default function BotTradingPage() {
       <div className="min-h-screen flex items-center justify-center bg-black">
         <div className="text-center">
           <Loader2 className="w-12 h-12 text-primary-500 animate-spin mx-auto mb-4" />
-          <p className="text-zinc-400">Завантаження...</p>
+          <p className="text-zinc-400">Loading...</p>
         </div>
       </div>
     );
@@ -241,10 +241,10 @@ export default function BotTradingPage() {
           <div className="w-full px-6 py-6">
             <h1 className="text-3xl sm:text-4xl font-extralight text-white tracking-tight flex items-center gap-3">
               <Zap className="w-8 h-8 text-primary-500" />
-              Торгівля з ботом
+              Bot Trading
             </h1>
             <p className="text-zinc-500 font-light mt-1">
-              {botState.currentPair} • Остання ціна: {formatPrice(botState.lastPrice, 5)}
+              {botState.currentPair} • Last Price: {formatPrice(botState.lastPrice, 5)}
             </p>
           </div>
         </div>
@@ -258,16 +258,16 @@ export default function BotTradingPage() {
                 <div className="flex justify-between items-center mb-6">
                   <h3 className="text-xl font-bold text-white flex items-center gap-2">
                     <Settings className="w-5 h-5 text-primary-500" />
-                    Управління
+                    Controls
                   </h3>
                   <div className={`flex items-center gap-2 ${botState.isActive ? 'text-green-400' : 'text-red-400'}`}>
                     <div className={`w-2.5 h-2.5 rounded-full ${botState.isActive ? 'bg-green-500' : 'bg-red-500'} ${botState.isActive ? 'animate-pulse' : ''}`}></div>
-                    <span className="text-sm font-medium">{botState.isActive ? 'Активний' : 'Зупинений'}</span>
+                    <span className="text-sm font-medium">{botState.isActive ? 'Active' : 'Stopped'}</span>
                   </div>
                 </div>
 
                 <div className="mb-4">
-                  <label className="block text-sm font-medium text-white mb-2">Торгова пара</label>
+                  <label className="block text-sm font-medium text-white mb-2">Trading Pair</label>
                   <select
                     value={botState.currentPair}
                     onChange={(e) => changePair(e.target.value)}
@@ -290,30 +290,30 @@ export default function BotTradingPage() {
                     }`}
                   >
                     {botState.isActive ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
-                    <span>{botState.isActive ? 'Пауза' : 'Старт'}</span>
+                    <span>{botState.isActive ? 'Pause' : 'Start'}</span>
                   </button>
                   <button className="btn btn-secondary py-3 text-sm">
                     <Square className="w-4 h-4" />
-                    <span>Стоп</span>
+                    <span>Stop</span>
                   </button>
                 </div>
               </div>
 
               <div className="bg-zinc-950 border border-zinc-800 rounded-3xl p-6">
-                <h3 className="text-lg font-bold text-white mb-4">Сьогодні</h3>
+                <h3 className="text-lg font-bold text-white mb-4">Today</h3>
                 <div className="space-y-3">
                   <div className="flex justify-between items-center">
-                    <span className="text-sm text-zinc-400">Прибуток:</span>
+                    <span className="text-sm text-zinc-400">Profit:</span>
                     <span className={`font-semibold text-lg ${botState.profitToday >= 0 ? 'text-green-400' : 'text-red-400'}`}>
                       {formatValueWithSign(botState.profitToday)}
                     </span>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span className="text-sm text-zinc-400">Закрито угод:</span>
+                    <span className="text-sm text-zinc-400">Closed Trades:</span>
                     <span className="font-medium text-white">{stats?.closed_trades || 0}</span>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span className="text-sm text-zinc-400">Відкрито позицій:</span>
+                    <span className="text-sm text-zinc-400">Open Positions:</span>
                     <span className="font-medium text-white">{openPositions.length}</span>
                   </div>
                 </div>
@@ -324,7 +324,7 @@ export default function BotTradingPage() {
               <div className="flex justify-between items-center mb-4">
                 <h3 className="text-xl font-bold text-white flex items-center gap-2">
                   <BarChart className="w-5 h-5 text-primary-500" />
-                  Графік {botState.currentPair}
+                  {botState.currentPair} Chart
                 </h3>
               </div>
 
@@ -364,7 +364,7 @@ export default function BotTradingPage() {
                   </ResponsiveContainer>
                 ) : (
                   <div className="flex items-center justify-center h-full text-zinc-500">
-                    Завантаження даних графіка...
+                    Loading chart data...
                   </div>
                 )}
               </div>
@@ -374,7 +374,7 @@ export default function BotTradingPage() {
               <div className="bg-zinc-950 border border-zinc-800 rounded-3xl overflow-hidden">
                 <div className="p-4 border-b border-zinc-800">
                   <h3 className="text-lg font-semibold text-white">
-                    Відкриті Позиції ({openPositions.length})
+                    Open Positions ({openPositions.length})
                   </h3>
                 </div>
                 <div className="divide-y divide-zinc-800/50 max-h-96 overflow-y-auto custom-scroll">
@@ -397,7 +397,7 @@ export default function BotTradingPage() {
                         </div>
                         <div className="flex justify-between items-center">
                           <span className="text-sm text-zinc-500">
-                            Вхід: {formatPrice(position.entry_price, 5)}
+                            Entry: {formatPrice(position.entry_price, 5)}
                           </span>
                           <span className={`text-sm font-semibold ${parseFloat(position.profit_loss) >= 0 ? 'text-green-400' : 'text-red-400'}`}>
                             {formatValueWithSign(position.profit_loss)}
@@ -408,7 +408,7 @@ export default function BotTradingPage() {
                   ) : (
                     <div className="p-6 text-center text-zinc-500">
                       <Activity className="w-10 h-10 mx-auto mb-3 opacity-30" />
-                      <p>Немає відкритих позицій</p>
+                      <p>No open positions</p>
                     </div>
                   )}
                 </div>
@@ -419,17 +419,17 @@ export default function BotTradingPage() {
           <div className="bg-zinc-950 border border-zinc-800 rounded-3xl overflow-hidden">
             <div className="p-6 border-b border-zinc-800">
               <h3 className="text-xl font-bold text-white">
-                Історія угод ({trades.length})
+                Trade History ({trades.length})
               </h3>
             </div>
             <div className="max-h-[500px] overflow-y-auto custom-scroll">
               <table className="w-full">
                 <thead className="bg-zinc-900 sticky top-0 z-10">
                   <tr className="border-b border-zinc-800">
-                    <th className="text-left py-4 px-6 text-xs font-semibold text-zinc-500 uppercase">Символ</th>
-                    <th className="text-left py-4 px-6 text-xs font-semibold text-zinc-500 uppercase">Тип</th>
-                    <th className="text-right py-4 px-6 text-xs font-semibold text-zinc-500 uppercase">Прибуток/Збиток</th>
-                    <th className="text-left py-4 px-6 text-xs font-semibold text-zinc-500 uppercase">Дата закриття</th>
+                    <th className="text-left py-4 px-6 text-xs font-semibold text-zinc-500 uppercase">Symbol</th>
+                    <th className="text-left py-4 px-6 text-xs font-semibold text-zinc-500 uppercase">Type</th>
+                    <th className="text-right py-4 px-6 text-xs font-semibold text-zinc-500 uppercase">Profit/Loss</th>
+                    <th className="text-left py-4 px-6 text-xs font-semibold text-zinc-500 uppercase">Close Date</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-zinc-800/50">
@@ -450,14 +450,14 @@ export default function BotTradingPage() {
                           </span>
                         </td>
                         <td className="py-4 px-6 text-sm text-zinc-500">
-                          {trade.closed_at ? new Date(trade.closed_at).toLocaleString('uk-UA') : '-'}
+                          {trade.closed_at ? new Date(trade.closed_at).toLocaleString('en-US') : '-'}
                         </td>
                       </tr>
                     ))
                   ) : (
                     <tr>
                       <td colSpan={4} className="p-8 text-center text-zinc-500">
-                        <p>Історія угод порожня.</p>
+                        <p>Trade history is empty.</p>
                       </td>
                     </tr>
                   )}

@@ -1,7 +1,7 @@
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAppSelector, useAppDispatch } from '@/store/hooks';
 import { logoutUser } from '@/store/slices/authSlice';
-import { TrendingUp, Menu, Bell, Wifi, WifiOff, LogOut, Globe, Wallet } from 'lucide-react';
+import { TrendingUp, Menu, Wifi, WifiOff, LogOut, Globe, Wallet } from 'lucide-react';
 import { useState, memo, useCallback, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import Sidebar from './Sidebar';
@@ -190,11 +190,6 @@ const Header = memo(() => {
                                     </div>
                                 )}
                             </div>
-
-                            <button className="relative text-dark-text-secondary hover:text-dark-text-primary p-2 rounded-lg hover:bg-dark-hover transition-colors" aria-label="Notifications">
-                                <Bell className="w-5 h-5" />
-                                <span className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 bg-danger-500 rounded-full border-2 border-dark-card" />
-                            </button>
 
                             <div className="relative">
                                 <button

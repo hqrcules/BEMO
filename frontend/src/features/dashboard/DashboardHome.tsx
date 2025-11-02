@@ -34,6 +34,7 @@ import { formatCurrency } from '@/shared/utils/formatCurrency';
 import { RootState } from '@/store/store';
 import { transactionService, BalanceHistoryEntry } from '@/services/transactionService';
 import { tradingService, TradingSession } from '@/services/tradingService';
+import { AssetItem } from '@/store/slices/websocketSlice';
 
 
 function Spinner({ size = 'h-8 w-8' }: { size?: string }) {
@@ -44,7 +45,7 @@ function Spinner({ size = 'h-8 w-8' }: { size?: string }) {
 
 const WEBSOCKET_URL = 'ws://localhost:8000/ws/market/';
 
-function TickerItem({ crypto, currencyState }: { crypto: any, currencyState: any }) {
+function TickerItem({ crypto, currencyState }: { crypto: AssetItem, currencyState: any }) {
     const isUp = crypto.change_percent_24h >= 0;
     return (
         <div className="flex items-center gap-2 mx-4 flex-none py-2.5">
@@ -61,15 +62,17 @@ function TickerItem({ crypto, currencyState }: { crypto: any, currencyState: any
     );
 }
 
-function PriceTicker({ cryptoList, currencyState }: { cryptoList: any[], currencyState: any }) {
-    const tickerList = cryptoList.slice(0, 20);
-    if (!tickerList || tickerList.length === 0) {
+function PriceTicker({ cryptoList, currencyState }: { cryptoList: AssetItem[], currencyState: any }) {
+    if (!cryptoList || cryptoList.length === 0) {
         return (
             <div className="w-full bg-zinc-950 border-b border-zinc-800 py-3 text-center text-sm text-zinc-500">
                 Loading price ticker...
             </div>
         );
     }
+
+    const tickerList = cryptoList.slice(0, 20);
+
     return (
         <div className="w-full bg-zinc-950 border-b border-zinc-800 overflow-hidden whitespace-nowrap relative group">
             <div className="flex w-max animate-marquee group-hover:[animation-play-state:paused]">
@@ -124,7 +127,10 @@ export default function DashboardHome() {
     const navigate = useNavigate();
     const { t, i18n } = useTranslation();
     const { user } = useAppSelector((state: RootState) => state.auth);
-    const { cryptoList, connected } = useAppSelector((state: RootState) => state.websocket);
+
+    const { assets, connected, loading: isWebsocketLoading } = useAppSelector((state: RootState) => state.websocket);
+    const cryptoList = useMemo(() => Object.values(assets).filter(asset => asset.category === 'crypto'), [assets]);
+
     const currencyState = useAppSelector((state: RootState) => state.currency);
 
     useWebSocket({ url: WEBSOCKET_URL, autoConnect: true });
@@ -139,7 +145,7 @@ export default function DashboardHome() {
     const [loadingBotStatus, setLoadingBotStatus] = useState(true);
     const [activeTimeRange, setActiveTimeRange] = useState<ChartTimeRange>('1M');
 
-    const isCryptoLoading = !cryptoList || cryptoList.length === 0;
+    const isCryptoLoading = isWebsocketLoading && cryptoList.length === 0;
     const prevCryptoList = usePrevious(cryptoList);
 
     useEffect(() => {

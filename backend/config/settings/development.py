@@ -1,6 +1,7 @@
 from .base import *
 
 ALLOWED_HOSTS.append('backend')
+ALLOWED_HOSTS.append('corinna-diagnosable-spiritlessly.ngrok-free.dev')
 
 DEBUG = True
 
@@ -29,6 +30,7 @@ CORS_ALLOWED_ORIGINS = [
     'http://localhost:5173',
     'http://127.0.0.1:3000',
     'http://127.0.0.1:5173',
+    'https://corinna-diagnosable-spiritlessly.ngrok-free.dev', # <--- ДОДАТИ ЦЕЙ РЯДОК
 ]
 
 CORS_ALLOW_CREDENTIALS = True  # REQUIRED for cookies!
@@ -61,6 +63,7 @@ CSRF_TRUSTED_ORIGINS = [
     'http://localhost:5173',
     'http://127.0.0.1:5173',
     'http://backend:8000',
+    'https://corinna-diagnosable-spiritlessly.ngrok-free.dev', # <--- ДОДАТИ ЦЕЙ РЯДОК
 ]
 
 # Disable caching in development

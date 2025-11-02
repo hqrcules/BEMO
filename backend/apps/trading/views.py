@@ -1,18 +1,21 @@
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.views import APIView
 from django.db.models import Sum, Avg, Max, Min, Q, Count
 from django.utils import timezone
 from django.db import transaction as db_transaction
 from django.db import models
 from decimal import Decimal
+from asgiref.sync import async_to_sync
 from .models import BotTrade, TradingSession
 from .serializers import (
     BotTradeSerializer,
     TradingSessionSerializer,
     TradingStatsSerializer
 )
+from .utils.market_data_fetcher import MarketDataFetcher
 
 
 class BotTradeViewSet(viewsets.ReadOnlyModelViewSet):
@@ -95,14 +98,14 @@ class TradingSessionViewSet(viewsets.ReadOnlyModelViewSet):
         )
 
         if not created and not session.is_active:
-             session.is_active = True
-             session.ended_at = None
-             session.save(update_fields=['is_active', 'ended_at'])
-             print(f"Reactivated existing session for user {user.email}")
+            session.is_active = True
+            session.ended_at = None
+            session.save(update_fields=['is_active', 'ended_at'])
+            print(f"Reactivated existing session for user {user.email}")
         elif created:
-             print(f"Started new session for user {user.email}")
+            print(f"Started new session for user {user.email}")
         else:
-             print(f"Session already active for user {user.email}")
+            print(f"Session already active for user {user.email}")
 
         return Response({'status': 'Bot session active'}, status=status.HTTP_200_OK)
 
@@ -132,9 +135,9 @@ class TradingSessionViewSet(viewsets.ReadOnlyModelViewSet):
 
         status_message = f'Bot stopped. {closed_trade_count} open positions closed (at entry price).'
         if not session_stopped and closed_trade_count == 0:
-             status_message = 'No active session found and no open positions to close.'
+            status_message = 'No active session found and no open positions to close.'
         elif not session_stopped:
-             status_message = f'No active session found, but {closed_trade_count} open positions were closed (at entry price).'
+            status_message = f'No active session found, but {closed_trade_count} open positions were closed (at entry price).'
 
         return Response({'status': status_message}, status=status.HTTP_200_OK)
 
@@ -157,3 +160,24 @@ class TradingSessionViewSet(viewsets.ReadOnlyModelViewSet):
             trades = trades.filter(opened_at__lte=session.ended_at)
         serializer = BotTradeSerializer(trades, many=True)
         return Response(serializer.data)
+
+
+class MarketHistoryView(APIView):
+    permission_classes = [AllowAny]
+
+    def get(self, request):
+        symbol = request.query_params.get('symbol')
+        interval = request.query_params.get('interval', '1d')
+
+        if not symbol:
+            return Response({"error": "Symbol parameter is required"}, status=status.HTTP_400_BAD_REQUEST)
+
+        valid_intervals = ['1h', '4h', '1d', '1w']
+        if interval not in valid_intervals:
+            return Response({"error": f"Invalid interval. Must be one of {valid_intervals}"},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        fetcher = MarketDataFetcher()
+        data = async_to_sync(fetcher.fetch_history)(symbol, interval)
+
+        return Response(data)

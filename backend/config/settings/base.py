@@ -2,13 +2,13 @@ from pathlib import Path
 from datetime import timedelta
 from decouple import config
 
-# Build paths
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
-# Security
 SECRET_KEY = config('SECRET_KEY', default='django-insecure-change-this-in-production')
 DEBUG = config('DEBUG', default=False, cast=bool)
 ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='localhost,127.0.0.1', cast=lambda v: [s.strip() for s in v.split(',')])
+
+FINNHUB_API_KEY = config('FINNHUB_API_KEY', default='')
 
 INSTALLED_APPS = [
     'daphne',
@@ -19,14 +19,13 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    # Third party
     'rest_framework',
     'rest_framework_simplejwt',
     'corsheaders',
     'django_celery_beat',
     'channels',
+    'drf_spectacular',
 
-    # Local apps
     'apps.accounts',
     'apps.admin_panel',
     'apps.support',
@@ -47,28 +46,21 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'config.urls'
 
-# Django REST Framework
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        'core.authentication.CookieJWTAuthentication',  # Your custom auth
-        'rest_framework_simplejwt.authentication.JWTAuthentication',  # Fallback
+        'core.authentication.CookieJWTAuthentication',
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
     ],
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticated',
     ],
-    # Add this for CORS credentials
     'DEFAULT_RENDERER_CLASSES': [
         'rest_framework.renderers.JSONRenderer',
     ],
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
 }
 
-ASGI_APPLICATION = 'core.asgi.application'
-
-CHANNEL_LAYERS = {
-    'default': {
-        'BACKEND': 'channels.layers.InMemoryChannelLayer'
-    }
-}
+ASGI_APPLICATION = 'config.asgi.application'
 
 TEMPLATES = [
     {
@@ -87,9 +79,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'config.wsgi.application'
-ASGI_APPLICATION = 'config.asgi.application'
 
-# Database
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
@@ -97,10 +87,8 @@ DATABASES = {
     }
 }
 
-# Custom User Model
 AUTH_USER_MODEL = 'accounts.User'
 
-# Password Hashers - Argon2 First!
 PASSWORD_HASHERS = [
     'django.contrib.auth.hashers.Argon2PasswordHasher',
     'django.contrib.auth.hashers.PBKDF2PasswordHasher',
@@ -108,44 +96,27 @@ PASSWORD_HASHERS = [
     'django.contrib.auth.hashers.BCryptSHA256PasswordHasher',
 ]
 
-# Password validation
 AUTH_PASSWORD_VALIDATORS = [
-    {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-        'OPTIONS': {
-            'min_length': 8,
-        }
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
-    },
+    {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator', 'OPTIONS': {'min_length': 8}},
+    {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
 ]
 
-# Internationalization
 LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'UTC'
 USE_I18N = True
 USE_TZ = True
 
-# Static files
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_DIRS = [BASE_DIR / 'static']
 
-# Media files
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
-# Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# JWT Configuration
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(hours=1),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
@@ -169,7 +140,7 @@ CORS_ALLOWED_ORIGINS = config(
     default='http://localhost:3000,http://localhost:5173',
     cast=lambda v: [s.strip() for s in v.split(',')]
 )
-CORS_ALLOW_CREDENTIALS = True  # Important for cookies!
+CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOW_HEADERS = [
     'accept',
     'accept-encoding',
@@ -180,16 +151,14 @@ CORS_ALLOW_HEADERS = [
     'user-agent',
     'x-csrftoken',
     'x-requested-with',
-    'cookie',  # Add cookie header
+    'cookie',
 ]
 
-# Session/Cookie settings
 SESSION_COOKIE_HTTPONLY = True
 SESSION_COOKIE_SAMESITE = 'Lax'
 CSRF_COOKIE_HTTPONLY = False
 CSRF_COOKIE_SAMESITE = 'Lax'
 
-# Channels (WebSocket)
 CHANNEL_LAYERS = {
     'default': {
         'BACKEND': 'channels_redis.core.RedisChannelLayer',
@@ -199,7 +168,6 @@ CHANNEL_LAYERS = {
     },
 }
 
-# Celery Configuration
 CELERY_BROKER_URL = config('CELERY_BROKER_URL', default='redis://localhost:6379/0')
 CELERY_RESULT_BACKEND = config('CELERY_RESULT_BACKEND', default='redis://localhost:6379/0')
 CELERY_ACCEPT_CONTENT = ['json']
@@ -207,7 +175,6 @@ CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TIMEZONE = TIME_ZONE
 
-# Logging
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
@@ -222,7 +189,7 @@ LOGGING = {
             'level': 'INFO',
             'class': 'logging.handlers.RotatingFileHandler',
             'filename': BASE_DIR / 'logs' / 'django.log',
-            'maxBytes': 1024 * 1024 * 10,  # 10MB
+            'maxBytes': 1024 * 1024 * 10,
             'backupCount': 5,
             'formatter': 'verbose',
         },
@@ -246,14 +213,11 @@ LOGGING = {
     },
 }
 
-# Commission Settings (бізнес логіка)
-WITHDRAWAL_COMMISSION_PERCENT = 25.0  # 25% комісія при виводі
-MIN_DEPOSIT_AMOUNT = 250.0  # Мінімальна сума депозиту
+WITHDRAWAL_COMMISSION_PERCENT = 25.0
+MIN_DEPOSIT_AMOUNT = 250.0
 
-# Bot Pricing
 BOT_PRICING = {
-    'basic': 250.0,  # 250 EUR
-    'premium': 500.0,  # 500 EUR
-    'specialist': 1000.0,  # 1000 EUR
+    'basic': 250.0,
+    'premium': 500.0,
+    'specialist': 1000.0,
 }
-
