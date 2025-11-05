@@ -13,6 +13,7 @@ export interface AssetItem {
   change_percent_24h: number;
   volume: number;
   isFavorite?: boolean;
+  binance_id?: string;
 }
 
 export interface WebSocketState {

@@ -301,6 +301,7 @@ class MarketConsumer(AsyncWebsocketConsumer):
                         'change_percent_24h': float(ticker.get('priceChangePercent', 0)),
                         'change_24h': float(ticker.get('priceChange', 0)),
                         'volume': float(ticker.get('volume', 0)),
+                        'binance_id': asset.get('binance_id'),
                     })
 
                 for asset in self.ASSET_MAP['commodities']:
@@ -313,11 +314,12 @@ class MarketConsumer(AsyncWebsocketConsumer):
                             'symbol': asset['symbol'],
                             'name': asset['name'],
                             'image': asset['image'],
-                            'category': 'commodities',
+                            'category': 'commodometries',
                             'price': float(ticker.get('lastPrice', 0)),
                             'change_percent_24h': float(ticker.get('priceChangePercent', 0)),
                             'change_24h': float(ticker.get('priceChange', 0)),
                             'volume': float(ticker.get('volume', 0)),
+                            'binance_id': asset.get('binance_id'),
                         })
                     else:
                         all_assets.append(self._get_mock_ticker(asset, 'commodities'))

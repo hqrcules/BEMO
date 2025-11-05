@@ -9,13 +9,13 @@ from django.db import transaction as db_transaction
 from django.db import models
 from decimal import Decimal
 from asgiref.sync import async_to_sync
+import requests
 from .models import BotTrade, TradingSession
 from .serializers import (
     BotTradeSerializer,
     TradingSessionSerializer,
     TradingStatsSerializer
 )
-from .utils.market_data_fetcher import MarketDataFetcher
 
 
 class BotTradeViewSet(viewsets.ReadOnlyModelViewSet):
@@ -164,20 +164,77 @@ class TradingSessionViewSet(viewsets.ReadOnlyModelViewSet):
 
 class MarketHistoryView(APIView):
     permission_classes = [AllowAny]
+    BINANCE_KLINES_URL = "https://api.binance.com/api/v3/klines"
+
+    INTERVAL_MAP = {
+        '1h': '1h',
+        '4h': '4h',
+        '1d': '1d',
+        '1w': '1w',
+    }
 
     def get(self, request):
         symbol = request.query_params.get('symbol')
-        interval = request.query_params.get('interval', '1d')
+        interval_key = request.query_params.get('interval', '1d')
 
         if not symbol:
-            return Response({"error": "Symbol parameter is required"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"error": "Symbol parameter (e.g., BTCUSDT) is required"},
+                            status=status.HTTP_400_BAD_REQUEST)
 
-        valid_intervals = ['1h', '4h', '1d', '1w']
-        if interval not in valid_intervals:
+        interval = self.INTERVAL_MAP.get(interval_key)
+        if not interval:
+            valid_intervals = list(self.INTERVAL_MAP.keys())
             return Response({"error": f"Invalid interval. Must be one of {valid_intervals}"},
                             status=status.HTTP_400_BAD_REQUEST)
 
-        fetcher = MarketDataFetcher()
-        data = async_to_sync(fetcher.fetch_history)(symbol, interval)
+        params = {
+            'symbol': symbol,
+            'interval': interval,
+            'limit': 500
+        }
 
-        return Response(data)
+        try:
+            response = requests.get(self.BINANCE_KLINES_URL, params=params, timeout=10)
+            response.raise_for_status()
+            klines = response.json()
+
+            ohlc_data = []
+            volume_data = []
+
+            for kline in klines:
+                time = kline[0] / 1000
+                open_price = float(kline[1])
+                high_price = float(kline[2])
+                low_price = float(kline[3])
+                close_price = float(kline[4])
+                volume = float(kline[5])
+
+                ohlc_data.append({
+                    'time': time,
+                    'open': open_price,
+                    'high': high_price,
+                    'low': low_price,
+                    'close': close_price,
+                })
+
+                color = 'rgba(239, 68, 68, 0.5)'
+                if close_price > open_price:
+                    color = 'rgba(34, 197, 94, 0.5)'
+
+                volume_data.append({
+                    'time': time,
+                    'value': volume,
+                    'color': color,
+                })
+
+            return Response({
+                'ohlc': ohlc_data,
+                'volume': volume_data
+            })
+
+        except requests.RequestException as e:
+            return Response({"error": f"Failed to fetch data from Binance: {str(e)}"},
+                            status=status.HTTP_503_SERVICE_UNAVAILABLE)
+        except Exception as e:
+            return Response({"error": f"An unexpected error occurred: {str(e)}"},
+                            status=status.HTTP_500_INTERNAL_SERVER_ERROR)
