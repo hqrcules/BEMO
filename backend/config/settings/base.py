@@ -16,14 +16,12 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-
     'rest_framework',
     'rest_framework_simplejwt',
     'corsheaders',
     'django_celery_beat',
     'channels',
     'drf_spectacular',
-
     'apps.accounts',
     'apps.admin_panel',
     'apps.support',
@@ -138,18 +136,11 @@ CORS_ALLOWED_ORIGINS = config(
     default='http://localhost:3000,http://localhost:5173',
     cast=lambda v: [s.strip() for s in v.split(',')]
 )
+
 CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOW_HEADERS = [
-    'accept',
-    'accept-encoding',
-    'authorization',
-    'content-type',
-    'dnt',
-    'origin',
-    'user-agent',
-    'x-csrftoken',
-    'x-requested-with',
-    'cookie',
+    'accept', 'accept-encoding', 'authorization', 'content-type',
+    'dnt', 'origin', 'user-agent', 'x-csrftoken', 'x-requested-with', 'cookie',
 ]
 
 SESSION_COOKIE_HTTPONLY = True
@@ -211,9 +202,34 @@ LOGGING = {
     },
 }
 
+CACHES = {
+    'default': {
+        'BACKEND': 'django_redis.cache.RedisCache',
+        'LOCATION': config('REDIS_URL', default='redis://127.0.0.1:6379/1'),
+        'OPTIONS': {
+            'CLIENT_CLASS': 'django_redis.client.DefaultClient',
+            'SOCKET_CONNECT_TIMEOUT': 5,
+            'SOCKET_TIMEOUT': 5,
+            'CONNECTION_POOL_KWARGS': {'max_connections': 50},
+        }
+    }
+}
+
+# Market Data API Keys & Cache
+TWELVE_DATA_API_KEY = config('TWELVE_DATA_API_KEY', default=None)
+OANDA_API_KEY = config('OANDA_API_KEY', default=None)
+BINANCE_API_KEY = config('BINANCE_API_KEY', default=None)
+
+MARKET_DATA_CACHE_TTL = {
+    'crypto': 60,
+    'forex': 300,
+    'stock': 300,
+    'commodity': 300,
+}
+
+# Bot Configuration
 WITHDRAWAL_COMMISSION_PERCENT = 25.0
 MIN_DEPOSIT_AMOUNT = 250.0
-
 BOT_PRICING = {
     'basic': 250.0,
     'premium': 500.0,

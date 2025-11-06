@@ -29,13 +29,23 @@ export type ChartInterval = '1h' | '4h' | '1d' | '1w';
 export const marketService = {
   async getHistory(symbol: string, interval: ChartInterval): Promise<ChartDataPoint[]> {
     try {
-      const response = await api.get('/api/trading/history/', {
+      const response = await api.get<OHLCVResponse>('/api/trading/history/', {
         params: {
           symbol: symbol,
           interval: interval,
         },
       });
-      return response.data;
+
+      const ohlcvData = response.data;
+
+      if (ohlcvData && ohlcvData.ohlc && ohlcvData.ohlc.length > 0) {
+        return ohlcvData.ohlc.map((candle: CandlestickData) => ({
+          time: candle.time,
+          value: candle.close,
+        }));
+      }
+
+      return [];
     } catch (error) {
       console.error(`Error fetching history for ${symbol}:`, error);
       throw error;
