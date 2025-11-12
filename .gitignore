@@ -1,27 +1,97 @@
-node_modules
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
 .venv
-__pycache__
-*.pyc
-.env
-.DS_Store
-.idea
-.vscode
+venv/
+ENV/
+env/
+*.egg-info/
+dist/
+build/
+*.egg
+
+# Django
 *.log
-dist
-build
-*.egg-info
+*.pot
+*.pyc
+db.sqlite3
+db.sqlite3-journal
+media/
+staticfiles/
+static/
+celerybeat-schedule
+celerybeat.pid
+
+# Testing
+.pytest_cache/
+.coverage
+.tox/
+.nox/
+htmlcov/
+coverage.xml
+nosetests.xml
+
+# Frontend
+node_modules/
+frontend/dist/
+frontend/build/
+frontend/.vite/
+frontend/tsconfig.tsbuildinfo
+*.local
+
+# Environment variables
+.env
+.env.local
+.env.development
+.env.test
+.env.production
+.env.*.local
+
+# IDEs
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+*.iml
+
+# Docker
+*.pid
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
+*.cache
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Database
 *.sqlite3
 *.db
-*.iml
+
+# Compiled files
 *.class
 *.war
 *.jar
-celerybeat-schedule
-coverage.xml
-htmlcov/
-.tox/
-.nox/
-.coverage
-.pytest_cache/
-nosetests.xml
-db.sqlite3
+
+# Project specific
+ngrok.exe
+fix_theme.py
+replace_theme_vars.py
+update_theme.py
+THEME_UPDATE_SUMMARY.md
+POLLING_MIGRATION.md

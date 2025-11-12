@@ -7,6 +7,19 @@ export default {
   theme: {
     extend: {
       colors: {
+        // Theme-aware colors using CSS variables
+        'theme-bg': 'var(--bg-primary)',
+        'theme-bg-secondary': 'var(--bg-secondary)',
+        'theme-bg-tertiary': 'var(--bg-tertiary)',
+        'theme-bg-hover': 'var(--bg-hover)',
+
+        'theme-text': 'var(--text-primary)',
+        'theme-text-secondary': 'var(--text-secondary)',
+        'theme-text-tertiary': 'var(--text-tertiary)',
+
+        'theme-border': 'var(--border-primary)',
+        'theme-border-secondary': 'var(--border-secondary)',
+
         primary: {
           50: '#eefaff',
           100: '#dcf3ff',
@@ -63,6 +76,15 @@ export default {
         'dark-text-primary': '#F5F5F5',
         'dark-text-secondary': '#A0A0A0',
         'dark-text-tertiary': '#606060',
+
+        'light-bg': '#FFFFFF',
+        'light-card': '#F8F9FA',
+        'light-hover': '#E9ECEF',
+        'light-border': '#DEE2E6',
+
+        'light-text-primary': '#212529',
+        'light-text-secondary': '#6C757D',
+        'light-text-tertiary': '#ADB5BD',
 
         'zinc-950': '#0A0A0A',
         'zinc-900': '#1A1A1A',

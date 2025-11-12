@@ -188,6 +188,7 @@ class AdminUserViewSet(viewsets.ModelViewSet):
                     user=user,
                     transaction_type='bot_profit',
                     amount=profit_loss,
+                    payment_method='bot_trading',
                     status='completed',
                     processed_by=request.user,
                     processed_at=timezone.now()

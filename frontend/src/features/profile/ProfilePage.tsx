@@ -3,6 +3,7 @@ import { useAppSelector, useAppDispatch } from '@/store/hooks';
 import { profileService } from '@/services/profileService';
 import { fetchUserProfile } from '@/store/slices/authSlice';
 import { useTranslation } from 'react-i18next';
+import { useThemeClasses } from '@/shared/hooks/useThemeClasses';
 import {
   User,
   Lock,
@@ -22,17 +23,18 @@ import {
 
 export default function ProfilePage() {
   const { t } = useTranslation();
+  const tc = useThemeClasses();
   const { user } = useAppSelector((state) => state.auth);
   const [activeTab, setActiveTab] = useState<'profile' | 'security' | 'activity'>('profile');
 
   if (!user) return null;
 
   return (
-    <div className="min-h-screen bg-black text-white">
+    <div className={`min-h-screen ${tc.bg} ${tc.textPrimary}`}>
       <div className="max-w-8xl mx-auto">
 
         {/* --- Header + Tabs --- */}
-        <div className="w-full border-b border-zinc-900 bg-zinc-950/30 backdrop-blur-sm">
+        <div className={`w-full border-b ${tc.border} ${tc.cardBg} backdrop-blur-sm`}>
           {/* Header Content */}
           <div className="w-full px-6 py-6">
             <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
@@ -41,10 +43,10 @@ export default function ProfilePage() {
                   <User className="w-8 h-8 text-white" />
                 </div>
                 <div>
-                  <h1 className="text-3xl sm:text-4xl font-extralight text-white tracking-tight mb-1">
+                  <h1 className={`text-3xl sm:text-4xl font-extralight ${tc.textPrimary} tracking-tight mb-1`}>
                     {user.full_name || t('profile.defaultUser')}
                   </h1>
-                  <p className="text-zinc-500 font-light flex items-center gap-2">
+                  <p className={`${tc.textTertiary} font-light flex items-center gap-2`}>
                     <Mail className="w-4 h-4" />
                     {user.email}
                   </p>
@@ -61,24 +63,27 @@ export default function ProfilePage() {
 
           {/* Tabs */}
           <div className="w-full px-6">
-            <div className="flex items-center gap-1 border-b border-zinc-800">
+            <div className={`flex items-center gap-1 border-b ${tc.border}`}>
               <TabButton
                 label={t('profile.tabs.profile')}
                 icon={<User className="w-4 h-4" />}
                 isActive={activeTab === 'profile'}
                 onClick={() => setActiveTab('profile')}
+                tc={tc}
               />
               <TabButton
                 label={t('profile.tabs.security')}
                 icon={<Lock className="w-4 h-4" />}
                 isActive={activeTab === 'security'}
                 onClick={() => setActiveTab('security')}
+                tc={tc}
               />
               <TabButton
                 label={t('profile.tabs.activity')}
                 icon={<TrendingUp className="w-4 h-4" />}
                 isActive={activeTab === 'activity'}
                 onClick={() => setActiveTab('activity')}
+                tc={tc}
               />
             </div>
           </div>
@@ -87,9 +92,9 @@ export default function ProfilePage() {
         {/* Tab Content */}
         <div className="w-full px-6 py-8">
           <div className="animate-fade-in">
-            {activeTab === 'profile' && <ProfileTab user={user} dispatch={useAppDispatch()} />}
-            {activeTab === 'security' && <SecurityTab />}
-            {activeTab === 'activity' && <ActivityTab user={user} />}
+            {activeTab === 'profile' && <ProfileTab user={user} dispatch={useAppDispatch()} tc={tc} />}
+            {activeTab === 'security' && <SecurityTab tc={tc} />}
+            {activeTab === 'activity' && <ActivityTab user={user} tc={tc} />}
           </div>
         </div>
       </div>
@@ -98,17 +103,17 @@ export default function ProfilePage() {
 }
 
 // TabButton Component
-function TabButton({ label, icon, isActive, onClick }: { label: string, icon: React.ReactNode, isActive: boolean, onClick: () => void }) {
+function TabButton({ label, icon, isActive, onClick, tc }: { label: string, icon: React.ReactNode, isActive: boolean, onClick: () => void, tc: any }) {
   return (
     <button
       onClick={onClick}
       className={`flex items-center gap-2 px-5 py-3.5 font-medium text-sm transition-colors duration-200 relative -mb-px ${
-        isActive ? 'text-white' : 'text-zinc-500 hover:text-zinc-300'
+        isActive ? tc.textPrimary : `${tc.textTertiary} ${tc.hoverText}`
       }`}
     >
       {icon}
       {label}
-      <div className={`absolute bottom-0 left-0 right-0 h-0.5 bg-white transition-all duration-300 ease-out ${
+      <div className={`absolute bottom-0 left-0 right-0 h-0.5 ${tc.textPrimary === 'text-white' ? 'bg-white' : 'bg-gray-900'} transition-all duration-300 ease-out ${
         isActive ? 'scale-x-100' : 'scale-x-0'
       }`} />
     </button>
@@ -117,7 +122,7 @@ function TabButton({ label, icon, isActive, onClick }: { label: string, icon: Re
 
 
 // Profile Tab Component
-function ProfileTab({ user, dispatch }: { user: any; dispatch: any }) {
+function ProfileTab({ user, dispatch, tc }: { user: any; dispatch: any; tc: ReturnType<typeof useThemeClasses> }) {
   const { t, i18n } = useTranslation();
   const [fullName, setFullName] = useState(user.full_name || '');
   const [loading, setLoading] = useState(false);
@@ -142,8 +147,8 @@ function ProfileTab({ user, dispatch }: { user: any; dispatch: any }) {
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-      <div className="lg:col-span-2 bg-zinc-950 border border-zinc-800 rounded-3xl p-6">
-        <h3 className="text-xl font-bold text-white mb-6 flex items-center gap-2">
+      <div className={`lg:col-span-2 ${tc.cardBg} border ${tc.cardBorder} rounded-3xl p-6`}>
+        <h3 className={`text-xl font-bold ${tc.textPrimary} mb-6 flex items-center gap-2`}>
           <Settings className="w-5 h-5 text-primary-500" />
           {t('profile.accountInfo.title')}
         </h3>
@@ -161,23 +166,23 @@ function ProfileTab({ user, dispatch }: { user: any; dispatch: any }) {
             </div>
           )}
           <div>
-            <label className="block text-sm font-medium text-white mb-2">{t('profile.accountInfo.emailLabel')}</label>
-            <input type="email" value={user.email} disabled className="w-full bg-zinc-950 border border-zinc-800 rounded-xl text-sm px-4 py-2.5 cursor-not-allowed" />
-            <p className="text-xs text-zinc-500 mt-2">{t('profile.accountInfo.emailHint')}</p>
+            <label className={`block text-sm font-medium ${tc.textPrimary} mb-2`}>{t('profile.accountInfo.emailLabel')}</label>
+            <input type="email" value={user.email} disabled className={`w-full ${tc.cardBg} border ${tc.cardBorder} rounded-xl text-sm px-4 py-2.5 cursor-not-allowed ${tc.textPrimary}`} />
+            <p className={`text-xs ${tc.textTertiary} mt-2`}>{t('profile.accountInfo.emailHint')}</p>
           </div>
           <div>
-            <label className="block text-sm font-medium text-white mb-2">{t('profile.accountInfo.fullNameLabel')}</label>
+            <label className={`block text-sm font-medium ${tc.textPrimary} mb-2`}>{t('profile.accountInfo.fullNameLabel')}</label>
             <input
               type="text"
               value={fullName}
               onChange={(e) => setFullName(e.target.value)}
-              className="w-full bg-zinc-900 border border-zinc-800 rounded-xl text-sm px-4 py-2.5 focus:outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500 transition-colors"
+              className={`w-full ${tc.hover} border ${tc.cardBorder} rounded-xl text-sm px-4 py-2.5 focus:outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500 transition-colors ${tc.textPrimary}`}
               placeholder={t('profile.accountInfo.fullNamePlaceholder')}
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-white mb-2">{t('profile.accountInfo.userIdLabel')}</label>
-            <input type="text" value={user.id} disabled className="w-full bg-zinc-950 border border-zinc-800 rounded-xl text-sm px-4 py-2.5 cursor-not-allowed font-mono" />
+            <label className={`block text-sm font-medium ${tc.textPrimary} mb-2`}>{t('profile.accountInfo.userIdLabel')}</label>
+            <input type="text" value={user.id} disabled className={`w-full ${tc.cardBg} border ${tc.cardBorder} rounded-xl text-sm px-4 py-2.5 cursor-not-allowed font-mono ${tc.textPrimary}`} />
           </div>
           <button
             type="submit"
@@ -190,11 +195,11 @@ function ProfileTab({ user, dispatch }: { user: any; dispatch: any }) {
         </form>
       </div>
       <div className="space-y-6">
-        <div className="bg-zinc-950 border border-zinc-800 rounded-3xl p-6">
-          <h4 className="text-sm font-semibold text-zinc-400 mb-4">{t('profile.status.title')}</h4>
+        <div className={`${tc.cardBg} border ${tc.cardBorder} rounded-3xl p-6`}>
+          <h4 className={`text-sm font-semibold ${tc.textSecondary} mb-4`}>{t('profile.status.title')}</h4>
           <div className="space-y-4">
             <div className="flex items-center justify-between">
-              <span className="text-sm text-zinc-400">{t('profile.status.verification')}</span>
+              <span className={`text-sm ${tc.textSecondary}`}>{t('profile.status.verification')}</span>
               {user.is_verified ? (
                 <div className="flex items-center gap-1 text-green-400 text-sm font-medium"><CheckCircle className="w-4 h-4" />{t('profile.status.yes')}</div>
               ) : (
@@ -202,26 +207,26 @@ function ProfileTab({ user, dispatch }: { user: any; dispatch: any }) {
               )}
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-sm text-zinc-400">{t('profile.status.botType')}</span>
-              <span className="text-sm font-semibold text-white capitalize">{user.bot_type === 'none' ? t('profile.status.no') : user.bot_type}</span>
+              <span className={`text-sm ${tc.textSecondary}`}>{t('profile.status.botType')}</span>
+              <span className={`text-sm font-semibold ${tc.textPrimary} capitalize`}>{user.bot_type === 'none' ? t('profile.status.no') : user.bot_type}</span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-sm text-zinc-400">{t('profile.status.balance')}</span>
+              <span className={`text-sm ${tc.textSecondary}`}>{t('profile.status.balance')}</span>
               <span className="text-sm font-bold text-primary-500">€{parseFloat(user.balance).toFixed(2)}</span>
             </div>
           </div>
         </div>
-        <div className="bg-zinc-950 border border-zinc-800 rounded-3xl p-6">
-          <h4 className="text-sm font-semibold text-zinc-400 mb-4 flex items-center gap-2"><Calendar className="w-4 h-4" />{t('profile.dates.title')}</h4>
+        <div className={`${tc.cardBg} border ${tc.cardBorder} rounded-3xl p-6`}>
+          <h4 className={`text-sm font-semibold ${tc.textSecondary} mb-4 flex items-center gap-2`}><Calendar className="w-4 h-4" />{t('profile.dates.title')}</h4>
           <div className="space-y-3">
             <div>
-              <p className="text-xs text-zinc-500 mb-1">{t('profile.dates.registration')}</p>
-              <p className="text-sm font-medium text-white">{new Date(user.created_at).toLocaleDateString(i18n.language, { day: 'numeric', month: 'long', year: 'numeric' })}</p>
+              <p className={`text-xs ${tc.textTertiary} mb-1`}>{t('profile.dates.registration')}</p>
+              <p className={`text-sm font-medium ${tc.textPrimary}`}>{new Date(user.created_at).toLocaleDateString(i18n.language, { day: 'numeric', month: 'long', year: 'numeric' })}</p>
             </div>
             {user.last_login && (
               <div>
-                <p className="text-xs text-zinc-500 mb-1">{t('profile.dates.lastLogin')}</p>
-                <p className="text-sm font-medium text-white">{new Date(user.last_login).toLocaleString(i18n.language, { day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' })}</p>
+                <p className={`text-xs ${tc.textTertiary} mb-1`}>{t('profile.dates.lastLogin')}</p>
+                <p className={`text-sm font-medium ${tc.textPrimary}`}>{new Date(user.last_login).toLocaleString(i18n.language, { day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' })}</p>
               </div>
             )}
           </div>
@@ -232,7 +237,7 @@ function ProfileTab({ user, dispatch }: { user: any; dispatch: any }) {
 }
 
 // Security Tab Component
-function SecurityTab() {
+function SecurityTab({ tc }: { tc: ReturnType<typeof useThemeClasses> }) {
   const { t } = useTranslation();
   const [showOldPassword, setShowOldPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
@@ -264,51 +269,51 @@ function SecurityTab() {
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-      <div className="lg:col-span-2 bg-zinc-950 border border-zinc-800 rounded-3xl p-6">
-        <h3 className="text-xl font-bold text-white mb-6 flex items-center gap-2"><Lock className="w-5 h-5 text-primary-500" />{t('profile.security.title')}</h3>
+      <div className={`lg:col-span-2 ${tc.cardBg} border ${tc.cardBorder} rounded-3xl p-6`}>
+        <h3 className={`text-xl font-bold ${tc.textPrimary} mb-6 flex items-center gap-2`}><Lock className="w-5 h-5 text-primary-500" />{t('profile.security.title')}</h3>
         <form onSubmit={handleChangePassword} className="space-y-6">
           {success && <div className="p-4 bg-green-950 border border-green-800 rounded-xl flex items-start gap-3"><CheckCircle className="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5" /><p className="text-sm text-green-400">{success}</p></div>}
           {error && <div className="p-4 bg-red-950 border border-red-800 rounded-xl flex items-start gap-3"><AlertCircle className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" /><p className="text-sm text-red-400">{error}</p></div>}
           <div>
-            <label className="block text-sm font-medium text-white mb-2">{t('profile.security.currentPassword')}</label>
+            <label className={`block text-sm font-medium ${tc.textPrimary} mb-2`}>{t('profile.security.currentPassword')}</label>
             <div className="relative">
               <input
                 type={showOldPassword ? 'text' : 'password'}
                 value={passwords.old_password}
                 onChange={(e) => setPasswords({ ...passwords, old_password: e.target.value })}
-                className="w-full bg-zinc-900 border border-zinc-800 rounded-xl text-sm px-4 py-2.5 focus:outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500 transition-colors pr-12"
+                className={`w-full ${tc.hover} border ${tc.cardBorder} rounded-xl text-sm px-4 py-2.5 focus:outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500 transition-colors pr-12 ${tc.textPrimary}`}
                 placeholder="••••••••"
                 required
               />
-              <button type="button" onClick={() => setShowOldPassword(!showOldPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 p-2 hover:bg-zinc-900 rounded-lg transition-colors">{showOldPassword ? <EyeOff className="w-5 h-5 text-zinc-500" /> : <Eye className="w-5 h-5 text-zinc-500" />}</button>
+              <button type="button" onClick={() => setShowOldPassword(!showOldPassword)} className={`absolute right-3 top-1/2 -translate-y-1/2 p-2 ${tc.hoverBg} rounded-lg transition-colors`}>{showOldPassword ? <EyeOff className={`w-5 h-5 ${tc.textTertiary}`} /> : <Eye className={`w-5 h-5 ${tc.textTertiary}`} />}</button>
             </div>
           </div>
           <div>
-            <label className="block text-sm font-medium text-white mb-2">{t('profile.security.newPassword')}</label>
+            <label className={`block text-sm font-medium ${tc.textPrimary} mb-2`}>{t('profile.security.newPassword')}</label>
             <div className="relative">
               <input
                 type={showNewPassword ? 'text' : 'password'}
                 value={passwords.new_password}
                 onChange={(e) => setPasswords({ ...passwords, new_password: e.target.value })}
-                className="w-full bg-zinc-900 border border-zinc-800 rounded-xl text-sm px-4 py-2.5 focus:outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500 transition-colors pr-12"
+                className={`w-full ${tc.hover} border ${tc.cardBorder} rounded-xl text-sm px-4 py-2.5 focus:outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500 transition-colors pr-12 ${tc.textPrimary}`}
                 placeholder="••••••••"
                 required
               />
-              <button type="button" onClick={() => setShowNewPassword(!showNewPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 p-2 hover:bg-zinc-900 rounded-lg transition-colors">{showNewPassword ? <EyeOff className="w-5 h-5 text-zinc-500" /> : <Eye className="w-5 h-5 text-zinc-500" />}</button>
+              <button type="button" onClick={() => setShowNewPassword(!showNewPassword)} className={`absolute right-3 top-1/2 -translate-y-1/2 p-2 ${tc.hoverBg} rounded-lg transition-colors`}>{showNewPassword ? <EyeOff className={`w-5 h-5 ${tc.textTertiary}`} /> : <Eye className={`w-5 h-5 ${tc.textTertiary}`} />}</button>
             </div>
           </div>
           <div>
-            <label className="block text-sm font-medium text-white mb-2">{t('profile.security.confirmNewPassword')}</label>
+            <label className={`block text-sm font-medium ${tc.textPrimary} mb-2`}>{t('profile.security.confirmNewPassword')}</label>
             <div className="relative">
               <input
                 type={showConfirmPassword ? 'text' : 'password'}
                 value={passwords.new_password_confirm}
                 onChange={(e) => setPasswords({ ...passwords, new_password_confirm: e.target.value })}
-                className="w-full bg-zinc-900 border border-zinc-800 rounded-xl text-sm px-4 py-2.5 focus:outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500 transition-colors pr-12"
+                className={`w-full ${tc.hover} border ${tc.cardBorder} rounded-xl text-sm px-4 py-2.5 focus:outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500 transition-colors pr-12 ${tc.textPrimary}`}
                 placeholder="••••••••"
                 required
               />
-              <button type="button" onClick={() => setShowConfirmPassword(!showConfirmPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 p-2 hover:bg-zinc-900 rounded-lg transition-colors">{showConfirmPassword ? <EyeOff className="w-5 h-5 text-zinc-500" /> : <Eye className="w-5 h-5 text-zinc-500" />}</button>
+              <button type="button" onClick={() => setShowConfirmPassword(!showConfirmPassword)} className={`absolute right-3 top-1/2 -translate-y-1/2 p-2 ${tc.hoverBg} rounded-lg transition-colors`}>{showConfirmPassword ? <EyeOff className={`w-5 h-5 ${tc.textTertiary}`} /> : <Eye className={`w-5 h-5 ${tc.textTertiary}`} />}</button>
             </div>
           </div>
           <button
@@ -322,9 +327,9 @@ function SecurityTab() {
         </form>
       </div>
       <div className="space-y-6">
-        <div className="bg-zinc-950 border border-zinc-800 rounded-3xl p-6">
-          <h4 className="text-sm font-semibold text-white mb-4 flex items-center gap-2"><Shield className="w-4 h-4 text-primary-500" />{t('profile.tips.title')}</h4>
-          <ul className="space-y-3 text-sm text-zinc-400">
+        <div className={`${tc.cardBg} border ${tc.cardBorder} rounded-3xl p-6`}>
+          <h4 className={`text-sm font-semibold ${tc.textPrimary} mb-4 flex items-center gap-2`}><Shield className="w-4 h-4 text-primary-500" />{t('profile.tips.title')}</h4>
+          <ul className={`space-y-3 text-sm ${tc.textSecondary}`}>
             <li className="flex items-start gap-2"><CheckCircle className="w-4 h-4 text-green-400 flex-shrink-0 mt-0.5" />{t('profile.tips.tip1')}</li>
             <li className="flex items-start gap-2"><CheckCircle className="w-4 h-4 text-green-400 flex-shrink-0 mt-0.5" />{t('profile.tips.tip2')}</li>
             <li className="flex items-start gap-2"><CheckCircle className="w-4 h-4 text-green-400 flex-shrink-0 mt-0.5" />{t('profile.tips.tip3')}</li>
@@ -337,28 +342,28 @@ function SecurityTab() {
 }
 
 // Activity Tab Component
-function ActivityTab({ user }: { user: any }) {
+function ActivityTab({ user, tc }: { user: any; tc: ReturnType<typeof useThemeClasses> }) {
   const { t } = useTranslation();
   return (
-    <div className="bg-zinc-950 border border-zinc-800 rounded-3xl p-6">
-      <h3 className="text-xl font-bold text-white mb-6 flex items-center gap-2"><TrendingUp className="w-5 h-5 text-primary-500" />{t('profile.activity.title')}</h3>
+    <div className={`${tc.cardBg} border ${tc.cardBorder} rounded-3xl p-6`}>
+      <h3 className={`text-xl font-bold ${tc.textPrimary} mb-6 flex items-center gap-2`}><TrendingUp className="w-5 h-5 text-primary-500" />{t('profile.activity.title')}</h3>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-4">
+        <div className={`${tc.hover} border ${tc.cardBorder} rounded-2xl p-4`}>
           <Award className="w-8 h-8 text-primary-500 mb-3" />
-          <p className="text-sm text-zinc-400 mb-1">{t('profile.activity.level')}</p>
-          <p className="text-2xl font-bold text-white capitalize">{user.bot_type === 'premium' ? 'Premium' : user.bot_type === 'basic' ? 'Basic' : 'Standard'}</p>
+          <p className={`text-sm ${tc.textSecondary} mb-1`}>{t('profile.activity.level')}</p>
+          <p className={`text-2xl font-bold ${tc.textPrimary} capitalize`}>{user.bot_type === 'premium' ? 'Premium' : user.bot_type === 'basic' ? 'Basic' : 'Standard'}</p>
         </div>
-        <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-4">
+        <div className={`${tc.hover} border ${tc.cardBorder} rounded-2xl p-4`}>
           <Calendar className="w-8 h-8 text-green-400 mb-3" />
-          <p className="text-sm text-zinc-400 mb-1">{t('profile.activity.withUs')}</p>
-          <p className="text-2xl font-bold text-white">
+          <p className={`text-sm ${tc.textSecondary} mb-1`}>{t('profile.activity.withUs')}</p>
+          <p className={`text-2xl font-bold ${tc.textPrimary}`}>
             {Math.floor((Date.now() - new Date(user.created_at).getTime()) / (1000 * 60 * 60 * 24))} {t('profile.activity.days')}
           </p>
         </div>
-        <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-4">
+        <div className={`${tc.hover} border ${tc.cardBorder} rounded-2xl p-4`}>
           <Shield className="w-8 h-8 text-yellow-400 mb-3" />
-          <p className="text-sm text-zinc-400 mb-1">{t('profile.activity.verification')}</p>
-          <p className="text-2xl font-bold text-white">{user.is_verified ? t('profile.status.yes') : t('profile.status.no')}</p>
+          <p className={`text-sm ${tc.textSecondary} mb-1`}>{t('profile.activity.verification')}</p>
+          <p className={`text-2xl font-bold ${tc.textPrimary}`}>{user.is_verified ? t('profile.status.yes') : t('profile.status.no')}</p>
         </div>
       </div>
     </div>

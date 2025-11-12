@@ -59,33 +59,63 @@ export const tradingService = {
     return response.data;
   },
 
-  async getTrades(): Promise<{ results: BotTrade[] }> {
+  // Trades
+  async getTrades(): Promise<BotTrade[]> {
     const response = await api.get('/api/trading/trades/');
-    return response.data;
+    // Handle both paginated and non-paginated responses
+    return response.data.results || response.data;
+  },
+
+  async getOpenPositions(): Promise<BotTrade[]> {
+    const response = await api.get('/api/trading/trades/open/');
+    return response.data.results || response.data;
   },
 
   async getOpenTrades(): Promise<BotTrade[]> {
-    const response = await api.get('/api/trading/trades/open/');
-    return response.data;
+    return this.getOpenPositions();
   },
 
   async getClosedTrades(): Promise<BotTrade[]> {
     const response = await api.get('/api/trading/trades/closed/');
-    return response.data;
+    return response.data.results || response.data;
   },
 
-  async getStats(): Promise<TradingStats> {
+  // Statistics
+  async getTradingStats(): Promise<TradingStats> {
     const response = await api.get('/api/trading/trades/stats/');
     return response.data;
   },
 
-  async getSessions(): Promise<{ results: TradingSession[] }> {
+  async getStats(): Promise<TradingStats> {
+    return this.getTradingStats();
+  },
+
+  // Sessions
+  async getSessions(): Promise<TradingSession[]> {
     const response = await api.get('/api/trading/sessions/');
+    return response.data.results || response.data;
+  },
+
+  async getActiveSession(): Promise<TradingSession | null> {
+    try {
+      const response = await api.get('/api/trading/sessions/active/');
+      return response.data;
+    } catch (error) {
+      console.error('No active session:', error);
+      return null;
+    }
+  },
+
+  // Additional methods
+  async getTrade(tradeId: string): Promise<BotTrade> {
+    const response = await api.get(`/api/trading/trades/${tradeId}/`);
     return response.data;
   },
 
-  async getActiveSession(): Promise<TradingSession> {
-    const response = await api.get('/api/trading/sessions/active/');
+  async closePosition(tradeId: string): Promise<BotTrade> {
+    const response = await api.post(`/api/trading/trades/${tradeId}/close/`);
     return response.data;
   },
 };
+
+export default tradingService;

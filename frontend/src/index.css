@@ -6,72 +6,155 @@
 
 @layer base {
   * {
-    @apply border-dark-border; /* Використовуємо новий колір рамки */
+    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
   }
 
   html {
     scroll-behavior: smooth;
   }
 
-  body {
-    @apply bg-dark-bg text-dark-text-primary antialiased; /* Використовуємо нові кольори */
-    font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
-    margin: 0;
-    padding: 0;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
+  /* CSS Variables for Dark Theme (default) */
+  html.dark-theme,
+  html:not(.light-theme) {
+    --bg-primary: #000000;
+    --bg-secondary: #111111;
+    --bg-tertiary: #1F1F1F;
+    --bg-hover: #2A2A2A;
+
+    --text-primary: #F5F5F5;
+    --text-secondary: #A0A0A0;
+    --text-tertiary: #606060;
+
+    --border-primary: #2F2F2F;
+    --border-secondary: #3A3A3A;
+
+    * {
+      @apply border-dark-border;
+    }
+
+    body {
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      @apply antialiased;
+      font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+      margin: 0;
+      padding: 0;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    input, textarea, select {
+      @apply text-dark-text-primary bg-transparent;
+      outline: none;
+    }
+
+    input:-webkit-autofill,
+    input:-webkit-autofill:hover,
+    input:-webkit-autofill:focus,
+    textarea:-webkit-autofill,
+    textarea:-webkit-autofill:hover,
+    textarea:-webkit-autofill:focus,
+    select:-webkit-autofill,
+    select:-webkit-autofill:hover,
+    select:-webkit-autofill:focus {
+      -webkit-text-fill-color: theme('colors.dark-text-primary');
+      -webkit-box-shadow: 0 0 0px 1000px theme('colors.dark-card') inset;
+      transition: background-color 5000s ease-in-out 0s;
+      caret-color: theme('colors.dark-text-primary');
+    }
+
+    ::-webkit-scrollbar-track {
+      @apply bg-dark-bg;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      @apply bg-dark-hover rounded-full;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      @apply bg-dark-border;
+    }
   }
 
-  input, textarea, select {
-    @apply text-dark-text-primary bg-transparent; /* Покращення для полів вводу */
-    outline: none; /* Забираємо стандартний outline */
-  }
+  /* CSS Variables for Light Theme */
+  html.light-theme {
+    --bg-primary: #FFFFFF;
+    --bg-secondary: #F8F9FA;
+    --bg-tertiary: #E9ECEF;
+    --bg-hover: #DEE2E6;
 
-  input:-webkit-autofill,
-  input:-webkit-autofill:hover,
-  input:-webkit-autofill:focus,
-  textarea:-webkit-autofill,
-  textarea:-webkit-autofill:hover,
-  textarea:-webkit-autofill:focus,
-  select:-webkit-autofill,
-  select:-webkit-autofill:hover,
-  select:-webkit-autofill:focus {
-    -webkit-text-fill-color: theme('colors.dark-text-primary');
-    -webkit-box-shadow: 0 0 0px 1000px theme('colors.dark-card') inset;
-    transition: background-color 5000s ease-in-out 0s;
-    caret-color: theme('colors.dark-text-primary');
+    --text-primary: #212529;
+    --text-secondary: #6C757D;
+    --text-tertiary: #ADB5BD;
+
+    --border-primary: #DEE2E6;
+    --border-secondary: #CED4DA;
+
+    * {
+      @apply border-light-border;
+    }
+
+    body {
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      @apply antialiased;
+      font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+      margin: 0;
+      padding: 0;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    input, textarea, select {
+      @apply text-light-text-primary bg-transparent;
+      outline: none;
+    }
+
+    input:-webkit-autofill,
+    input:-webkit-autofill:hover,
+    input:-webkit-autofill:focus,
+    textarea:-webkit-autofill,
+    textarea:-webkit-autofill:hover,
+    textarea:-webkit-autofill:focus,
+    select:-webkit-autofill,
+    select:-webkit-autofill:hover,
+    select:-webkit-autofill:focus {
+      -webkit-text-fill-color: theme('colors.light-text-primary');
+      -webkit-box-shadow: 0 0 0px 1000px theme('colors.light-card') inset;
+      transition: background-color 5000s ease-in-out 0s;
+      caret-color: theme('colors.light-text-primary');
+    }
+
+    ::-webkit-scrollbar-track {
+      @apply bg-light-bg;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      @apply bg-light-hover rounded-full;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      @apply bg-light-border;
+    }
   }
 
   /* Custom scrollbar */
   ::-webkit-scrollbar {
-    width: 6px; /* Тонший */
+    width: 6px;
     height: 6px;
-  }
-
-  ::-webkit-scrollbar-track {
-    @apply bg-dark-bg; /* Фон як у тіла */
-  }
-
-  ::-webkit-scrollbar-thumb {
-    @apply bg-dark-hover rounded-full; /* Новий колір */
-  }
-
-  ::-webkit-scrollbar-thumb:hover {
-    @apply bg-dark-border; /* Новий колір */
   }
 }
 
 @layer components {
-  /* Glass Card Effect */
+  /* Glass Card Effect - Default (Dark) */
   .glass-card {
-    /* Насиченіший чорний, менш прозорий */
     @apply bg-dark-card/90 backdrop-blur-lg rounded-3xl border border-dark-border/50 shadow-xl;
   }
 
   /* Buttons */
   .btn {
     @apply font-medium py-3 px-6 rounded-xl transition-all duration-300
-           focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-dark-bg
+           focus:outline-none focus:ring-2 focus:ring-offset-2
            disabled:opacity-50 disabled:cursor-not-allowed inline-flex items-center justify-center gap-2
            transform active:scale-95;
   }
@@ -91,23 +174,24 @@
            text-white shadow-lg hover:shadow-glow-danger focus:ring-danger-500;
   }
 
+  /* Button Secondary - Default (Dark) */
   .btn-secondary {
-    /* Змінено на темніший фон */
     @apply btn bg-dark-hover hover:bg-dark-border text-dark-text-secondary hover:text-dark-text-primary
            focus:ring-dark-border;
   }
 
-  /* Input Fields */
+  /* Input Fields - Default (Dark) */
   .input-field {
-    @apply w-full px-5 py-3 bg-dark-card border border-dark-border rounded-xl /* Змінено фон */
-           focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500/50 /* Легший фокус */
+    @apply w-full px-5 py-3 bg-dark-card border border-dark-border rounded-xl
+           focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500/50
            transition-all duration-300 placeholder:text-dark-text-tertiary text-dark-text-primary
-           hover:border-dark-hover; /* На hover темніший */
+           hover:border-dark-hover;
   }
 
-  /* Stat Cards */
+  /* Stat Cards - Default (Dark) */
   .stat-card {
-    @apply glass-card p-6 hover:bg-dark-hover/90 transition-all duration-300 /* Змінено фон hover */
+    @apply bg-dark-card/90 backdrop-blur-lg rounded-3xl border border-dark-border/50 shadow-xl
+           p-6 hover:bg-dark-hover/90 transition-all duration-300
            hover:shadow-2xl hover:border-primary-500/30 cursor-pointer
            transform hover:-translate-y-1;
   }
@@ -115,42 +199,42 @@
   /* Navigation Pills */
   .nav-pill {
     @apply flex items-center gap-2 px-4 py-2.5 rounded-xl transition-all duration-300
-           font-medium whitespace-nowrap text-sm; /* Зменшив розмір шрифту */
+           font-medium whitespace-nowrap text-sm;
   }
 
   .nav-pill-active {
-    @apply nav-pill bg-dark-hover text-dark-text-primary; /* Змінено стиль активного */
+    @apply nav-pill bg-dark-hover text-dark-text-primary;
   }
 
   .nav-pill-inactive {
-    @apply nav-pill bg-transparent text-dark-text-secondary hover:bg-dark-hover hover:text-dark-text-primary; /* Змінено стиль неактивного */
+    @apply nav-pill bg-transparent text-dark-text-secondary hover:bg-dark-hover hover:text-dark-text-primary;
   }
 
-  /* Table */
+  /* Table - Default (Dark) */
   .table-row {
     @apply border-b border-dark-border hover:bg-dark-hover/50 transition-colors duration-200;
   }
 
   /* Badge */
   .badge {
-    @apply inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold border; /* Додав border */
+    @apply inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold border;
   }
 
   .badge-success {
-    @apply badge bg-success-900/50 text-success-300 border-success-700/50; /* Темніший зелений */
+    @apply badge bg-success-900/50 text-success-300 border-success-700/50;
   }
 
   .badge-danger {
-    @apply badge bg-danger-900/50 text-danger-300 border-danger-700/50; /* Темніший червоний */
+    @apply badge bg-danger-900/50 text-danger-300 border-danger-700/50;
   }
 
   .badge-warning {
-    @apply badge bg-warning-900/50 text-warning-300 border-warning-700/50; /* Темніший жовтий */
+    @apply badge bg-warning-900/50 text-warning-300 border-warning-700/50;
   }
 
-  /* Текстовий градієнт */
+  /* Text gradients */
   .text-gradient {
-    @apply bg-clip-text text-transparent bg-gradient-to-r from-primary-400 via-primary-500 to-primary-300; /* Змінив градієнт */
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-primary-400 via-primary-500 to-primary-300;
   }
   .text-gradient-success {
     @apply bg-clip-text text-transparent bg-gradient-to-r from-success-400 to-success-300;
@@ -158,6 +242,49 @@
   .text-gradient-danger {
     @apply bg-clip-text text-transparent bg-gradient-to-r from-danger-400 to-danger-300;
   }
+}
+
+/* Light theme overrides - outside @layer to avoid circular dependencies */
+html.light-theme .glass-card {
+  @apply bg-light-card/90 border-light-border/50;
+}
+
+html.light-theme .btn-secondary {
+  @apply bg-light-hover hover:bg-light-border text-light-text-secondary hover:text-light-text-primary
+         focus:ring-light-border;
+}
+
+html.light-theme .input-field {
+  @apply bg-light-card border-light-border placeholder:text-light-text-tertiary text-light-text-primary
+         hover:border-light-hover;
+}
+
+html.light-theme .stat-card {
+  @apply bg-light-card/90 border-light-border/50 hover:bg-light-hover/90;
+}
+
+html.light-theme .nav-pill-active {
+  @apply bg-light-hover text-light-text-primary;
+}
+
+html.light-theme .nav-pill-inactive {
+  @apply text-light-text-secondary hover:bg-light-hover hover:text-light-text-primary;
+}
+
+html.light-theme .table-row {
+  @apply border-light-border hover:bg-light-hover/50;
+}
+
+html.light-theme .badge-success {
+  @apply bg-success-100 text-success-700 border-success-300;
+}
+
+html.light-theme .badge-danger {
+  @apply bg-danger-100 text-danger-700 border-danger-300;
+}
+
+html.light-theme .badge-warning {
+  @apply bg-warning-100 text-warning-700 border-warning-300;
 }
 
 @layer utilities {
@@ -168,19 +295,29 @@
 
   /* Custom scrollbar for containers */
   .custom-scroll::-webkit-scrollbar {
-    width: 4px; /* Ще тонший */
+    width: 4px;
   }
 
   .custom-scroll::-webkit-scrollbar-track {
-    @apply bg-transparent; /* Прозорий фон */
+    @apply bg-transparent;
   }
 
-  .custom-scroll::-webkit-scrollbar-thumb {
+  html.dark-theme .custom-scroll::-webkit-scrollbar-thumb,
+  html:not(.light-theme) .custom-scroll::-webkit-scrollbar-thumb {
     @apply bg-dark-hover rounded-full;
   }
 
-  .custom-scroll::-webkit-scrollbar-thumb:hover {
+  html.light-theme .custom-scroll::-webkit-scrollbar-thumb {
+    @apply bg-light-hover rounded-full;
+  }
+
+  html.dark-theme .custom-scroll::-webkit-scrollbar-thumb:hover,
+  html:not(.light-theme) .custom-scroll::-webkit-scrollbar-thumb:hover {
     @apply bg-dark-border;
+  }
+
+  html.light-theme .custom-scroll::-webkit-scrollbar-thumb:hover {
+    @apply bg-light-border;
   }
 }
 
@@ -202,9 +339,15 @@
 .animate-slide-in {
    animation: slideIn 0.5s ease-out forwards;
 }
-.th-cell {
+html.dark-theme .th-cell,
+html:not(.light-theme) .th-cell {
   @apply py-3 px-4 text-xs font-semibold text-dark-text-secondary uppercase tracking-wider whitespace-nowrap;
 }
+
+html.light-theme .th-cell {
+  @apply py-3 px-4 text-xs font-semibold text-light-text-secondary uppercase tracking-wider whitespace-nowrap;
+}
+
 .td-cell {
   @apply p-4 whitespace-nowrap;
 }

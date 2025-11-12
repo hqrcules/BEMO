@@ -1,6 +1,7 @@
 // frontend/src/components/AdminSupportChat.tsx
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { useThemeClasses } from '@/shared/hooks/useThemeClasses';
 
 interface Chat {
   id: string;
@@ -16,6 +17,7 @@ interface Chat {
 }
 
 export const AdminSupportChat: React.FC = () => {
+  const tc = useThemeClasses();
   const [chats, setChats] = useState<Chat[]>([]);
   const [selectedChat, setSelectedChat] = useState<Chat | null>(null);
   const [messageText, setMessageText] = useState('');
@@ -63,27 +65,27 @@ export const AdminSupportChat: React.FC = () => {
   };
 
   return (
-    <div className="admin-support-chat flex h-96 border border-gray-300 rounded-lg">
+    <div className={`admin-support-chat flex h-96 border ${tc.cardBorder} rounded-lg`}>
       {/* Список чатів */}
-      <div className="w-1/3 border-r border-gray-300 bg-gray-50">
-        <div className="p-3 bg-gray-100 border-b border-gray-300">
-          <h3 className="font-semibold">Активні чати ({chats.length})</h3>
+      <div className={`w-1/3 border-r ${tc.cardBorder} ${tc.bg}`}>
+        <div className={`p-3 ${tc.hover} border-b ${tc.cardBorder}`}>
+          <h3 className={`font-semibold ${tc.textPrimary}`}>Активні чати ({chats.length})</h3>
         </div>
         <div className="overflow-y-auto">
           {chats.map((chat) => (
             <div
               key={chat.id}
               onClick={() => setSelectedChat(chat)}
-              className={`p-3 border-b border-gray-200 cursor-pointer hover:bg-gray-100 ${
+              className={`p-3 border-b ${tc.border} cursor-pointer ${tc.hoverBg} ${
                 selectedChat?.id === chat.id ? 'bg-blue-100 border-blue-300' : ''
               }`}
             >
-              <div className="font-medium">{chat.user.email}</div>
-              <div className="text-sm text-gray-600">
+              <div className={`font-medium ${tc.textPrimary}`}>{chat.user.email}</div>
+              <div className={`text-sm ${tc.textSecondary}`}>
                 {chat.status} • {new Date(chat.updated_at).toLocaleTimeString()}
               </div>
               {chat.messages.length > 0 && (
-                <div className="text-xs text-gray-500 truncate mt-1">
+                <div className={`text-xs ${tc.textTertiary} truncate mt-1`}>
                   {chat.messages[chat.messages.length - 1].message}
                 </div>
               )}
@@ -97,15 +99,15 @@ export const AdminSupportChat: React.FC = () => {
         {selectedChat ? (
           <>
             {/* Заголовок чату */}
-            <div className="p-3 bg-gray-100 border-b border-gray-300">
-              <div className="font-semibold">Чат з {selectedChat.user.email}</div>
-              <div className="text-sm text-gray-600">
+            <div className={`p-3 ${tc.hover} border-b ${tc.cardBorder}`}>
+              <div className={`font-semibold ${tc.textPrimary}`}>Чат з {selectedChat.user.email}</div>
+              <div className={`text-sm ${tc.textSecondary}`}>
                 Статус: {selectedChat.status} • 🔄 Автооновлення
               </div>
             </div>
 
             {/* Повідомлення */}
-            <div className="flex-1 p-3 overflow-y-auto bg-white">
+            <div className={`flex-1 p-3 overflow-y-auto ${tc.cardBg}`}>
               {selectedChat.messages.map((msg) => (
                 <div
                   key={msg.id}
@@ -113,14 +115,14 @@ export const AdminSupportChat: React.FC = () => {
                 >
                   <div
                     className={`inline-block max-w-xs px-3 py-2 rounded-lg ${
-                      msg.is_from_admin 
-                        ? 'bg-green-500 text-white' 
-                        : 'bg-gray-200 text-gray-800'
+                      msg.is_from_admin
+                        ? 'bg-green-500 text-white'
+                        : `${tc.hover} ${tc.textPrimary}`
                     }`}
                   >
                     <div className="text-sm">{msg.message}</div>
                     <div className={`text-xs mt-1 ${
-                      msg.is_from_admin ? 'text-green-100' : 'text-gray-500'
+                      msg.is_from_admin ? 'text-green-100' : tc.textTertiary
                     }`}>
                       {new Date(msg.created_at).toLocaleTimeString()}
                       {msg.is_from_admin && <span className="ml-1">👨‍💼</span>}
@@ -131,7 +133,7 @@ export const AdminSupportChat: React.FC = () => {
             </div>
 
             {/* Поле вводу */}
-            <div className="p-3 border-t border-gray-300">
+            <div className={`p-3 border-t ${tc.cardBorder}`}>
               <div className="flex gap-2">
                 <input
                   type="text"
@@ -140,12 +142,12 @@ export const AdminSupportChat: React.FC = () => {
                   onKeyPress={(e) => e.key === 'Enter' && sendAdminMessage()}
                   placeholder="Відповідь адміністратора..."
                   disabled={isLoading}
-                  className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                  className={`flex-1 px-3 py-2 border ${tc.cardBorder} rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 ${tc.textPrimary} ${tc.bg}`}
                 />
                 <button
                   onClick={sendAdminMessage}
                   disabled={isLoading || !messageText.trim()}
-                  className="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 disabled:bg-gray-300"
+                  className={`px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 disabled:opacity-50`}
                 >
                   {isLoading ? '📤' : 'Відправити'}
                 </button>
@@ -153,7 +155,7 @@ export const AdminSupportChat: React.FC = () => {
             </div>
           </>
         ) : (
-          <div className="flex-1 flex items-center justify-center text-gray-500">
+          <div className={`flex-1 flex items-center justify-center ${tc.textTertiary}`}>
             Оберіть чат для початку спілкування
           </div>
         )}

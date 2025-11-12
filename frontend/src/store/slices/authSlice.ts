@@ -5,7 +5,7 @@ import { AuthState, LoginCredentials, User, AuthResponse } from '@/shared/types'
 const initialState: AuthState = {
   user: null,
   isAuthenticated: false,
-  isLoading: true,
+  isLoading: true, // Start with loading true to check auth on initial load
   error: null,
   accessToken: null,
 };
@@ -67,6 +67,9 @@ const authSlice = createSlice({
         state.user.balance = action.payload;
       }
     },
+    setLoadingFalse: (state) => {
+      state.isLoading = false;
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -107,5 +110,5 @@ const authSlice = createSlice({
   },
 });
 
-export const { clearError, setUser, updateBalance } = authSlice.actions;
+export const { clearError, setUser, updateBalance, setLoadingFalse } = authSlice.actions;
 export default authSlice.reducer;

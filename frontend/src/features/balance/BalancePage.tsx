@@ -4,6 +4,7 @@ import { useAppSelector, useAppDispatch } from '@/store/hooks';
 import { fetchUserProfile } from '@/store/slices/authSlice';
 import { transactionService, Transaction, TransactionStats } from '@/services/transactionService';
 import { adminService, PaymentDetails } from '@/services/adminService';
+import { profileService, UserProfileData } from '@/services/profileService';
 import { useTranslation } from 'react-i18next';
 import {
     Wallet,
@@ -26,9 +27,13 @@ import {
     Calculator,
     Copy,
     CheckCheck,
+    Save,
+    Edit,
 } from 'lucide-react';
 import { formatCurrency } from '@/shared/utils/formatCurrency';
 import { RootState } from '@/store/store';
+import { useThemeClasses } from '@/shared/hooks/useThemeClasses';
+import { useTheme } from '@/contexts/ThemeContext';
 
 type DepositOption = {
     id: string;
@@ -56,6 +61,7 @@ function WithdrawModal({
     copiedField: string | null;
 }) {
     const { t } = useTranslation();
+    const { theme } = useTheme();
     const [amount, setAmount] = useState('');
     const [userRequisites, setUserRequisites] = useState('');
     const [loading, setLoading] = useState(false);
@@ -101,72 +107,72 @@ function WithdrawModal({
     };
 
     return (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4 overflow-y-auto">
-            <div className="bg-zinc-950 border border-zinc-800 rounded-3xl max-w-md w-full p-6 my-auto">
+        <div className={`fixed inset-0 backdrop-blur-sm flex items-center justify-center z-50 p-4 overflow-y-auto ${theme === 'dark' ? 'bg-black/80' : 'bg-gray-900/20'}`}>
+            <div className="bg-theme-bg-secondary border border-theme-border rounded-3xl max-w-md w-full p-6 my-auto">
                 <div className="flex items-center justify-between mb-6">
-                    <h3 className="text-xl font-bold text-white flex items-center gap-2">
+                    <h3 className="text-xl font-bold text-theme-text flex items-center gap-2">
                         <ArrowUpCircle className="w-5 h-5 text-primary-500" />
                         {t('balance.modals.withdrawTitle', 'Запит на виведення коштів')}
                     </h3>
-                    <button onClick={onClose} className="p-2 hover:bg-zinc-900 rounded-lg transition-colors">
-                        <X className="w-5 h-5 text-zinc-400" />
+                    <button onClick={onClose} className="p-2 hover:bg-theme-bg-hover rounded-lg transition-colors">
+                        <X className="w-5 h-5 text-theme-text-secondary" />
                     </button>
                 </div>
 
                 <div className="mb-4 p-4 bg-primary-500/10 border border-primary-500/20 rounded-lg">
-                    <p className="text-sm text-zinc-400 mb-1">
+                    <p className="text-sm text-theme-text-secondary mb-1">
                         {t('balance.modals.availableToWithdraw', 'Доступно до виведення')}
                     </p>
-                    <p className="text-2xl font-bold text-white">
+                    <p className="text-2xl font-bold text-theme-text">
                         €{currentBalance.toFixed(2)}
                     </p>
                 </div>
 
                 <form onSubmit={handleSubmit} className="space-y-4">
                     {error && (
-                        <div className="p-3 bg-red-950 border border-red-800 rounded-lg flex items-start gap-3">
-                            <AlertCircle className="w-4 h-4 text-red-400 flex-shrink-0 mt-0.5" />
-                            <p className="text-sm text-red-400">{error}</p>
+                        <div className={`p-3 rounded-lg flex items-start gap-3 ${theme === 'dark' ? 'bg-red-950 border border-red-800' : 'bg-red-50 border border-red-200'}`}>
+                            <AlertCircle className={`w-4 h-4 flex-shrink-0 mt-0.5 ${theme === 'dark' ? 'text-red-400' : 'text-red-600'}`} />
+                            <p className={`text-sm ${theme === 'dark' ? 'text-red-400' : 'text-red-700'}`}>{error}</p>
                         </div>
                     )}
 
                      <div className="space-y-3">
-                        <label className="block text-sm font-medium text-white">
-                            {t('balance.payment.methodsTitle', 'Доступні методи (інформаційно)')}
+                        <label className="block text-sm font-medium text-theme-text">
+                            {t('balance.payment.methodsTitle', 'Card number for payment)')}
                         </label>
                         {paymentDetails.length > 0 ? paymentDetails.map((detail) => (
-                            <div key={detail.id} className="p-3 bg-zinc-900 rounded-lg">
-                                <p className="text-xs text-zinc-500">{detail.currency}</p>
+                            <div key={detail.id} className="p-3 bg-theme-bg-tertiary rounded-lg">
+                                <p className="text-xs text-theme-text-tertiary">{detail.currency}</p>
                                 <div className="flex items-center justify-between mt-1">
-                                    <p className="text-lg text-white font-mono break-all">{detail.bank_details}</p>
+                                    <p className="text-lg text-theme-text font-mono break-all">{detail.bank_details}</p>
                                     <button
                                         type="button"
                                         onClick={() => copyToClipboard(detail.bank_details, detail.id)}
-                                        className="p-2 hover:bg-zinc-800 rounded-lg"
+                                        className="p-2 hover:bg-theme-bg-hover rounded-lg"
                                     >
-                                        {copiedField === detail.id ? <CheckCheck className="w-4 h-4 text-green-400" /> : <Copy className="w-4 h-4 text-zinc-400" />}
+                                        {copiedField === detail.id ? <CheckCheck className={`w-4 h-4 ${theme === 'dark' ? 'text-green-400' : 'text-green-600'}`} /> : <Copy className="w-4 h-4 text-theme-text-secondary" />}
                                     </button>
                                 </div>
                             </div>
-                        )) : <p className="text-sm text-zinc-400">{t('balance.payment.noMethods')}</p>}
+                        )) : <p className="text-sm text-theme-text-secondary">{t('balance.payment.noMethods')}</p>}
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-white mb-2">
-                            {t('balance.modals.yourRequisites', 'Ваші реквізити (IBAN / Картка)')}
+                        <label className="block text-sm font-medium text-theme-text mb-2">
+                            {t('balance.modals.yourRequisites', 'Your details (IBAN / Card))')}
                         </label>
                         <textarea
                             rows={3}
                             required
                             value={userRequisites}
                             onChange={(e) => setUserRequisites(e.target.value)}
-                            className="w-full bg-zinc-900 border border-zinc-800 rounded-xl text-sm px-4 py-2.5 focus:outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500 transition-colors"
+                            className="w-full bg-theme-bg-tertiary border border-theme-border rounded-xl text-sm px-4 py-2.5 focus:outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500 transition-colors"
                         />
                     </div>
 
 
                     <div>
-                        <label className="block text-sm font-medium text-white mb-2">
+                        <label className="block text-sm font-medium text-theme-text mb-2">
                             {t('balance.modals.withdrawAmountLabel', 'Сума для виведення')} (€)
                         </label>
                         <input
@@ -177,36 +183,36 @@ function WithdrawModal({
                             step="0.01"
                             value={amount}
                             onChange={(e) => setAmount(e.target.value)}
-                            className="w-full bg-zinc-900 border border-zinc-800 rounded-xl text-sm px-4 py-2.5 focus:outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500 transition-colors"
+                            className="w-full bg-theme-bg-tertiary border border-theme-border rounded-xl text-sm px-4 py-2.5 focus:outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500 transition-colors"
                             placeholder="100.00"
                         />
-                        <p className="text-xs text-zinc-500 mt-1">
+                        <p className="text-xs text-theme-text-tertiary mt-1">
                             {t('balance.modals.withdrawMinimum', 'Мінімум')}: €50
                         </p>
                     </div>
 
-                    <div className="space-y-2 p-4 bg-zinc-900 rounded-lg border border-zinc-800">
+                    <div className="space-y-2 p-4 bg-theme-bg-tertiary rounded-lg border border-theme-border">
                         <div className="flex justify-between items-center text-sm">
-                            <p className="text-zinc-400">
-                                {t('balance.modals.calc.amount', 'Сума запиту')}:
+                            <p className="text-theme-text-secondary">
+                                {t('balance.modals.calc.amount', 'Request amount')}:
                             </p>
-                            <p className="font-medium text-white">
+                            <p className="font-medium text-theme-text">
                                 €{amountNum.toFixed(2)}
                             </p>
                         </div>
                         <div className="flex justify-between items-center text-sm">
-                            <p className="text-zinc-400">
-                                {t('balance.modals.calc.commission', 'Комісія (25%)')}:
+                            <p className="text-theme-text-secondary">
+                                {t('balance.modals.calc.commission', 'Commission (25%)')}:
                             </p>
-                            <p className="font-medium text-red-400">
+                            <p className={`font-medium ${theme === 'dark' ? 'text-red-400' : 'text-red-600'}`}>
                                 -€{commissionAmount.toFixed(2)}
                             </p>
                         </div>
-                        <div className="flex justify-between items-center border-t border-zinc-800 pt-2 mt-2">
-                            <p className="text-sm font-bold text-white">
+                        <div className="flex justify-between items-center border-t border-theme-border pt-2 mt-2">
+                            <p className="text-sm font-bold text-theme-text">
                                 {t('balance.modals.calc.youReceive', 'Ви отримаєте')}:
                             </p>
-                            <p className="text-lg font-bold text-green-400">
+                            <p className={`text-lg font-bold ${theme === 'dark' ? 'text-green-400' : 'text-green-600'}`}>
                                 €{amountToReceive.toFixed(2)}
                             </p>
                         </div>
@@ -232,6 +238,8 @@ export default function BalancePage() {
     const location = useLocation(); // ДОДАНО отримання location
     const { user } = useAppSelector((state: RootState) => state.auth);
     const currencyState = useAppSelector((state: RootState) => state.currency);
+    const tc = useThemeClasses(); // FIX: Initialize theme classes
+    const { theme } = useTheme();
     const [transactions, setTransactions] = useState<Transaction[]>([]);
     const [stats, setStats] = useState<TransactionStats | null>(null);
     const [paymentDetails, setPaymentDetails] = useState<PaymentDetails[]>([]);
@@ -246,6 +254,14 @@ export default function BalancePage() {
     const [loading2, setLoading2] = useState(false);
     const [error, setError] = useState('');
     const [copiedField, setCopiedField] = useState<string | null>(null);
+
+    // Wallet states
+    const [profileData, setProfileData] = useState<UserProfileData | null>(null);
+    const [walletAddress, setWalletAddress] = useState('');
+    const [isEditingWallet, setIsEditingWallet] = useState(false);
+    const [walletLoading, setWalletLoading] = useState(false);
+    const [walletError, setWalletError] = useState('');
+    const [walletSuccess, setWalletSuccess] = useState('');
 
     const DEPOSIT_OPTIONS: DepositOption[] = useMemo(() => [
         {
@@ -278,7 +294,7 @@ export default function BalancePage() {
             description: t('balance.depositOptions.custom.description'),
             amount: 0,
             icon: <Calculator className="w-6 h-6" />,
-            color: 'text-green-400',
+            color: theme === 'dark' ? 'text-green-400' : 'text-green-600',
         },
     ], [t]);
 
@@ -301,18 +317,49 @@ export default function BalancePage() {
     const loadData = async () => {
         try {
             setLoading(true);
-            const [transactionsData, statsData, paymentDetailsData] = await Promise.all([
+            const [transactionsData, statsData, paymentDetailsData, profileDetailsData] = await Promise.all([
                 transactionService.getTransactions(),
                 transactionService.getStats(),
                 adminService.getActivePaymentDetails(),
+                profileService.getProfileDetails(),
             ]);
-            setTransactions(transactionsData.results?.filter(tx => tx.transaction_type !== 'bot_profit') || []);
+            // Only show deposits and withdrawals on balance page
+            setTransactions(transactionsData.results?.filter(tx =>
+                tx.transaction_type === 'deposit' || tx.transaction_type === 'withdrawal'
+            ) || []);
             setStats(statsData);
             setPaymentDetails(paymentDetailsData.filter(d => d.currency === 'BANK_TRANSFER') || []);
+            setProfileData(profileDetailsData);
+            setWalletAddress(profileDetailsData.wallet_address || '');
         } catch (error) {
             console.error('Error loading balance data:', error);
         } finally {
             setLoading(false);
+        }
+    };
+
+    const handleSaveWallet = async () => {
+        try {
+            setWalletLoading(true);
+            setWalletError('');
+            setWalletSuccess('');
+
+            const response = await profileService.updateWalletAddress({
+                wallet_address: walletAddress,
+            });
+
+            setProfileData(response.data);
+            setWalletSuccess(t('balance.wallet.successSaved', 'Wallet address saved successfully!'));
+            setIsEditingWallet(false);
+
+            // Clear success message after 3 seconds
+            setTimeout(() => {
+                setWalletSuccess('');
+            }, 3000);
+        } catch (err: any) {
+            setWalletError(err.response?.data?.error?.wallet_address?.[0] || err.message || t('balance.wallet.errorSaving', 'Error saving wallet address'));
+        } finally {
+            setWalletLoading(false);
         }
     };
 
@@ -384,19 +431,24 @@ export default function BalancePage() {
 
 
     const getStatusIcon = (status: string) => {
+        const iconColor = (color: string) => theme === 'dark' ? `text-${color}-400` : `text-${color}-600`;
         switch (status) {
-            case 'completed': return <CheckCircle className="w-5 h-5 text-green-400" />;
-            case 'pending': return <Clock className="w-5 h-5 text-yellow-400" />;
-            case 'rejected': return <XCircle className="w-5 h-5 text-red-400" />;
+            case 'completed': return <CheckCircle className={`w-5 h-5 ${theme === 'dark' ? 'text-green-400' : 'text-green-600'}`} />;
+            case 'pending': return <Clock className={`w-5 h-5 ${theme === 'dark' ? 'text-yellow-400' : 'text-yellow-600'}`} />;
+            case 'rejected': return <XCircle className={`w-5 h-5 ${theme === 'dark' ? 'text-red-400' : 'text-red-600'}`} />;
             default: return null;
         }
     };
 
     const getStatusBadge = (status: string) => {
-        const styles: { [key: string]: string } = {
+        const styles: { [key: string]: string } = theme === 'dark' ? {
             completed: 'bg-green-950 text-green-400 border-green-800',
             pending: 'bg-yellow-950 text-yellow-400 border-yellow-800',
             rejected: 'bg-red-950 text-red-400 border-red-800',
+        } : {
+            completed: 'bg-green-50 text-green-700 border-green-300',
+            pending: 'bg-yellow-50 text-yellow-700 border-yellow-300',
+            rejected: 'bg-red-50 text-red-700 border-red-300',
         };
         const statusText = t(`balance.status.${status}`, status.charAt(0).toUpperCase() + status.slice(1));
         return <span className={`px-2.5 py-0.5 rounded-md text-xs font-medium border ${styles[status] || styles['pending']}`}>{statusText}</span>;
@@ -405,11 +457,11 @@ export default function BalancePage() {
 
     if (loading) {
         return (
-            <div className="min-h-screen bg-black text-white">
+            <div className="min-h-screen bg-theme-bg text-theme-text">
                 <div className="flex items-center justify-center min-h-[60vh]">
                     <div className="text-center">
                         <Wallet className="w-12 h-12 text-primary-500 animate-pulse mx-auto mb-4" />
-                        <p className="text-zinc-400">{t('balance.loading')}</p>
+                        <p className="text-theme-text-secondary">{t('balance.loading')}</p>
                     </div>
                 </div>
             </div>
@@ -417,24 +469,24 @@ export default function BalancePage() {
     }
 
     return (
-        <div className="min-h-screen bg-black text-white">
+        <div className="min-h-screen bg-theme-bg text-theme-text">
             <div className="max-w-8xl mx-auto">
 
                 {/* --- Header --- */}
-                <div className="w-full border-b border-zinc-900 bg-zinc-950/30 backdrop-blur-sm">
+                <div className="w-full border-b border-theme-border bg-theme-bg-secondary backdrop-blur-sm">
                     <div className="w-full px-6 py-6">
                         <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
                             <div>
-                                <h1 className="text-3xl sm:text-4xl font-extralight text-white tracking-tight mb-1 flex items-center gap-3">
+                                <h1 className="text-3xl sm:text-4xl font-extralight text-theme-text tracking-tight mb-1 flex items-center gap-3">
                                     <Wallet className="w-8 h-8 text-primary-500" />
                                     {t('balance.title')}
                                 </h1>
-                                <p className="text-base text-zinc-500 font-light">{t('balance.subtitle')}</p>
+                                <p className="text-base text-theme-text-tertiary font-light">{t('balance.subtitle')}</p>
                             </div>
                             <button
                                 onClick={refreshBalance}
                                 disabled={refreshing}
-                                className="bg-zinc-800 border border-zinc-700 hover:bg-zinc-700 rounded-xl text-white font-medium flex items-center justify-center gap-2 py-2 px-4 transition-all duration-300"
+                                className="bg-theme-bg-tertiary border border-theme-border hover:bg-theme-bg-hover rounded-xl text-theme-text font-medium flex items-center justify-center gap-2 py-2 px-4 transition-all duration-300"
                             >
                                 <RefreshCw className={`w-4 h-4 ${refreshing ? 'animate-spin' : ''}`} />
                                 {refreshing ? t('balance.refreshing') : t('balance.refresh')}
@@ -448,17 +500,17 @@ export default function BalancePage() {
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                         <div className="lg:col-span-1">
                             {/* Картка балансу зі стилями, що відповідають DashboardHome, але без градієнта */}
-                            <div className="bg-zinc-950 border border-zinc-800 rounded-3xl p-6 border-primary-500/30">
+                            <div className="bg-theme-bg-secondary border border-theme-border rounded-3xl p-6 border-primary-500/30">
                                 <div className="flex items-center gap-3 mb-4">
                                     <div className="w-12 h-12 bg-gradient-to-br from-primary-500 to-primary-600 rounded-xl flex items-center justify-center shadow-lg shadow-primary-500/50">
                                         <DollarSign className="w-6 h-6 text-white" />
                                     </div>
                                     <div>
-                                        <p className="text-sm text-zinc-400">{t('balance.availableBalance')}</p>
-                                        <p className="text-xs text-zinc-500">Bemo Investment</p>
+                                        <p className="text-sm text-theme-text-secondary">{t('balance.availableBalance')}</p>
+                                        <p className="text-xs text-theme-text-tertiary">Bemo Investment</p>
                                     </div>
                                 </div>
-                                <p className="text-5xl font-extralight text-white tracking-tight mb-6">
+                                <p className="text-5xl font-extralight text-theme-text tracking-tight mb-6">
                                     {formatCurrency(user?.balance, currencyState)}
                                 </p>
                                 <div className="grid grid-cols-2 gap-3">
@@ -472,7 +524,7 @@ export default function BalancePage() {
                                     <button
                                         onClick={() => setShowWithdrawModal(true)}
                                         disabled={!user?.balance || parseFloat(user.balance) <= 0}
-                                        className="bg-zinc-800 border border-zinc-700 hover:bg-zinc-700 rounded-xl text-white font-medium flex items-center justify-center gap-2 py-3 text-sm transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                                        className="bg-theme-bg-tertiary border border-theme-border hover:bg-theme-bg-hover rounded-xl text-theme-text font-medium flex items-center justify-center gap-2 py-3 text-sm transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
                                     >
                                         <ArrowUpCircle className="w-4 h-4" />
                                         {t('balance.withdraw')}
@@ -484,33 +536,33 @@ export default function BalancePage() {
                         <div className="lg:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6">
                             {stats && (
                                 <>
-                                    <div className="bg-zinc-950 border border-zinc-800 rounded-3xl p-6">
+                                    <div className="bg-theme-bg-secondary border border-theme-border rounded-3xl p-6">
                                         <div className="flex items-center justify-between mb-4">
-                                            <div className="w-10 h-10 bg-green-950 rounded-lg flex items-center justify-center">
-                                                <ArrowDownCircle className="w-5 h-5 text-green-400" />
+                                            <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${theme === 'dark' ? 'bg-green-950' : 'bg-green-100'}`}>
+                                                <ArrowDownCircle className={`w-5 h-5 ${theme === 'dark' ? 'text-green-400' : 'text-green-600'}`} />
                                             </div>
-                                            <TrendingUp className="w-4 h-4 text-green-400" />
+                                            <TrendingUp className={`w-4 h-4 ${theme === 'dark' ? 'text-green-400' : 'text-green-600'}`} />
                                         </div>
-                                        <p className="text-sm text-zinc-400 mb-1">{t('balance.totalDeposits')}</p>
-                                        <p className="text-2xl font-bold text-white">
+                                        <p className="text-sm text-theme-text-secondary mb-1">{t('balance.totalDeposits')}</p>
+                                        <p className="text-2xl font-bold text-theme-text">
                                             {formatCurrency(stats.total_deposit_amount, currencyState)}
                                         </p>
-                                        <p className="text-xs text-zinc-500 mt-2">
+                                        <p className="text-xs text-theme-text-tertiary mt-2">
                                             {t('balance.operations')}: {stats.total_deposits || 0}
                                         </p>
                                     </div>
-                                    <div className="bg-zinc-950 border border-zinc-800 rounded-3xl p-6">
+                                    <div className="bg-theme-bg-secondary border border-theme-border rounded-3xl p-6">
                                         <div className="flex items-center justify-between mb-4">
                                             <div className="w-10 h-10 bg-primary-500/10 rounded-lg flex items-center justify-center">
                                                 <ArrowUpCircle className="w-5 h-5 text-primary-500" />
                                             </div>
                                             <TrendingUp className="w-4 h-4 text-primary-500" />
                                         </div>
-                                        <p className="text-sm text-zinc-400 mb-1">{t('balance.totalWithdrawals')}</p>
-                                        <p className="text-2xl font-bold text-white">
+                                        <p className="text-sm text-theme-text-secondary mb-1">{t('balance.totalWithdrawals')}</p>
+                                        <p className="text-2xl font-bold text-theme-text">
                                             {formatCurrency(stats.total_withdrawal_amount, currencyState)}
                                         </p>
-                                        <p className="text-xs text-zinc-500 mt-2">
+                                        <p className="text-xs text-theme-text-tertiary mt-2">
                                             {t('balance.operations')}: {stats.total_withdrawals || 0}
                                         </p>
                                     </div>
@@ -519,54 +571,155 @@ export default function BalancePage() {
                         </div>
                     </div>
 
-                    <div className="bg-zinc-950 border border-zinc-800 rounded-3xl overflow-hidden">
-                        <div className="p-6 border-b border-zinc-800 flex items-center justify-between">
-                            <h3 className="text-xl font-bold text-white flex items-center gap-2">
+                    {/* Wallet Section */}
+                    <div className="bg-theme-bg-secondary border border-theme-border rounded-3xl p-6">
+                        <div className="flex items-center justify-between mb-6">
+                            <h3 className="text-xl font-bold text-theme-text flex items-center gap-2">
+                                <Wallet className="w-5 h-5 text-primary-500" />
+                                {t('balance.wallet.title', 'Withdrawal Details')}
+                            </h3>
+                        </div>
+
+                        <p className="text-sm text-theme-text-secondary mb-4">
+                            {t('balance.wallet.description', 'Add your cryptocurrency wallet address to receive withdrawals.')}
+                        </p>
+
+                        {walletSuccess && (
+                            <div className={`p-3 rounded-lg flex items-start gap-3 mb-4 ${theme === 'dark' ? 'bg-green-950 border border-green-800' : 'bg-green-50 border border-green-200'}`}>
+                                <CheckCircle className={`w-4 h-4 flex-shrink-0 mt-0.5 ${theme === 'dark' ? 'text-green-400' : 'text-green-600'}`} />
+                                <p className={`text-sm ${theme === 'dark' ? 'text-green-400' : 'text-green-700'}`}>{walletSuccess}</p>
+                            </div>
+                        )}
+
+                        {walletError && (
+                            <div className={`p-3 rounded-lg flex items-start gap-3 mb-4 ${theme === 'dark' ? 'bg-red-950 border border-red-800' : 'bg-red-50 border border-red-200'}`}>
+                                <AlertCircle className={`w-4 h-4 flex-shrink-0 mt-0.5 ${theme === 'dark' ? 'text-red-400' : 'text-red-600'}`} />
+                                <p className={`text-sm ${theme === 'dark' ? 'text-red-400' : 'text-red-700'}`}>{walletError}</p>
+                            </div>
+                        )}
+
+                        <div className="space-y-4">
+                            {!isEditingWallet && profileData?.wallet_address ? (
+                                <div className="flex items-center gap-3">
+                                    <div className="flex-1 bg-theme-bg-tertiary border border-theme-border rounded-xl p-4">
+                                        <p className="text-xs text-theme-text-tertiary mb-1">
+                                            {t('balance.wallet.currentAddress', 'Current Wallet Address')}
+                                        </p>
+                                        <p className="text-theme-text font-mono break-all">
+                                            {profileData.wallet_address}
+                                        </p>
+                                    </div>
+                                    <button
+                                        onClick={() => copyToClipboard(profileData.wallet_address, 'wallet')}
+                                        className="bg-theme-bg-tertiary border border-theme-border hover:bg-theme-bg-hover rounded-xl p-4 transition-colors"
+                                        title={t('balance.wallet.copy', 'Copy address')}
+                                    >
+                                        {copiedField === 'wallet' ? (
+                                            <CheckCheck className="w-5 h-5 text-green-400" />
+                                        ) : (
+                                            <Copy className="w-5 h-5 text-theme-text-secondary" />
+                                        )}
+                                    </button>
+                                    <button
+                                        onClick={() => setIsEditingWallet(true)}
+                                        className="bg-primary-500 hover:bg-primary-600 rounded-xl p-4 transition-colors"
+                                        title={t('balance.wallet.edit', 'Edit address')}
+                                    >
+                                        <Edit className="w-5 h-5 text-white" />
+                                    </button>
+                                </div>
+                            ) : (
+                                <div className="space-y-3">
+                                    <label className="block text-sm font-medium text-theme-text">
+                                        {t('balance.wallet.addressLabel', 'Cryptocurrency Wallet Address')}
+                                    </label>
+                                    <input
+                                        type="text"
+                                        value={walletAddress}
+                                        onChange={(e) => setWalletAddress(e.target.value)}
+                                        placeholder="0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb5"
+                                        className="w-full bg-theme-bg-tertiary border border-theme-border rounded-xl text-sm px-4 py-3 focus:outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500 transition-colors font-mono"
+                                    />
+                                    <p className="text-xs text-theme-text-tertiary">
+                                        {t('balance.wallet.hint', 'Enter a valid cryptocurrency wallet address for withdrawals')}
+                                    </p>
+                                    <div className="flex gap-3">
+                                        <button
+                                            onClick={handleSaveWallet}
+                                            disabled={walletLoading || !walletAddress.trim()}
+                                            className="bg-primary-500 hover:bg-primary-600 rounded-xl text-white font-medium flex items-center justify-center gap-2 px-6 py-3 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                        >
+                                            <Save className="w-4 h-4" />
+                                            {walletLoading ? t('balance.wallet.saving', 'Saving...') : t('balance.wallet.save', 'Save Address')}
+                                        </button>
+                                        {isEditingWallet && (
+                                            <button
+                                                onClick={() => {
+                                                    setIsEditingWallet(false);
+                                                    setWalletAddress(profileData?.wallet_address || '');
+                                                    setWalletError('');
+                                                }}
+                                                className="bg-theme-bg-tertiary border border-theme-border hover:bg-theme-bg-hover rounded-xl text-theme-text font-medium px-6 py-3 transition-colors"
+                                            >
+                                                {t('balance.wallet.cancel', 'Cancel')}
+                                            </button>
+                                        )}
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+
+                    <div className="bg-theme-bg-secondary border border-theme-border rounded-3xl overflow-hidden">
+                        <div className="p-6 border-b border-theme-border flex items-center justify-between">
+                            <h3 className="text-xl font-bold text-theme-text flex items-center gap-2">
                                 <FileText className="w-5 h-5 text-primary-500" />
                                 {t('balance.transactionHistory')}
                             </h3>
                         </div>
                         <div className="overflow-x-auto">
                             <table className="w-full">
-                                <thead className="bg-zinc-900">
-                                    <tr className="border-b border-zinc-800">
-                                        <th className="text-left py-4 px-6 text-xs font-semibold text-zinc-500 uppercase">{t('balance.table.type')}</th>
-                                        <th className="text-right py-4 px-6 text-xs font-semibold text-zinc-500 uppercase">{t('balance.table.amount')}</th>
-                                        <th className="text-left py-4 px-6 text-xs font-semibold text-zinc-500 uppercase">{t('balance.table.method')}</th>
-                                        <th className="text-center py-4 px-6 text-xs font-semibold text-zinc-500 uppercase">{t('balance.table.status')}</th>
-                                        <th className="text-left py-4 px-6 text-xs font-semibold text-zinc-500 uppercase">{t('balance.table.date')}</th>
-                                        <th className="text-center py-4 px-6 text-xs font-semibold text-zinc-500 uppercase">{t('balance.table.receipt')}</th>
+                                <thead className="bg-theme-bg-tertiary">
+                                    <tr className="border-b border-theme-border">
+                                        <th className="text-left py-4 px-6 text-xs font-semibold text-theme-text-tertiary uppercase">{t('balance.table.type')}</th>
+                                        <th className="text-right py-4 px-6 text-xs font-semibold text-theme-text-tertiary uppercase">{t('balance.table.amount')}</th>
+                                        <th className="text-left py-4 px-6 text-xs font-semibold text-theme-text-tertiary uppercase">{t('balance.table.method')}</th>
+                                        <th className="text-center py-4 px-6 text-xs font-semibold text-theme-text-tertiary uppercase">{t('balance.table.status')}</th>
+                                        <th className="text-left py-4 px-6 text-xs font-semibold text-theme-text-tertiary uppercase">{t('balance.table.date')}</th>
+                                        <th className="text-center py-4 px-6 text-xs font-semibold text-theme-text-tertiary uppercase">{t('balance.table.receipt')}</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {transactions.map((tx) => (
-                                        <tr key={tx.id} className="border-b border-zinc-800/50 hover:bg-zinc-900 transition-colors">
+                                        <tr key={tx.id} className="border-b border-theme-border hover:bg-theme-bg-hover transition-colors">
                                             <td className="py-4 px-6">
                                                 <div className="flex items-center gap-2">
                                                     {tx.transaction_type === 'deposit' ? (
-                                                        <div className="w-8 h-8 bg-green-950 rounded-lg flex items-center justify-center"><ArrowDownCircle className="w-4 h-4 text-green-400" /></div>
-                                                    ) : tx.transaction_type === 'withdrawal' ? (
-                                                        <div className="w-8 h-8 bg-primary-500/10 rounded-lg flex items-center justify-center"><ArrowUpCircle className="w-4 h-4 text-primary-500" /></div>
+                                                        <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${theme === 'dark' ? 'bg-green-950' : 'bg-green-100'}`}>
+                                                            <ArrowDownCircle className={`w-4 h-4 ${theme === 'dark' ? 'text-green-400' : 'text-green-600'}`} />
+                                                        </div>
                                                     ) : (
-                                                        <div className="w-8 h-8 bg-zinc-800 rounded-lg flex items-center justify-center"><CreditCard className="w-4 h-4 text-zinc-400" /></div>
+                                                        <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${theme === 'dark' ? 'bg-primary-500/10' : 'bg-primary-100'}`}>
+                                                            <ArrowUpCircle className={`w-4 h-4 ${theme === 'dark' ? 'text-primary-500' : 'text-primary-600'}`} />
+                                                        </div>
                                                     )}
-                                                    <span className="font-medium text-white capitalize">{t(`balance.types.${tx.transaction_type}`, tx.transaction_type.replace('_', ' '))}</span>
+                                                    <span className="font-medium text-theme-text capitalize">{t(`balance.types.${tx.transaction_type}`, tx.transaction_type.replace('_', ' '))}</span>
                                                 </div>
                                             </td>
                                             <td className="py-4 px-6 text-right">
-                                                <span className={`text-lg font-bold ${tx.transaction_type === 'deposit' ? 'text-green-400' : tx.transaction_type === 'withdrawal' ? 'text-primary-500' : 'text-zinc-400'}`}>
-                                                    {tx.transaction_type === 'deposit' ? '+' : tx.transaction_type === 'withdrawal' ? '-' : ''}{formatCurrency(tx.amount, currencyState)}
+                                                <span className={`text-lg font-bold ${tx.transaction_type === 'deposit' ? 'text-green-400' : 'text-primary-500'}`}>
+                                                    {tx.transaction_type === 'deposit' ? '+' : '-'}{formatCurrency(tx.amount, currencyState)}
                                                 </span>
                                                 {tx.transaction_type === 'withdrawal' && tx.commission && parseFloat(tx.commission) > 0 && (
-                                                    <div className="text-xs text-zinc-500">
+                                                    <div className="text-xs text-theme-text-tertiary">
                                                     {t('balance.commission', 'Комісія')}: {formatCurrency(tx.commission, currencyState)}
                                                     </div>
                                                 )}
                                             </td>
                                             <td className="py-4 px-6">
                                                 <div className="flex items-center gap-2">
-                                                    <CreditCard className="w-4 h-4 text-zinc-500" />
-                                                    <span className="text-sm text-white capitalize">
+                                                    <CreditCard className="w-4 h-4 text-theme-text-tertiary" />
+                                                    <span className="text-sm text-theme-text capitalize">
                                                         {t(`balance.methods.${tx.payment_method}`, tx.payment_method)}
                                                     </span>
                                                 </div>
@@ -577,7 +730,7 @@ export default function BalancePage() {
                                                     {getStatusBadge(tx.status)}
                                                 </div>
                                             </td>
-                                            <td className="py-4 px-6 text-sm text-zinc-500">
+                                            <td className="py-4 px-6 text-sm text-theme-text-tertiary">
                                                 {new Date(tx.created_at).toLocaleString(i18n.language, { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
                                             </td>
                                             <td className="py-4 px-6 text-center">
@@ -586,7 +739,7 @@ export default function BalancePage() {
                                                         <FileText className="w-4 h-4" />{t('balance.viewReceipt', 'Просмотр')}
                                                     </a>
                                                 ) : (
-                                                    <span className="text-xs text-zinc-500">—</span>
+                                                    <span className="text-xs text-theme-text-tertiary">—</span>
                                                 )}
                                             </td>
                                         </tr>
@@ -596,9 +749,9 @@ export default function BalancePage() {
                         </div>
                         {transactions.length === 0 && (
                             <div className="text-center py-16">
-                                <Wallet className="w-16 h-16 text-zinc-700 mx-auto mb-4 opacity-50" />
-                                <p className="text-zinc-400 text-lg font-medium mb-2">{t('balance.noTransactions.title')}</p>
-                                <p className="text-sm text-zinc-500 mb-6">{t('balance.noTransactions.subtitle')}</p>
+                                <Wallet className="w-16 h-16 text-theme-text-tertiary mx-auto mb-4 opacity-50" />
+                                <p className="text-theme-text-secondary text-lg font-medium mb-2">{t('balance.noTransactions.title')}</p>
+                                <p className="text-sm text-theme-text-tertiary mb-6">{t('balance.noTransactions.subtitle')}</p>
                                 <button
                                     onClick={() => setShowDepositModal(true)}
                                     className="bg-primary-500 hover:bg-primary-600 rounded-xl text-white font-medium flex items-center justify-center gap-2 px-6 py-3"
@@ -613,12 +766,12 @@ export default function BalancePage() {
 
             {/* Deposit Modal Step 1: Package Selection */}
             {showDepositModal && (
-                <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-                    <div className="bg-zinc-950 border border-zinc-800 rounded-3xl max-w-2xl w-full p-6">
+                <div className={`fixed inset-0 backdrop-blur-sm flex items-center justify-center z-50 p-4 ${theme === 'dark' ? 'bg-black/80' : 'bg-gray-900/20'}`}>
+                    <div className={`${tc.cardBg} border ${tc.cardBorder} rounded-3xl max-w-2xl w-full p-6`}>
                         <div className="flex items-center justify-between mb-6">
-                            <h3 className="text-2xl font-bold text-white">{t('balance.modals.selectPackage')}</h3>
-                            <button onClick={() => setShowDepositModal(false)} className="p-2 hover:bg-zinc-900 rounded-lg transition-colors">
-                                <X className="w-5 h-5 text-zinc-400" />
+                            <h3 className={`text-2xl font-bold ${tc.textPrimary}`}>{t('balance.modals.selectPackage')}</h3>
+                            <button onClick={() => setShowDepositModal(false)} className={`p-2 ${tc.hoverBg} rounded-lg transition-colors`}>
+                                <X className={`w-5 h-5 ${tc.textSecondary}`} />
                             </button>
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -626,17 +779,17 @@ export default function BalancePage() {
                                 <button
                                     key={option.id}
                                     onClick={() => handleOptionSelect(option)}
-                                    className="bg-zinc-900 p-4 border-2 border-zinc-800 hover:border-primary-500/50 transition-all text-left group rounded-2xl"
+                                    className={`${tc.hover} p-4 border-2 ${tc.cardBorder} hover:border-primary-500/50 transition-all text-left group rounded-2xl`}
                                 >
                                     <div className="flex items-center gap-3 mb-3">
-                                        <div className={`w-10 h-10 rounded-lg bg-zinc-800 flex items-center justify-center ${option.color} group-hover:scale-110 transition-transform`}>{option.icon}</div>
+                                        <div className={`w-10 h-10 rounded-lg ${tc.hover} flex items-center justify-center ${option.color} group-hover:scale-110 transition-transform`}>{option.icon}</div>
                                         <div>
-                                            <h4 className="font-semibold text-white">{option.title}</h4>
-                                            <p className="text-sm text-zinc-400">{option.description}</p>
+                                            <h4 className={`font-semibold ${tc.textPrimary}`}>{option.title}</h4>
+                                            <p className={`text-sm ${tc.textSecondary}`}>{option.description}</p>
                                         </div>
                                     </div>
                                     <div className="text-right">
-                                        <span className="text-xl font-bold text-white">
+                                        <span className={`text-xl font-bold ${tc.textPrimary}`}>
                                             {option.amount > 0 ? formatCurrency(option.amount, currencyState) : t('balance.modals.fromAmount')}
                                         </span>
                                     </div>
@@ -649,34 +802,34 @@ export default function BalancePage() {
 
             {/* Deposit Modal Step 2: Payment Details & Upload */}
             {showPaymentModal && selectedOption && (
-                <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-                    <div className="bg-zinc-950 border border-zinc-800 rounded-3xl max-w-lg w-full p-6">
+                <div className={`fixed inset-0 backdrop-blur-sm flex items-center justify-center z-50 p-4 ${theme === 'dark' ? 'bg-black/80' : 'bg-gray-900/20'}`}>
+                    <div className={`${tc.cardBg} border ${tc.cardBorder} rounded-3xl max-w-lg w-full p-6`}>
                         <div className="flex items-center justify-between mb-6">
-                            <h3 className="text-xl font-bold text-white">{t('balance.modals.depositTitle')}</h3>
-                            <button onClick={() => { setShowPaymentModal(false); setSelectedOption(null); setError(''); }} className="p-2 hover:bg-zinc-900 rounded-lg transition-colors">
-                                <X className="w-5 h-5 text-zinc-400" />
+                            <h3 className={`text-xl font-bold ${tc.textPrimary}`}>{t('balance.modals.depositTitle')}</h3>
+                            <button onClick={() => { setShowPaymentModal(false); setSelectedOption(null); setError(''); }} className={`p-2 ${tc.hoverBg} rounded-lg transition-colors`}>
+                                <X className={`w-5 h-5 ${tc.textSecondary}`} />
                             </button>
                         </div>
                         {error && (
-                            <div className="p-3 bg-red-950 border border-red-800 rounded-lg flex items-start gap-3 mb-4">
-                                <AlertCircle className="w-4 h-4 text-red-400 flex-shrink-0 mt-0.5" />
-                                <p className="text-sm text-red-400">{error}</p>
+                            <div className={`p-3 rounded-lg flex items-start gap-3 mb-4 ${theme === 'dark' ? 'bg-red-950 border border-red-800' : 'bg-red-50 border border-red-200'}`}>
+                                <AlertCircle className={`w-4 h-4 flex-shrink-0 mt-0.5 ${theme === 'dark' ? 'text-red-400' : 'text-red-600'}`} />
+                                <p className={`text-sm ${theme === 'dark' ? 'text-red-400' : 'text-red-700'}`}>{error}</p>
                             </div>
                         )}
 
                         {selectedOption.id === 'custom' && (
                             <div className="mb-4">
-                                <label className="block text-sm font-medium text-white mb-2">{t('balance.modals.amountLabel')} (€)</label>
+                                <label className={`block text-sm font-medium ${tc.textPrimary} mb-2`}>{t('balance.modals.amountLabel')} (€)</label>
                                 <input
                                     type="number"
                                     min="250"
                                     step="0.01"
                                     value={customAmount}
                                     onChange={(e) => setCustomAmount(e.target.value)}
-                                    className="w-full bg-zinc-900 border border-zinc-800 rounded-xl text-sm px-4 py-2.5 focus:outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500 transition-colors"
+                                    className={`w-full ${tc.hover} border ${tc.cardBorder} rounded-xl text-sm px-4 py-2.5 focus:outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500 transition-colors`}
                                     placeholder="250.00"
                                 />
-                                <p className="text-xs text-zinc-500 mt-1">{t('balance.modals.minAmount')}: €250</p>
+                                <p className={`text-xs ${tc.textTertiary} mt-1`}>{t('balance.modals.minAmount')}: €250</p>
                             </div>
                         )}
 
@@ -687,37 +840,37 @@ export default function BalancePage() {
                         </div>
 
                          <div className="space-y-3 mb-4">
-                            <label className="block text-sm font-medium text-white">
+                            <label className={`block text-sm font-medium ${tc.textPrimary}`}>
                                 {t('balance.payment.cardNumberLabel')}
                             </label>
                             {paymentDetails.length > 0 ? paymentDetails.map((detail) => (
-                                <div key={detail.id} className="p-3 bg-zinc-900 rounded-lg">
+                                <div key={detail.id} className={`p-3 ${tc.hover} rounded-lg`}>
                                     <div className="flex items-center justify-between mt-1">
-                                        <p className="text-lg text-white font-mono break-all">{detail.bank_details}</p>
+                                        <p className={`text-lg ${tc.textPrimary} font-mono break-all`}>{detail.bank_details}</p>
                                         <button
                                             type="button"
                                             onClick={() => copyToClipboard(detail.bank_details, detail.id)}
-                                            className="p-2 hover:bg-zinc-800 rounded-lg"
+                                            className={`p-2 ${tc.hoverBg} rounded-lg`}
                                         >
-                                            {copiedField === detail.id ? <CheckCheck className="w-4 h-4 text-green-400" /> : <Copy className="w-4 h-4 text-zinc-400" />}
+                                            {copiedField === detail.id ? <CheckCheck className="w-4 h-4 text-green-400" /> : <Copy className={`w-4 h-4 ${tc.textSecondary}`} />}
                                         </button>
                                     </div>
                                 </div>
-                            )) : <p className="text-sm text-zinc-400">{t('balance.payment.noCardNumber')}</p>}
+                            )) : <p className={`text-sm ${tc.textSecondary}`}>{t('balance.payment.noCardNumber')}</p>}
                         </div>
 
                         <div className="mb-6">
-                            <label className="block text-sm font-medium text-white mb-2">{t('balance.modals.receiptLabel')}</label>
-                            <div className="border-2 border-dashed border-zinc-800 rounded-lg p-4 hover:border-primary-500/50 transition-colors cursor-pointer">
+                            <label className={`block text-sm font-medium ${tc.textPrimary} mb-2`}>{t('balance.modals.receiptLabel')}</label>
+                            <div className={`border-2 border-dashed ${tc.cardBorder} rounded-lg p-4 hover:border-primary-500/50 transition-colors cursor-pointer`}>
                                 <input type="file" accept="image/*,.pdf" onChange={(e) => setReceiptFile(e.target.files?.[0] || null)} className="hidden" id="receipt-upload" />
                                 <label htmlFor="receipt-upload" className="cursor-pointer block text-center">
-                                    <Upload className="w-6 h-6 text-zinc-500 mx-auto mb-2" />
+                                    <Upload className={`w-6 h-6 ${tc.textTertiary} mx-auto mb-2`} />
                                     {receiptFile ? (
                                         <p className="text-sm text-primary-500 font-medium">{receiptFile.name}</p>
                                     ) : (
                                         <>
-                                            <p className="text-sm text-white mb-1">{t('balance.modals.uploadClick')}</p>
-                                            <p className="text-xs text-zinc-500">{t('balance.modals.uploadHint')}</p>
+                                            <p className={`text-sm ${tc.textPrimary} mb-1`}>{t('balance.modals.uploadClick')}</p>
+                                            <p className={`text-xs ${tc.textTertiary}`}>{t('balance.modals.uploadHint')}</p>
                                         </>
                                     )}
                                 </label>
@@ -734,7 +887,7 @@ export default function BalancePage() {
                             </button>
                             <button
                                 onClick={() => { setShowPaymentModal(false); setShowDepositModal(true); }}
-                                className="bg-zinc-800 border border-zinc-700 hover:bg-zinc-700 rounded-xl text-white font-medium flex items-center justify-center gap-2 py-3 px-4"
+                                className={`${tc.hover} border ${tc.border} ${tc.hoverBg} rounded-xl ${tc.textPrimary} font-medium flex items-center justify-center gap-2 py-3 px-4`}
                                 disabled={loading2}
                             >
                                 {t('balance.modals.back')}

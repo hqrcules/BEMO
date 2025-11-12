@@ -1,13 +1,15 @@
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAppSelector, useAppDispatch } from '@/store/hooks';
 import { logoutUser } from '@/store/slices/authSlice';
-import { TrendingUp, Menu, Wifi, WifiOff, LogOut, Globe, Wallet } from 'lucide-react';
+import { TrendingUp, Menu, Wifi, WifiOff, LogOut, Globe, Wallet, Sun, Moon } from 'lucide-react';
 import { useState, memo, useCallback, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import Sidebar from './Sidebar';
 import { fetchCurrencyRates, setCurrency } from '@/store/slices/currencySlice';
 import { formatCurrency } from '@/shared/utils/formatCurrency';
 import { RootState } from '@/store/store';
+import { useTheme } from '@/contexts/ThemeContext';
+import { useThemeClasses } from '@/shared/hooks/useThemeClasses';
 
 const languages = [
     { code: 'en', name: 'English', flag: '🇬🇧' },
@@ -28,10 +30,13 @@ const Header = memo(() => {
     const { user } = useAppSelector((state: RootState) => state.auth);
     const { connected } = useAppSelector((state: RootState) => state.websocket);
     const currencyState = useAppSelector((state: RootState) => state.currency);
+    const { flashBalance } = useAppSelector((state: RootState) => state.trading);
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
     const location = useLocation();
     const [sidebarOpen, setSidebarOpen] = useState(false);
+    const { theme, toggleTheme } = useTheme();
+    const tc = useThemeClasses();
 
     const [activeDropdown, setActiveDropdown] = useState<null | 'user' | 'settings'>(null);
 
@@ -87,7 +92,7 @@ const Header = memo(() => {
         <>
             <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
-            <header className="bg-dark-card border-b border-dark-border sticky top-0 z-30">
+            <header className={`${tc.cardBg} border-b ${tc.cardBorder} sticky top-0 z-30`}>
                 <div className="w-full px-6 py-4">
                     <div className="flex items-center justify-between">
 
@@ -95,7 +100,7 @@ const Header = memo(() => {
                             <div className="flex items-center gap-4">
                                 <button
                                     onClick={() => setSidebarOpen(true)}
-                                    className="lg:hidden text-dark-text-secondary hover:text-dark-text-primary p-2 -ml-2"
+                                    className={`lg:hidden ${tc.textSecondary} ${tc.hoverText} p-2 -ml-2`}
                                     aria-label="Open menu"
                                 >
                                     <Menu className="w-6 h-6" />
@@ -108,7 +113,7 @@ const Header = memo(() => {
                                     <div className="w-8 h-8 bg-gradient-to-br from-primary-500 to-primary-600 rounded-lg flex items-center justify-center shadow-md group-hover:shadow-glow-primary transition-shadow duration-300">
                                         <TrendingUp className="w-5 h-5 text-white" />
                                     </div>
-                                    <span className="text-dark-text-primary font-bold text-xl hidden sm:inline">
+                                    <span className={`${tc.textPrimary} font-bold text-xl hidden sm:inline`}>
                                         Bemo Investment
                                     </span>
                                 </div>
@@ -120,8 +125,8 @@ const Header = memo(() => {
                                         key={item.path}
                                         onClick={() => navigate(item.path)}
                                         className={`px-4 py-2 rounded-lg transition text-base font-medium ${location.pathname === item.path
-                                            ? 'text-dark-text-primary bg-dark-hover'
-                                            : 'text-dark-text-secondary hover:text-dark-text-primary hover:bg-dark-hover'
+                                            ? `${tc.textPrimary} ${tc.hover}`
+                                            : `${tc.textSecondary} ${tc.hoverText} ${tc.hoverBg}`
                                             }`}
                                     >
                                         {item.name}
@@ -139,20 +144,33 @@ const Header = memo(() => {
                                 )}
                             </span>
 
+                            <button
+                                onClick={toggleTheme}
+                                className={`${tc.textSecondary} ${tc.hoverText} p-2 rounded-lg ${tc.hoverBg} transition-colors`}
+                                aria-label="Toggle theme"
+                                title={theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'}
+                            >
+                                {theme === 'dark' ? (
+                                    <Sun className="w-5 h-5" />
+                                ) : (
+                                    <Moon className="w-5 h-5" />
+                                )}
+                            </button>
+
                             <div className="relative">
                                 <button
                                     onClick={() => handleDropdownToggle('settings')}
-                                    className="text-dark-text-secondary hover:text-dark-text-primary p-2 rounded-lg hover:bg-dark-hover transition-colors"
+                                    className={`${tc.textSecondary} ${tc.hoverText} p-2 rounded-lg ${tc.hoverBg} transition-colors`}
                                     aria-label="Change language or currency"
                                 >
                                     <Globe className="w-5 h-5" />
                                 </button>
                                 {activeDropdown === 'settings' && (
-                                    <div className="absolute right-0 mt-2 w-96 bg-dark-card rounded-lg shadow-xl border border-dark-border z-50 animate-fade-in">
-                                        <div className="grid grid-cols-2 divide-x divide-zinc-800">
+                                    <div className={`absolute right-0 mt-2 w-96 ${tc.cardBg} rounded-lg shadow-xl border ${tc.cardBorder} z-50 animate-fade-in`}>
+                                        <div className={`grid grid-cols-2 divide-x ${tc.border}`}>
 
                                             <div className="p-4">
-                                                <h4 className="pb-2 text-xs font-medium text-dark-text-tertiary uppercase tracking-wider">{t('nav.currency')}</h4>
+                                                <h4 className={`pb-2 text-xs font-medium ${tc.textTertiary} uppercase tracking-wider`}>{t('nav.currency')}</h4>
                                                 <div
                                                     className="max-h-60 overflow-y-auto"
                                                 >
@@ -160,17 +178,17 @@ const Header = memo(() => {
                                                         <button
                                                             key={curr.code}
                                                             onClick={() => handleCurrencyChange(curr.code)}
-                                                            className={`w-full px-3 py-2 text-left rounded-md hover:bg-dark-hover transition flex items-center justify-between text-sm ${currencyState.selectedCurrency === curr.code ? 'bg-dark-hover text-dark-text-primary' : 'text-dark-text-secondary'}`}
+                                                            className={`w-full px-3 py-2 text-left rounded-md ${tc.hoverBg} transition flex items-center justify-between text-sm ${currencyState.selectedCurrency === curr.code ? `${tc.hover} ${tc.textPrimary}` : tc.textSecondary}`}
                                                         >
                                                             <span>{curr.code}</span>
-                                                            <span className="font-medium text-dark-text-tertiary">{curr.symbol}</span>
+                                                            <span className={`font-medium ${tc.textTertiary}`}>{curr.symbol}</span>
                                                         </button>
                                                     ))}
                                                 </div>
                                             </div>
 
                                             <div className="p-4">
-                                                <h4 className="pb-2 text-xs font-medium text-dark-text-tertiary uppercase tracking-wider">{t('nav.language')}</h4>
+                                                <h4 className={`pb-2 text-xs font-medium ${tc.textTertiary} uppercase tracking-wider`}>{t('nav.language')}</h4>
                                                 <div
                                                     className="max-h-60 overflow-y-auto"
                                                 >
@@ -178,7 +196,7 @@ const Header = memo(() => {
                                                         <button
                                                             key={lang.code}
                                                             onClick={() => changeLanguage(lang.code)}
-                                                            className={`w-full px-3 py-2 text-left rounded-md hover:bg-dark-hover transition flex items-center gap-3 text-sm ${i18n.language === lang.code ? 'bg-dark-hover text-dark-text-primary' : 'text-dark-text-secondary'}`}
+                                                            className={`w-full px-3 py-2 text-left rounded-md ${tc.hoverBg} transition flex items-center gap-3 text-sm ${i18n.language === lang.code ? `${tc.hover} ${tc.textPrimary}` : tc.textSecondary}`}
                                                         >
                                                             <span className="text-lg">{lang.flag}</span>
                                                             <span>{lang.name}</span>
@@ -194,15 +212,15 @@ const Header = memo(() => {
                             <div className="relative">
                                 <button
                                     onClick={() => handleDropdownToggle('user')}
-                                    className="flex items-center gap-2.5 p-1.5 rounded-lg hover:bg-dark-hover transition"
+                                    className={`flex items-center gap-2.5 p-1.5 rounded-lg ${tc.hoverBg} transition`}
                                     aria-label="User menu"
                                 >
                                     <div className="w-8 h-8 bg-gradient-to-br from-primary-500 to-primary-600 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-md flex-shrink-0">
                                         {user?.email?.[0].toUpperCase()}
                                     </div>
                                     <div className="text-left hidden sm:block">
-                                        <p className="text-dark-text-primary text-sm font-medium leading-tight truncate max-w-[120px]">{user?.email}</p>
-                                        <p className="text-xs text-dark-text-secondary leading-tight flex items-center gap-1">
+                                        <p className={`${tc.textPrimary} text-sm font-medium leading-tight truncate max-w-[120px]`}>{user?.email}</p>
+                                        <p className={`text-xs ${tc.textSecondary} leading-tight flex items-center gap-1 transition-all duration-300 ${flashBalance ? 'text-primary-500 font-bold scale-110' : ''}`}>
                                             <Wallet size={12} className="opacity-70" />
                                             {formatCurrency(user?.balance, currencyState)}
                                         </p>
@@ -210,10 +228,10 @@ const Header = memo(() => {
                                 </button>
 
                                 {activeDropdown === 'user' && (
-                                    <div className="absolute right-0 mt-2 w-48 bg-dark-card rounded-lg shadow-xl border border-dark-border overflow-hidden z-50 animate-fade-in">
+                                    <div className={`absolute right-0 mt-2 w-48 ${tc.cardBg} rounded-lg shadow-xl border ${tc.cardBorder} overflow-hidden z-50 animate-fade-in`}>
                                         <button
                                             onClick={() => { navigate('/profile'); setActiveDropdown(null); }}
-                                            className="w-full px-4 py-3 text-left text-sm text-dark-text-secondary hover:bg-dark-hover hover:text-dark-text-primary transition"
+                                            className={`w-full px-4 py-3 text-left text-sm ${tc.textSecondary} ${tc.hoverBg} ${tc.hoverText} transition`}
                                         >
                                             {t('nav.profile')}
                                         </button>

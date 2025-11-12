@@ -4,6 +4,7 @@ import { supportService } from '@/services/supportService';
 import { SupportChat } from '@/shared/types/support';
 import { usePolling } from '@/shared/hooks/usePolling';
 import { useTranslation } from 'react-i18next';
+import { useThemeClasses } from '@/shared/hooks/useThemeClasses';
 import {
   MessageSquare,
   Send,
@@ -20,6 +21,7 @@ const isImageUrl = (url: string) => {
 
 export default function SupportPage() {
   const { t, i18n } = useTranslation();
+  const tc = useThemeClasses();
   const { user } = useAppSelector((state) => state.auth);
   const [chat, setChat] = useState<SupportChat | null>(null);
   const [loading, setLoading] = useState(true);
@@ -155,11 +157,11 @@ export default function SupportPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-black text-white">
+      <div className={`min-h-screen ${tc.bg} ${tc.textPrimary}`}>
         <div className="flex items-center justify-center min-h-[60vh]">
           <div className="text-center">
             <MessageSquare className="w-12 h-12 text-primary-500 animate-pulse mx-auto mb-4" />
-            <p className="text-zinc-400">{t('support.loading')}</p>
+            <p className={tc.textSecondary}>{t('support.loading')}</p>
           </div>
         </div>
       </div>
@@ -167,37 +169,37 @@ export default function SupportPage() {
   }
 
   return (
-    <div className="min-h-screen bg-black text-white flex flex-col">
+    <div className={`min-h-screen ${tc.bg} ${tc.textPrimary} flex flex-col`}>
       <div className="max-w-8xl mx-auto w-full flex-1 flex flex-col">
         <div className="w-full px-6 py-8 space-y-6 flex flex-col flex-1">
-          <div className="bg-zinc-950 border border-zinc-800 rounded-3xl p-6">
+          <div className={`${tc.cardBg} border ${tc.cardBorder} rounded-3xl p-6`}>
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-4">
                 <div className="w-14 h-14 bg-gradient-to-br from-primary-500 to-primary-600 rounded-2xl flex items-center justify-center shadow-lg shadow-primary-500/50">
                   <Shield className="w-7 h-7 text-white" />
                 </div>
                 <div>
-                  <h1 className="text-3xl sm:text-4xl font-extralight text-white tracking-tight flex items-center gap-2">
+                  <h1 className={`text-3xl sm:text-4xl font-extralight ${tc.textPrimary} tracking-tight flex items-center gap-2`}>
                     {t('support.header.title')}
                   </h1>
                   <div className="flex items-center gap-2 mt-1">
                     <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                    <p className="text-sm text-zinc-500 font-light">{t('support.header.subtitle')}</p>
+                    <p className={`text-sm ${tc.textTertiary} font-light`}>{t('support.header.subtitle')}</p>
                   </div>
                 </div>
               </div>
             </div>
           </div>
 
-          <div className="bg-zinc-950 border border-zinc-800 rounded-3xl flex flex-col overflow-hidden flex-1">
+          <div className={`${tc.cardBg} border ${tc.cardBorder} rounded-3xl flex flex-col overflow-hidden flex-1`}>
             <div className="flex-1 overflow-y-auto p-6 space-y-4">
               {!chat || chat.messages.length === 0 ? (
                 <div className="flex flex-col items-center justify-center h-full text-center">
-                  <MessageSquare className="w-16 h-16 text-zinc-700 mb-4 opacity-50" />
-                  <p className="text-zinc-400 text-lg font-medium mb-2">
+                  <MessageSquare className={`w-16 h-16 ${tc.textTertiary} mb-4 opacity-50`} />
+                  <p className={`${tc.textSecondary} text-lg font-medium mb-2`}>
                     {t('support.emptyChat.title')}
                   </p>
-                  <p className="text-sm text-zinc-500 max-w-md">
+                  <p className={`text-sm ${tc.textTertiary} max-w-md`}>
                     {t('support.emptyChat.subtitle')}
                   </p>
                 </div>
@@ -215,9 +217,9 @@ export default function SupportPage() {
                               </div>
                             )}
                             <div>
-                              <div className={`rounded-2xl px-5 py-3 ${isUser ? 'bg-gradient-to-br from-primary-500 to-primary-600 text-white shadow-lg' : 'bg-zinc-900 border border-zinc-800'}`}>
+                              <div className={`rounded-2xl px-5 py-3 ${isUser ? 'bg-gradient-to-br from-primary-500 to-primary-600 text-white shadow-lg' : `${tc.hover} border ${tc.cardBorder}`}`}>
                                 {!isUser && <p className="text-xs text-primary-500 font-semibold mb-1">{t('support.chat.supportTeam')}</p>}
-                                <p className={`text-sm ${isUser ? 'text-white' : 'text-white'}`}>{msg.message}</p>
+                                <p className={`text-sm ${isUser ? 'text-white' : tc.textPrimary}`}>{msg.message}</p>
                                 {msg.attachment_url && (
                                     isImageUrl(msg.attachment_url) ? (
                                         <a href={msg.attachment_url} target="_blank" rel="noopener noreferrer">
@@ -231,8 +233,8 @@ export default function SupportPage() {
                                 )}
                               </div>
                               <div className={`flex items-center gap-1 mt-1 px-2 ${isUser ? 'justify-end' : 'justify-start'}`}>
-                                <Clock className="w-3 h-3 text-zinc-500" />
-                                <p className="text-xs text-zinc-500">{formatTime(msg.created_at)}</p>
+                                <Clock className={`w-3 h-3 ${tc.textTertiary}`} />
+                                <p className={`text-xs ${tc.textTertiary}`}>{formatTime(msg.created_at)}</p>
                                 {isUser && <CheckCheck className="w-3 h-3 text-primary-500" />}
                               </div>
                             </div>
@@ -251,20 +253,20 @@ export default function SupportPage() {
               )}
             </div>
 
-            <div className="border-t border-zinc-800 p-4 bg-zinc-950/50">
+            <div className={`border-t ${tc.cardBorder} p-4 ${tc.cardBg}/50`}>
               {attachment && (
-                <div className="mb-3 flex items-center gap-2 p-3 bg-zinc-900 rounded-lg">
+                <div className={`mb-3 flex items-center gap-2 p-3 ${tc.hover} rounded-lg`}>
                   <Paperclip className="w-4 h-4 text-primary-500" />
-                  <span className="text-sm text-white flex-1">{attachment.name}</span>
-                  <button onClick={() => setAttachment(null)} className="p-1 hover:bg-zinc-800 rounded-lg transition-colors">
-                    <X className="w-4 h-4 text-zinc-400" />
+                  <span className={`text-sm ${tc.textPrimary} flex-1`}>{attachment.name}</span>
+                  <button onClick={() => setAttachment(null)} className={`p-1 ${tc.hoverBg} rounded-lg transition-colors`}>
+                    <X className={`w-4 h-4 ${tc.textSecondary}`} />
                   </button>
                 </div>
               )}
               <form onSubmit={handleSendMessage} className="flex items-center gap-3">
                 <input type="file" ref={fileInputRef} onChange={(e) => setAttachment(e.target.files?.[0] || null)} className="hidden" accept="image/*,.pdf,.doc,.docx" />
-                <button type="button" onClick={() => fileInputRef.current?.click()} className="p-3 hover:bg-zinc-900 rounded-xl transition-colors flex-shrink-0" title={t('support.input.attachTitle')}>
-                  <Paperclip className="w-5 h-5 text-zinc-400" />
+                <button type="button" onClick={() => fileInputRef.current?.click()} className={`p-3 ${tc.hoverBg} rounded-xl transition-colors flex-shrink-0`} title={t('support.input.attachTitle')}>
+                  <Paperclip className={`w-5 h-5 ${tc.textSecondary}`} />
                 </button>
                 <textarea
                   value={message}
@@ -276,7 +278,7 @@ export default function SupportPage() {
                     }
                   }}
                   placeholder={t('support.input.placeholder')}
-                  className="flex-1 bg-zinc-900 border border-zinc-800 rounded-xl text-sm px-4 py-3 focus:outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500 transition-colors resize-none min-h-[52px] max-h-32"
+                  className={`flex-1 ${tc.hover} border ${tc.cardBorder} rounded-xl text-sm px-4 py-3 focus:outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500 transition-colors resize-none min-h-[52px] max-h-32 ${tc.textPrimary}`}
                   rows={1}
                   disabled={sending}
                 />
@@ -288,7 +290,7 @@ export default function SupportPage() {
                   {sending ? <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <Send className="w-5 h-5" />}
                 </button>
               </form>
-              <p className="text-xs text-zinc-500 mt-3 text-center">{t('support.input.footer')}</p>
+              <p className={`text-xs ${tc.textTertiary} mt-3 text-center`}>{t('support.input.footer')}</p>
             </div>
           </div>
         </div>

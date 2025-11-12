@@ -3,16 +3,18 @@ import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-route
 import { Provider } from 'react-redux';
 import { store } from '@/store/store';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
-import { fetchUserProfile } from '@/store/slices/authSlice';
+import { fetchUserProfile, setLoadingFalse } from '@/store/slices/authSlice';
 import Header from '@/components/layout/Header';
-import Footer from '@/components/layout/Footer'; // 1. Імпортуємо Footer
+import Footer from '@/components/layout/Footer';
 import ProtectedRoute from '@/routes/ProtectedRoute';
 import AdminProtectedRoute from '@/routes/AdminProtectedRoute';
 import { Loader2 } from 'lucide-react';
 import { useBalanceWebSocket } from '@/shared/hooks/useBalanceWebSocket';
+import { ThemeProvider } from '@/contexts/ThemeContext';
 
 // Ледаче завантаження компонентів (без змін)
 const LoginPage = lazy(() => import('@/features/auth/LoginPage'));
+const RegisterPage = lazy(() => import('@/features/auth/RegisterPage'));
 const DashboardLayout = lazy(() => import('@/features/dashboard/DashboardPage'));
 const DashboardHome = lazy(() => import('@/features/dashboard/DashboardHome'));
 const TradingPage = lazy(() => import('@/features/trading/TradingPage'));
@@ -31,8 +33,8 @@ const AdminPaymentDetails = lazy(() => import('@/features/admin/AdminPaymentDeta
 
 
 const LoadingFallback = () => (
-  <div className="min-h-screen flex items-center justify-center bg-gray-900">
-    <Loader2 className="w-12 h-12 text-blue-500 animate-spin" />
+  <div className="min-h-screen flex items-center justify-center">
+    <Loader2 className="w-12 h-12 text-primary-500 animate-spin" />
   </div>
 );
 
@@ -52,34 +54,35 @@ function AppContent() {
   useBalanceWebSocket();
 
   useEffect(() => {
-    const publicPages = ['/login', '/admin/login'];
+    const publicPages = ['/login', '/register', '/admin/login'];
     if (publicPages.includes(location.pathname)) {
+      dispatch(setLoadingFalse());
       return;
     }
     dispatch(fetchUserProfile());
   }, [dispatch, location.pathname]);
 
   const isLoginPage = location.pathname === '/login';
+  const isRegisterPage = location.pathname === '/register';
   const isAdminRoute = location.pathname.startsWith('/admin');
 
-  if (isLoading && !isLoginPage && !isAdminRoute) {
-    const publicPages = ['/login', '/admin/login'];
+  if (isLoading && !isLoginPage && !isRegisterPage && !isAdminRoute) {
+    const publicPages = ['/login', '/register', '/admin/login'];
     if (!publicPages.includes(location.pathname)) {
       return <LoadingFallback />;
     }
   }
 
-  // 2. Використовуємо flex-структуру для "притискання" футера донизу
   return (
-    <div className="min-h-screen flex flex-col bg-gray-900">
+    <div className="min-h-screen flex flex-col">
       <ScrollToTop />
-      {!isLoginPage && !isAdminRoute && <Header />}
+      {!isLoginPage && !isRegisterPage && !isAdminRoute && <Header />}
 
-      {/* 3. Основний контент займає доступний простір */}
       <main className="flex-grow">
         <Suspense fallback={<LoadingFallback />}>
           <Routes>
             <Route path="/login" element={<LoginPage />} />
+            <Route path="/register" element={<RegisterPage />} />
 
             <Route element={<ProtectedRoute />}>
               <Route path="/" element={<DashboardLayout />}>
@@ -110,8 +113,7 @@ function AppContent() {
         </Suspense>
       </main>
 
-      {/* 4. Рендеримо Footer тут, застосовуючи ту ж умову */}
-      {!isLoginPage && !isAdminRoute && <Footer />}
+      {!isLoginPage && !isRegisterPage && !isAdminRoute && <Footer />}
     </div>
   );
 }
@@ -119,9 +121,11 @@ function AppContent() {
 export default function App() {
   return (
     <Provider store={store}>
-      <BrowserRouter>
-        <AppContent />
-      </BrowserRouter>
+      <ThemeProvider>
+        <BrowserRouter>
+          <AppContent />
+        </BrowserRouter>
+      </ThemeProvider>
     </Provider>
   );
 }

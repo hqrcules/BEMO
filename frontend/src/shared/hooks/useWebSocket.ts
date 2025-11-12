@@ -28,6 +28,7 @@ export function useWebSocket({
   const reconnectAttempts = useRef(0);
   const shouldReconnect = useRef(autoConnect);
   const isConnecting = useRef(false);
+  const connectionTimeout = useRef<NodeJS.Timeout | null>(null);
 
   const connect = useCallback(() => {
     if (!url || typeof url !== 'string' || (!url.startsWith('ws://') && !url.startsWith('wss://'))) {
@@ -46,11 +47,31 @@ export function useWebSocket({
 
     isConnecting.current = true;
 
+    // Set connection timeout (10 seconds)
+    connectionTimeout.current = setTimeout(() => {
+      if (isConnecting.current) {
+        console.error('⏱️ WebSocket connection timeout');
+        dispatch(setError('Connection timeout. Unable to reach WebSocket server.'));
+        isConnecting.current = false;
+        if (ws.current) {
+          ws.current.close();
+          ws.current = null;
+        }
+      }
+    }, 10000);
+
     try {
+      console.log('🔌 Attempting to connect to WebSocket:', url);
       ws.current = new WebSocket(url);
 
       ws.current.onopen = () => {
+        console.log('✅ WebSocket connected successfully');
+        if (connectionTimeout.current) {
+          clearTimeout(connectionTimeout.current);
+          connectionTimeout.current = null;
+        }
         dispatch(setConnected(true));
+        dispatch(setError(null));
         reconnectAttempts.current = 0;
         isConnecting.current = false;
       };
@@ -70,12 +91,22 @@ export function useWebSocket({
         }
       };
 
-      ws.current.onerror = () => {
-        dispatch(setError('Помилка підключення WebSocket'));
+      ws.current.onerror = (error) => {
+        console.error('❌ WebSocket error:', error);
+        if (connectionTimeout.current) {
+          clearTimeout(connectionTimeout.current);
+          connectionTimeout.current = null;
+        }
+        dispatch(setError('WebSocket connection error. Check if backend is running.'));
         isConnecting.current = false;
       };
 
-      ws.current.onclose = () => {
+      ws.current.onclose = (event) => {
+        console.log('🔌 WebSocket closed:', event.code, event.reason);
+        if (connectionTimeout.current) {
+          clearTimeout(connectionTimeout.current);
+          connectionTimeout.current = null;
+        }
         dispatch(setConnected(false));
         isConnecting.current = false;
         ws.current = null;

@@ -137,7 +137,20 @@ CORS_ALLOWED_ORIGINS = config(
     cast=lambda v: [s.strip() for s in v.split(',')]
 )
 
+# For development/testing - allows all origins. Set to False in production!
+CORS_ALLOW_ALL_ORIGINS = config('CORS_ALLOW_ALL_ORIGINS', default=False, cast=bool)
+
 CORS_ALLOW_CREDENTIALS = True
+
+CORS_ALLOW_METHODS = [
+    'DELETE',
+    'GET',
+    'OPTIONS',
+    'PATCH',
+    'POST',
+    'PUT',
+]
+
 CORS_ALLOW_HEADERS = [
     'accept', 'accept-encoding', 'authorization', 'content-type',
     'dnt', 'origin', 'user-agent', 'x-csrftoken', 'x-requested-with', 'cookie',
@@ -220,12 +233,16 @@ TWELVE_DATA_API_KEY = config('TWELVE_DATA_API_KEY', default=None)
 OANDA_API_KEY = config('OANDA_API_KEY', default=None)
 BINANCE_API_KEY = config('BINANCE_API_KEY', default=None)
 
+
+CRYPTO_SYMBOLS_LIMIT = 150
+
 MARKET_DATA_CACHE_TTL = {
     'crypto': 60,
     'forex': 300,
-    'stock': 300,
-    'commodity': 300,
+    'stocks': 300,
+    'commodities': 300,
 }
+
 
 # Bot Configuration
 WITHDRAWAL_COMMISSION_PERCENT = 25.0

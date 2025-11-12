@@ -26,10 +26,30 @@ class User(AbstractBaseUser, PermissionsMixin):
         max_length=255,
         help_text='User email address (used for login)'
     )
+    first_name = models.CharField(
+        max_length=100,
+        blank=True,
+        help_text='First name of the user'
+    )
+    last_name = models.CharField(
+        max_length=100,
+        blank=True,
+        help_text='Last name of the user'
+    )
     full_name = models.CharField(
         max_length=255,
         blank=True,
         help_text='Full name of the user'
+    )
+    phone = models.CharField(
+        max_length=20,
+        blank=True,
+        help_text='Phone number of the user'
+    )
+    date_of_birth = models.DateField(
+        null=True,
+        blank=True,
+        help_text='Date of birth of the user'
     )
 
     # Financial Information
@@ -44,6 +64,11 @@ class User(AbstractBaseUser, PermissionsMixin):
         choices=BOT_TYPE_CHOICES,
         default='none',
         help_text='Active bot subscription type'
+    )
+    wallet_address = models.CharField(
+        max_length=255,
+        blank=True,
+        help_text='Cryptocurrency wallet address for withdrawals'
     )
 
     # Account Status
@@ -78,6 +103,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         ordering = ['-created_at']
         indexes = [
             models.Index(fields=['email']),
+            models.Index(fields=['phone']),
             models.Index(fields=['created_at']),
         ]
 

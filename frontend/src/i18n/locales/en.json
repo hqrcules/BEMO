@@ -16,7 +16,43 @@
     "loginButton": "Sign In",
     "noAccount": "Don't have an account?",
     "signUp": "Sign up",
+    "hasAccount": "Already have an account?",
+    "loginHere": "Login here",
     "platformSlogan": "Professional Trading Platform",
+    "register": {
+      "title": "Create Account",
+      "subtitle": "Join us and start investing today",
+      "firstName": "First Name",
+      "firstNamePlaceholder": "John",
+      "lastName": "Last Name",
+      "lastNamePlaceholder": "Doe",
+      "phone": "Phone",
+      "phonePlaceholder": "+1 234 567 8900",
+      "emailPlaceholder": "your@email.com",
+      "dateOfBirth": "Date of Birth",
+      "confirmPassword": "Confirm Password",
+      "rememberMe": "Remember me for 7 days",
+      "creating": "Creating Account...",
+      "createButton": "Create Account",
+      "errorTitle": "Error"
+    },
+    "validation": {
+      "firstNameRequired": "First name is required",
+      "lastNameRequired": "Last name is required",
+      "phoneRequired": "Phone is required",
+      "emailRequired": "Email is required",
+      "emailInvalid": "Please enter a valid email address",
+      "phoneInvalid": "Phone can only contain digits, +, -, and spaces",
+      "dateOfBirthRequired": "Date of birth is required",
+      "dateInvalidFormat": "Date must be in YYYY-MM-DD format",
+      "dateInvalid": "Invalid date",
+      "passwordRequired": "Password is required",
+      "confirmPasswordRequired": "Please confirm password",
+      "passwordMinLength": "Password must be at least 6 characters",
+      "passwordsNotMatch": "Passwords do not match",
+      "registrationFailed": "Registration failed. Please try again.",
+      "accountCreated": "Account created successfully! Please login."
+    },
     "hero": {
       "title1": "Trade cryptocurrency",
       "title2": "with confidence"
@@ -115,10 +151,20 @@
       "asset": "Asset",
       "price": "Price",
       "change24h": "24h Change",
+      "volume": "Volume",
       "chart": "Chart",
       "action": "Action"
     },
-    "buy": "Buy"
+    "buy": "Buy",
+    "error": {
+      "title": "Connection Failed",
+      "websocketUrl": "WebSocket URL:",
+      "backendInfo": "Make sure your backend server is running and accessible.",
+      "retry": "Retry Connection"
+    },
+    "loading": {
+      "connecting": "Connecting to market data..."
+    }
   },
   "trading": {
     "title": "Trading",
@@ -342,6 +388,202 @@
       "passwordMismatch": "New passwords do not match",
       "passwordUpdateSuccess": "Password changed successfully!",
       "passwordUpdateError": "Error changing password"
+    }
+  },
+  "bot": {
+    "title": "Bot Trading",
+    "subtitle": "Automated trading with your selected bot",
+    "info": {
+      "title": "Automated Trading Bot",
+      "subtitle": "Execute strategies with precision. Trade 24/7. Secure. Adaptive. Efficient.",
+      "openBalance": "Open Balance",
+      "description": "This trading system eliminates emotional decisions by leveraging autonomous algorithms. Built for accuracy and stability — it analyzes, reacts, and executes continuously under any market condition, protecting your assets while maximizing opportunity.",
+      "features": {
+        "trading247": {
+          "title": "24/7 Trading",
+          "description": "Constant market monitoring"
+        },
+        "riskControl": {
+          "title": "Risk Control",
+          "description": "Automated capital protection"
+        },
+        "fastExecution": {
+          "title": "Fast Execution",
+          "description": "Latency under 100 ms"
+        },
+        "adaptiveAI": {
+          "title": "Adaptive AI",
+          "description": "Smart trade logic"
+        }
+      }
+    },
+    "activity": {
+      "title": "Bot Activity",
+      "description": "Your {{botType}} bot is active and trading",
+      "active": "Active",
+      "stopped": "Stopped",
+      "sessionProfit": "Session Profit",
+      "winRate": "Win Rate",
+      "totalTrades": "Total Trades",
+      "losingTrades": "Losing Trades",
+      "today": "today"
+    },
+    "controls": {
+      "title": "Controls",
+      "tradingPair": "Trading Pair",
+      "pause": "Pause",
+      "start": "Start",
+      "stop": "Stop"
+    },
+    "stats": {
+      "today": "Today",
+      "profit": "Profit:",
+      "closedTrades": "Closed Trades:",
+      "openPositions": "Open Positions:"
+    },
+    "chart": {
+      "title": "{{pair}} Chart",
+      "loading": "Loading chart data..."
+    },
+    "positions": {
+      "title": "Open Positions",
+      "entry": "Entry:",
+      "noPositions": "No open positions"
+    },
+    "history": {
+      "title": "Trade History",
+      "headers": {
+        "symbol": "Symbol",
+        "type": "Type",
+        "profitLoss": "Profit/Loss",
+        "closeDate": "Close Date"
+      },
+      "noTrades": "No trades yet"
+    }
+  },
+  "balance": {
+    "loading": "Loading balance data...",
+    "title": "Balance & Transactions",
+    "subtitle": "Manage your deposits and withdrawals",
+    "availableBalance": "Available Balance",
+    "deposit": "Deposit",
+    "withdraw": "Withdraw",
+    "totalDeposits": "Total Deposits",
+    "totalWithdrawals": "Total Withdrawals",
+    "operations": "Operations",
+    "transactionHistory": "Transaction History",
+    "viewReceipt": "View",
+    "refreshing": "Refreshing...",
+    "refresh": "Refresh",
+    "wallet": {
+      "title": "Withdrawal Details",
+      "description": "Add your cryptocurrency wallet address to receive withdrawals.",
+      "currentAddress": "Current Wallet Address",
+      "addressLabel": "Cryptocurrency Wallet Address",
+      "hint": "Enter a valid cryptocurrency wallet address for withdrawals",
+      "save": "Save Address",
+      "saving": "Saving...",
+      "cancel": "Cancel",
+      "edit": "Edit address",
+      "copy": "Copy address",
+      "successSaved": "Wallet address saved successfully!",
+      "errorSaving": "Error saving wallet address"
+    },
+    "table": {
+      "type": "Type",
+      "amount": "Amount",
+      "method": "Method",
+      "status": "Status",
+      "date": "Date",
+      "receipt": "Receipt"
+    },
+    "types": {
+      "deposit": "Deposit",
+      "withdrawal": "Withdrawal",
+      "bot_profit": "Bot Profit",
+      "commission": "Commission"
+    },
+    "status": {
+      "completed": "Completed",
+      "pending": "Pending",
+      "rejected": "Rejected"
+    },
+    "noTransactions": {
+      "title": "No transactions yet",
+      "subtitle": "Deposit funds to get started",
+      "button": "Deposit Balance"
+    },
+    "modals": {
+      "selectPackage": "Select a deposit package",
+      "fromAmount": "from €250",
+      "depositTitle": "Deposit Balance",
+      "errorMinAmount": "Minimum deposit amount is €{{amount}}",
+      "withdrawTitle": "Withdraw Funds",
+      "amountLabel": "Deposit Amount",
+      "minAmount": "Minimum amount",
+      "transferAmount": "Amount to transfer",
+      "withdrawAmountLabel": "Withdrawal Amount",
+      "methodLabel": "Payment Method",
+      "withdrawMethodLabel": "Withdrawal Method",
+      "receiptLabel": "Payment Receipt",
+      "uploadClick": "Click to upload",
+      "uploadHint": "PNG, JPG or PDF up to 5MB",
+      "sending": "Sending...",
+      "processing": "Processing...",
+      "confirmDeposit": "Confirm Deposit",
+      "back": "Back",
+      "depositSuccess": "Deposit request has been successfully created and sent for admin review.",
+      "sendButton": "Send for review",
+      "errorReceipt": "Please upload a payment receipt",
+      "errorDeposit": "Error creating deposit",
+      "availableToWithdraw": "Available for withdrawal",
+      "walletAddressLabel": "Wallet Address",
+      "requesting": "Sending request...",
+      "requestButton": "Request Withdrawal",
+      "errorInsufficientFunds": "Insufficient funds in the balance",
+      "errorWithdraw": "Error creating withdrawal request",
+      "withdrawMinimum": "Minimum",
+      "commission": "commission",
+      "calc": {
+        "amount": "Request amount",
+        "commission": "Commission (25%)",
+        "youReceive": "You will receive"
+      },
+      "yourRequisites": "Your details (IBAN / Card)",
+      "errorRequisites": "Please specify your withdrawal details",
+      "errorMinAmountWithdraw": "Minimum withdrawal amount: €50"
+    },
+    "methods": {
+      "card": "Bank Card",
+      "crypto": "Cryptocurrency",
+      "transfer": "Bank Transfer"
+    },
+    "depositOptions": {
+      "basic": {
+        "title": "Basic Package",
+        "description": "Ideal for beginners"
+      },
+      "premium": {
+        "title": "Premium Package",
+        "description": "Enhanced trading capabilities"
+      },
+      "trader": {
+        "title": "Trade with a Trader",
+        "description": "Full access to all tools"
+      },
+      "custom": {
+        "title": "Custom Amount",
+        "description": "Minimum €250"
+      }
+    },
+    "payment": {
+      "cardNumberLabel": "Card number for payment",
+      "noCardNumber": "Card number for payment is not specified. Please contact support.",
+      "methodsTitle": "Card number for payment",
+      "noMethods": "No payment methods available",
+      "attached": "Attached: ",
+      "replyPlaceholder": "Reply to user...",
+      "downloadAttachment": "Download attachment"
     }
   },
   "common": {
