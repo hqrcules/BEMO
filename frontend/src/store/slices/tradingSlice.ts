@@ -5,12 +5,13 @@ export interface BotTradeData {
   symbol: string;
   side: 'buy' | 'sell';
   entry_price: string;
-  exit_price: string;
+  exit_price: string | null;
   quantity: string;
   profit_loss: string;
   profit_loss_percent: string;
+  is_open: boolean;
   opened_at: string;
-  closed_at: string;
+  closed_at: string | null;
 }
 
 export interface TradingState {

@@ -67,6 +67,7 @@ class BotTrade(models.Model):
         ordering = ['-opened_at']
         indexes = [
             models.Index(fields=['user', 'is_open']),
+            models.Index(fields=['user', '-opened_at']),
             models.Index(fields=['symbol', 'opened_at']),
         ]
 
@@ -113,6 +114,10 @@ class TradingSession(models.Model):
         verbose_name = 'Trading Session'
         verbose_name_plural = 'Trading Sessions'
         ordering = ['-started_at']
+        indexes = [
+            models.Index(fields=['user', 'is_active']),
+            models.Index(fields=['user', '-ended_at']),
+        ]
 
     def __str__(self):
         return f"{self.user.email} - {self.bot_type} - {self.started_at}"

@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react';
 import { tradingService, BotTrade, TradingStats } from '@/services/tradingService';
+import { botService } from '@/services/botService';
 import BotActivity from './BotActivity';
-import { useAppSelector } from '@/store/hooks';
+import { useAppSelector, useAppDispatch } from '@/store/hooks';
+import { setUser } from '@/store/slices/authSlice';
 import BotInfo from './BotInfo';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { Activity, Play, Pause, Square, Zap, Settings, BarChart, X as CloseIcon, Loader2 } from 'lucide-react';
@@ -43,91 +45,137 @@ export default function BotTradingPage() {
   const [trades, setTrades] = useState<BotTrade[]>([]);
   const [openPositions, setOpenPositions] = useState<BotTrade[]>([]);
   const [stats, setStats] = useState<TradingStats | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [loadingTrades, setLoadingTrades] = useState(false);
+  const [loadingStats, setLoadingStats] = useState(false);
+  const [loadingPositions, setLoadingPositions] = useState(false);
+  const [toggling, setToggling] = useState(false);
+  const [renderError, setRenderError] = useState<string | null>(null);
   const { user } = useAppSelector((state: RootState) => state.auth);
   const currencyState = useAppSelector((state: RootState) => state.currency);
   const { prices } = useAppSelector((state: RootState) => state.websocket);
   const { latestTrade } = useAppSelector((state: RootState) => state.trading);
   const { t } = useTranslation();
   const tc = useThemeClasses();
+  const dispatch = useAppDispatch();
+
+  // Debug logging
+  useEffect(() => {
+    console.log('BotTradingPage render - user:', user);
+    console.log('User bot_type:', user?.bot_type);
+    console.log('User is_bot_enabled:', user?.is_bot_enabled);
+  }, [user]);
 
   const initialPair = 'BTC/USDT';
   const initialSymbol = getBaseSymbol(initialPair);
   const initialPrice = prices?.[initialSymbol]?.price || 45230.50; // FIXED: Added optional chaining
 
   const [botState, setBotState] = useState<BotState>({
-    isActive: true,
+    isActive: user?.is_bot_enabled || false,
     currentPair: initialPair,
     lastPrice: initialPrice,
-    profitToday: 127.85
+    profitToday: 0 // Will be calculated from actual session/stats data
   });
 
   const [chartData, setChartData] = useState<SimpleChartData[]>([]);
 
+  // Sync botState.isActive with user.is_bot_enabled
   useEffect(() => {
-    async function fetchData() {
-      if (user?.bot_type !== 'none') {
-        try {
-          setLoading(true);
-          const [tradesData, statsData, openPositionsData] = await Promise.all([
-            tradingService.getTrades(),
-            tradingService.getTradingStats(),
-            tradingService.getOpenPositions(),
-          ]);
-
-          const tradesArray = Array.isArray(tradesData) ? tradesData : (tradesData.results || []);
-          const openArray = Array.isArray(openPositionsData) ? openPositionsData : (openPositionsData.results || []);
-
-          setTrades(tradesArray.filter(t => !t.is_open) || []);
-          setStats(statsData);
-          setOpenPositions(openArray || []);
-        } catch (error) {
-          console.error('Error fetching trading data:', error);
-        } finally {
-          setLoading(false);
-        }
-      } else {
-        setLoading(false);
-      }
+    if (user) {
+      setBotState(prev => ({
+        ...prev,
+        isActive: user.is_bot_enabled
+      }));
     }
-    fetchData();
+  }, [user?.is_bot_enabled]);
+
+  useEffect(() => {
+    // Load data independently for faster initial render
+    if (user?.bot_type !== 'none') {
+      // Load stats first (lightweight)
+      setLoadingStats(true);
+      tradingService.getTradingStats()
+        .then(statsData => {
+          setStats(statsData);
+          // Initialize profitToday from stats
+          setBotState(prev => ({
+            ...prev,
+            profitToday: parseFloat(statsData.total_profit) || 0
+          }));
+        })
+        .catch(error => console.error('Error fetching stats:', error))
+        .finally(() => setLoadingStats(false));
+
+      // Load open positions (important)
+      setLoadingPositions(true);
+      tradingService.getOpenPositions()
+        .then(openPositionsData => {
+          const openArray = Array.isArray(openPositionsData) ? openPositionsData : (openPositionsData.results || []);
+          setOpenPositions(openArray || []);
+        })
+        .catch(error => console.error('Error fetching positions:', error))
+        .finally(() => setLoadingPositions(false));
+
+      // Load trades last (can be deferred)
+      setLoadingTrades(true);
+      tradingService.getTrades()
+        .then(tradesData => {
+          const tradesArray = Array.isArray(tradesData) ? tradesData : (tradesData.results || []);
+          setTrades(tradesArray.filter(t => !t.is_open) || []);
+        })
+        .catch(error => console.error('Error fetching trades:', error))
+        .finally(() => setLoadingTrades(false));
+    }
   }, [user?.id, user?.bot_type]);
 
   // Listen for new trades from WebSocket
   useEffect(() => {
     if (latestTrade) {
-      // Add new trade to the beginning of the trades list
-      setTrades(prevTrades => {
-        // Check if trade already exists to avoid duplicates
-        if (prevTrades.some(t => t.id === latestTrade.id)) {
-          return prevTrades;
-        }
-        return [latestTrade, ...prevTrades];
-      });
+      // If trade is OPEN, add to open positions
+      if (latestTrade.is_open) {
+        setOpenPositions(prevPositions => {
+          // Check if position already exists
+          if (prevPositions.some(p => p.id === latestTrade.id)) {
+            return prevPositions;
+          }
+          return [latestTrade as any, ...prevPositions];
+        });
+      } else {
+        // If trade is CLOSED, remove from open positions and add to trades history
+        setOpenPositions(prevPositions => prevPositions.filter(p => p.id !== latestTrade.id));
 
-      // Update stats
-      setStats(prevStats => {
-        if (!prevStats) return prevStats;
-        const profitLoss = parseFloat(latestTrade.profit_loss);
-        return {
-          ...prevStats,
-          total_trades: prevStats.total_trades + 1,
-          closed_trades: prevStats.closed_trades + 1,
-          total_profit: (parseFloat(prevStats.total_profit) + profitLoss).toFixed(2),
-          winning_trades: profitLoss > 0 ? prevStats.winning_trades + 1 : prevStats.winning_trades,
-        };
-      });
+        setTrades(prevTrades => {
+          // Check if trade already exists to avoid duplicates
+          if (prevTrades.some(t => t.id === latestTrade.id)) {
+            return prevTrades;
+          }
+          return [latestTrade as any, ...prevTrades];
+        });
+      }
 
-      // Update profitToday in botState
-      setBotState(prev => ({
-        ...prev,
-        profitToday: prev.profitToday + parseFloat(latestTrade.profit_loss)
-      }));
+      // Only update stats and profitToday for CLOSED trades
+      if (!latestTrade.is_open) {
+        setStats(prevStats => {
+          if (!prevStats) return prevStats;
+          const profitLoss = parseFloat(latestTrade.profit_loss);
+          return {
+            ...prevStats,
+            closed_trades: prevStats.closed_trades + 1,
+            total_profit: (parseFloat(prevStats.total_profit) + profitLoss).toFixed(2),
+            winning_trades: profitLoss > 0 ? prevStats.winning_trades + 1 : prevStats.winning_trades,
+          };
+        });
 
-      // Update chart data if the trade matches the current pair
-      if (latestTrade.symbol === botState.currentPair) {
+        // Update profitToday in botState
+        setBotState(prev => ({
+          ...prev,
+          profitToday: prev.profitToday + parseFloat(latestTrade.profit_loss)
+        }));
+      }
+
+      // Update chart data only for CLOSED trades
+      if (!latestTrade.is_open && latestTrade.symbol === botState.currentPair && latestTrade.exit_price) {
         const exitPrice = parseFloat(latestTrade.exit_price);
-        const tradeTime = new Date(latestTrade.closed_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        const tradeTime = new Date(latestTrade.closed_at!).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
         setChartData(prevData => {
           // Remove oldest point and add new trade point
@@ -246,8 +294,8 @@ export default function BotTradingPage() {
         });
         setBotState(prev => ({
           ...prev,
-          lastPrice: newPrice > 0 ? newPrice : prev.lastPrice,
-          profitToday: prev.profitToday + (Math.random() - 0.45) * 5
+          lastPrice: newPrice > 0 ? newPrice : prev.lastPrice
+          // REMOVED: Random simulation that was corrupting profitToday
         }));
       }
     }, 5000);
@@ -255,8 +303,30 @@ export default function BotTradingPage() {
     return () => clearInterval(interval);
   }, [botState.currentPair, prices, botState.lastPrice, chartData.length]);
 
-  const toggleBot = () => {
-    setBotState(prev => ({ ...prev, isActive: !prev.isActive }));
+  const toggleBot = async () => {
+    if (!user) return;
+
+    try {
+      setToggling(true);
+      const response = await botService.toggleBot();
+      if (response.success) {
+        // Update user state directly without refetching
+        const updatedUser = {
+          ...user,
+          is_bot_enabled: response.is_bot_enabled
+        };
+        console.log('Updating user with is_bot_enabled:', response.is_bot_enabled);
+        dispatch(setUser(updatedUser));
+        // Don't manually set botState here - let the useEffect handle it
+      }
+    } catch (error: any) {
+      console.error('Failed to toggle bot:', error);
+      alert(error.response?.data?.message || 'Failed to toggle bot');
+      // Revert local state on error
+      setBotState(prev => ({ ...prev, isActive: user.is_bot_enabled }));
+    } finally {
+      setToggling(false);
+    }
   };
 
   const changePair = (pair: string) => {
@@ -274,18 +344,38 @@ export default function BotTradingPage() {
     setOpenPositions(prev => prev.filter(p => p.id !== id));
   };
 
-  if (loading && user?.bot_type !== 'none') {
+  // Error boundary
+  if (renderError) {
     return (
       <div className={`min-h-screen flex items-center justify-center ${tc.bg}`}>
         <div className="text-center">
-          <Loader2 className="w-12 h-12 text-primary-500 animate-spin mx-auto mb-4" />
-          <p className={tc.textSecondary}>Loading...</p>
+          <p className="text-red-500 mb-4">Error: {renderError}</p>
+          <button
+            onClick={() => {
+              setRenderError(null);
+              window.location.reload();
+            }}
+            className="btn btn-primary"
+          >
+            Reload Page
+          </button>
         </div>
       </div>
     );
   }
 
-  if (!user || user.bot_type === 'none') {
+  if (!user) {
+    return (
+      <div className={`min-h-screen flex items-center justify-center ${tc.bg}`}>
+        <div className="text-center">
+          <Loader2 className="w-12 h-12 text-primary-500 animate-spin mx-auto mb-4" />
+          <p className={tc.textSecondary}>Loading user data...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (user.bot_type === 'none') {
     return <BotInfo />;
   }
 
@@ -344,21 +434,30 @@ export default function BotTradingPage() {
                   </select>
                 </div>
 
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-1 gap-3">
                   <button
                     onClick={toggleBot}
+                    disabled={toggling || user?.bot_type === 'none'}
                     className={`btn py-3 text-sm ${
                       botState.isActive
                         ? 'btn-danger'
                         : 'btn-success'
-                    }`}
+                    } ${toggling ? 'opacity-50 cursor-not-allowed' : ''}`}
                   >
-                    {botState.isActive ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
-                    <span>{botState.isActive ? t('bot.controls.pause') : t('bot.controls.start')}</span>
-                  </button>
-                  <button className="btn btn-secondary py-3 text-sm">
-                    <Square className="w-4 h-4" />
-                    <span>{t('bot.controls.stop')}</span>
+                    {toggling ? (
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                    ) : botState.isActive ? (
+                      <Pause className="w-4 h-4" />
+                    ) : (
+                      <Play className="w-4 h-4" />
+                    )}
+                    <span>
+                      {toggling
+                        ? 'Processing...'
+                        : botState.isActive
+                          ? t('bot.controls.pause')
+                          : t('bot.controls.start')}
+                    </span>
                   </button>
                 </div>
               </div>
@@ -442,7 +541,12 @@ export default function BotTradingPage() {
                   </h3>
                 </div>
                 <div className={`divide-y ${tc.cardBorder} max-h-96 overflow-y-auto custom-scroll`}>
-                  {openPositions.length > 0 ? (
+                  {loadingPositions ? (
+                    <div className={`p-6 text-center ${tc.textTertiary}`}>
+                      <Loader2 className="w-8 h-8 mx-auto mb-2 animate-spin text-primary-500" />
+                      <p className="text-sm">Loading positions...</p>
+                    </div>
+                  ) : openPositions.length > 0 ? (
                     openPositions.map((position) => (
                       <div key={position.id} className={`p-4 ${tc.hoverBg} transition-colors`}>
                         <div className="flex justify-between items-center mb-2">
@@ -497,7 +601,14 @@ export default function BotTradingPage() {
                   </tr>
                 </thead>
                 <tbody className={`divide-y ${tc.cardBorder}`}>
-                  {trades.length > 0 ? (
+                  {loadingTrades ? (
+                    <tr>
+                      <td colSpan={4} className={`p-8 text-center ${tc.textTertiary}`}>
+                        <Loader2 className="w-8 h-8 mx-auto mb-2 animate-spin text-primary-500" />
+                        <p className="text-sm">Loading trade history...</p>
+                      </td>
+                    </tr>
+                  ) : trades.length > 0 ? (
                     trades.map((trade) => (
                       <tr key={trade.id} className={`${tc.hoverBg} transition-colors`}>
                         <td className="py-4 px-6">

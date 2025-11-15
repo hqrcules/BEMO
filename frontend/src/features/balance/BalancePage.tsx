@@ -49,14 +49,14 @@ function WithdrawModal({
     onClose,
     onSuccess,
     currentBalance,
-    paymentDetails,
+    allPaymentDetails,
     copyToClipboard,
     copiedField,
 }: {
     onClose: () => void;
     onSuccess: () => void;
     currentBalance: number;
-    paymentDetails: PaymentDetails[];
+    allPaymentDetails: PaymentDetails[];
     copyToClipboard: (text: string, field: string) => Promise<void>;
     copiedField: string | null;
 }) {
@@ -64,18 +64,28 @@ function WithdrawModal({
     const { theme } = useTheme();
     const [amount, setAmount] = useState('');
     const [userRequisites, setUserRequisites] = useState('');
+    const [receiptFile, setReceiptFile] = useState<File | null>(null);
+    const [paymentMethodType, setPaymentMethodType] = useState<'card' | 'crypto'>('card');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
 
     const amountNum = parseFloat(amount) || 0;
     const commissionAmount = useMemo(() => amountNum * 0.25, [amountNum]);
-    const amountToReceive = useMemo(() => amountNum - commissionAmount, [amountNum, commissionAmount]);
+    const totalDeducted = useMemo(() => amountNum + commissionAmount, [amountNum, commissionAmount]);
+
+    const paymentDetails = useMemo(() => {
+        return allPaymentDetails.filter(d =>
+            paymentMethodType === 'card'
+                ? d.currency === 'BANK_TRANSFER'
+                : d.currency !== 'BANK_TRANSFER'
+        );
+    }, [allPaymentDetails, paymentMethodType]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setError('');
 
-        if (amountNum > currentBalance) {
+        if (totalDeducted > currentBalance) {
             setError(t('balance.modals.errorInsufficientFunds', 'Недостатньо коштів на балансі'));
             return;
         }
@@ -90,13 +100,21 @@ function WithdrawModal({
              return;
         }
 
+        if (!receiptFile) {
+            setError(t('balance.modals.errorReceipt', 'Будь ласка, завантажте підтвердження платежу'));
+            return;
+        }
+
         try {
             setLoading(true);
-            await transactionService.requestWithdrawal({
-                amount: amountNum,
-                // @ts-ignore // TODO: Fix this type issue if needed
-                payment_details: userRequisites
-            });
+            const formData = new FormData();
+            formData.append('amount', amountNum.toString());
+            formData.append('payment_method', paymentMethodType);
+            formData.append('payment_receipt', receiptFile);
+            // @ts-ignore // TODO: Fix this type issue if needed
+            formData.append('payment_details', userRequisites);
+
+            await transactionService.requestWithdrawal(formData);
             onSuccess();
             onClose();
         } catch (err: any) {
@@ -136,19 +154,56 @@ function WithdrawModal({
                         </div>
                     )}
 
+                    {/* Payment Method Type Selector */}
+                    <div>
+                        <label className="block text-sm font-medium text-theme-text mb-2">
+                            {t('balance.modals.paymentMethodType', 'Тип способу оплати')}
+                        </label>
+                        <div className="grid grid-cols-2 gap-3">
+                            <button
+                                type="button"
+                                onClick={() => setPaymentMethodType('card')}
+                                className={`p-3 rounded-lg border-2 transition-all ${
+                                    paymentMethodType === 'card'
+                                        ? 'border-primary-500 bg-primary-500/10'
+                                        : 'border-theme-border hover:border-theme-border'
+                                }`}
+                            >
+                                <CreditCard className="w-5 h-5 mx-auto mb-1 text-theme-text" />
+                                <span className="text-sm text-theme-text">{t('balance.modals.bankCard', 'Банківська карта')}</span>
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => setPaymentMethodType('crypto')}
+                                className={`p-3 rounded-lg border-2 transition-all ${
+                                    paymentMethodType === 'crypto'
+                                        ? 'border-primary-500 bg-primary-500/10'
+                                        : 'border-theme-border hover:border-theme-border'
+                                }`}
+                            >
+                                <Wallet className="w-5 h-5 mx-auto mb-1 text-theme-text" />
+                                <span className="text-sm text-theme-text">{t('balance.modals.cryptoWallet', 'Crypto гаманець')}</span>
+                            </button>
+                        </div>
+                    </div>
+
                      <div className="space-y-3">
                         <label className="block text-sm font-medium text-theme-text">
-                            {t('balance.payment.methodsTitle', 'Card number for payment)')}
+                            {paymentMethodType === 'card'
+                                ? t('balance.payment.cardNumberLabel', 'Номер картки для переказу')
+                                : t('balance.payment.walletAddressLabel', 'Криpto адреса для переказу')}
                         </label>
                         {paymentDetails.length > 0 ? paymentDetails.map((detail) => (
                             <div key={detail.id} className="p-3 bg-theme-bg-tertiary rounded-lg">
-                                <p className="text-xs text-theme-text-tertiary">{detail.currency}</p>
+                                <p className="text-xs text-theme-text-tertiary">{detail.currency.replace('_', ' ')} - {detail.network}</p>
                                 <div className="flex items-center justify-between mt-1">
-                                    <p className="text-lg text-theme-text font-mono break-all">{detail.bank_details}</p>
+                                    <p className="text-sm text-theme-text font-mono break-all">
+                                        {detail.bank_details || detail.wallet_address}
+                                    </p>
                                     <button
                                         type="button"
-                                        onClick={() => copyToClipboard(detail.bank_details, detail.id)}
-                                        className="p-2 hover:bg-theme-bg-hover rounded-lg"
+                                        onClick={() => copyToClipboard(detail.bank_details || detail.wallet_address, detail.id)}
+                                        className="p-2 hover:bg-theme-bg-hover rounded-lg flex-shrink-0"
                                     >
                                         {copiedField === detail.id ? <CheckCheck className={`w-4 h-4 ${theme === 'dark' ? 'text-green-400' : 'text-green-600'}`} /> : <Copy className="w-4 h-4 text-theme-text-secondary" />}
                                     </button>
@@ -159,17 +214,19 @@ function WithdrawModal({
 
                     <div>
                         <label className="block text-sm font-medium text-theme-text mb-2">
-                            {t('balance.modals.yourRequisites', 'Your details (IBAN / Card))')}
+                            {paymentMethodType === 'card'
+                                ? t('balance.modals.yourRequisites', 'Ваші реквізити (IBAN / Карта)')
+                                : t('balance.modals.yourWalletAddress', 'Ваша криpto адреса')}
                         </label>
                         <textarea
                             rows={3}
                             required
                             value={userRequisites}
                             onChange={(e) => setUserRequisites(e.target.value)}
-                            className="w-full bg-theme-bg-tertiary border border-theme-border rounded-xl text-sm px-4 py-2.5 focus:outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500 transition-colors"
+                            className="w-full bg-theme-bg-tertiary border border-theme-border rounded-xl text-sm px-4 py-2.5 focus:outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500 transition-colors font-mono"
+                            placeholder={paymentMethodType === 'card' ? 'UA123456789012345678901234567' : '0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb5'}
                         />
                     </div>
-
 
                     <div>
                         <label className="block text-sm font-medium text-theme-text mb-2">
@@ -191,10 +248,37 @@ function WithdrawModal({
                         </p>
                     </div>
 
+                    {/* Photo Upload */}
+                    <div>
+                        <label className="block text-sm font-medium text-theme-text mb-2">
+                            {t('balance.modals.receiptLabel', 'Підтвердження оплати')}
+                        </label>
+                        <div className={`border-2 border-dashed border-theme-border rounded-lg p-4 hover:border-primary-500/50 transition-colors cursor-pointer ${receiptFile ? 'bg-primary-500/5' : ''}`}>
+                            <input
+                                type="file"
+                                accept="image/*,.pdf"
+                                onChange={(e) => setReceiptFile(e.target.files?.[0] || null)}
+                                className="hidden"
+                                id="withdraw-receipt-upload"
+                            />
+                            <label htmlFor="withdraw-receipt-upload" className="cursor-pointer block text-center">
+                                <Upload className="w-6 h-6 text-theme-text-tertiary mx-auto mb-2" />
+                                {receiptFile ? (
+                                    <p className="text-sm text-primary-500 font-medium">{receiptFile.name}</p>
+                                ) : (
+                                    <>
+                                        <p className="text-sm text-theme-text mb-1">{t('balance.modals.uploadClick', 'Натисніть для завантаження')}</p>
+                                        <p className="text-xs text-theme-text-tertiary">{t('balance.modals.uploadHint', 'PNG, JPG або PDF (макс. 10MB)')}</p>
+                                    </>
+                                )}
+                            </label>
+                        </div>
+                    </div>
+
                     <div className="space-y-2 p-4 bg-theme-bg-tertiary rounded-lg border border-theme-border">
                         <div className="flex justify-between items-center text-sm">
                             <p className="text-theme-text-secondary">
-                                {t('balance.modals.calc.amount', 'Request amount')}:
+                                {t('balance.modals.calc.withdrawAmount', 'Сума виведення')}:
                             </p>
                             <p className="font-medium text-theme-text">
                                 €{amountNum.toFixed(2)}
@@ -202,26 +286,32 @@ function WithdrawModal({
                         </div>
                         <div className="flex justify-between items-center text-sm">
                             <p className="text-theme-text-secondary">
-                                {t('balance.modals.calc.commission', 'Commission (25%)')}:
+                                {t('balance.modals.calc.commission', 'Комісія (25%)')}:
                             </p>
-                            <p className={`font-medium ${theme === 'dark' ? 'text-red-400' : 'text-red-600'}`}>
-                                -€{commissionAmount.toFixed(2)}
+                            <p className={`font-medium ${theme === 'dark' ? 'text-yellow-400' : 'text-yellow-600'}`}>
+                                +€{commissionAmount.toFixed(2)}
                             </p>
                         </div>
                         <div className="flex justify-between items-center border-t border-theme-border pt-2 mt-2">
                             <p className="text-sm font-bold text-theme-text">
-                                {t('balance.modals.calc.youReceive', 'Ви отримаєте')}:
+                                {t('balance.modals.calc.totalDeducted', 'Всього знято з балансу')}:
                             </p>
-                            <p className={`text-lg font-bold ${theme === 'dark' ? 'text-green-400' : 'text-green-600'}`}>
-                                €{amountToReceive.toFixed(2)}
+                            <p className={`text-lg font-bold ${theme === 'dark' ? 'text-red-400' : 'text-red-600'}`}>
+                                €{totalDeducted.toFixed(2)}
                             </p>
+                        </div>
+                        <div className="text-xs text-theme-text-tertiary mt-2 text-center">
+                            {t('balance.modals.calc.note', 'Ви отримаєте €{amount}, але з вашого балансу буде знято €{total}', {
+                                amount: amountNum.toFixed(2),
+                                total: totalDeducted.toFixed(2)
+                            })}
                         </div>
                     </div>
 
                     <button
                         type="submit"
-                        disabled={loading || amountNum < 50 || !userRequisites}
-                        className="w-full bg-primary-500 hover:bg-primary-600 rounded-xl text-white font-medium flex items-center justify-center gap-2 py-3 disabled:opacity-50"
+                        disabled={loading || amountNum < 50 || !userRequisites || !receiptFile || totalDeducted > currentBalance}
+                        className="w-full bg-primary-500 hover:bg-primary-600 rounded-xl text-white font-medium flex items-center justify-center gap-2 py-3 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                         {loading ? t('balance.modals.requesting', 'Обробка...') : t('balance.modals.requestButton', 'Створити запит')}
                     </button>
@@ -251,6 +341,7 @@ export default function BalancePage() {
     const [selectedOption, setSelectedOption] = useState<DepositOption | null>(null);
     const [customAmount, setCustomAmount] = useState('');
     const [receiptFile, setReceiptFile] = useState<File | null>(null);
+    const [depositPaymentType, setDepositPaymentType] = useState<'card' | 'crypto'>('card');
     const [loading2, setLoading2] = useState(false);
     const [error, setError] = useState('');
     const [copiedField, setCopiedField] = useState<string | null>(null);
@@ -328,7 +419,7 @@ export default function BalancePage() {
                 tx.transaction_type === 'deposit' || tx.transaction_type === 'withdrawal'
             ) || []);
             setStats(statsData);
-            setPaymentDetails(paymentDetailsData.filter(d => d.currency === 'BANK_TRANSFER') || []);
+            setPaymentDetails(paymentDetailsData || []); // Don't filter, show all payment methods
             setProfileData(profileDetailsData);
             setWalletAddress(profileDetailsData.wallet_address || '');
         } catch (error) {
@@ -403,13 +494,14 @@ export default function BalancePage() {
             setLoading2(true);
             await transactionService.createDeposit({
                 amount: amount,
-                payment_method: 'card',
+                payment_method: depositPaymentType,
                 payment_receipt: receiptFile
             });
             setShowPaymentModal(false);
             setSelectedOption(null);
             setCustomAmount('');
             setReceiptFile(null);
+            setDepositPaymentType('card');
             await handleModalSuccess();
             alert(t('balance.modals.depositSuccess'));
         } catch (err: any) {
@@ -839,24 +931,70 @@ export default function BalancePage() {
                             </p>
                         </div>
 
+                        {/* Payment Method Type Selector */}
+                        <div className="mb-4">
+                            <label className={`block text-sm font-medium ${tc.textPrimary} mb-2`}>
+                                {t('balance.modals.paymentMethodType', 'Тип способу оплати')}
+                            </label>
+                            <div className="grid grid-cols-2 gap-3">
+                                <button
+                                    type="button"
+                                    onClick={() => setDepositPaymentType('card')}
+                                    className={`p-3 rounded-lg border-2 transition-all ${
+                                        depositPaymentType === 'card'
+                                            ? 'border-primary-500 bg-primary-500/10'
+                                            : `border-${tc.cardBorder} hover:border-${tc.cardBorder}`
+                                    }`}
+                                >
+                                    <CreditCard className={`w-5 h-5 mx-auto mb-1 ${tc.textPrimary}`} />
+                                    <span className={`text-sm ${tc.textPrimary}`}>{t('balance.modals.bankCard', 'Банківська карта')}</span>
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={() => setDepositPaymentType('crypto')}
+                                    className={`p-3 rounded-lg border-2 transition-all ${
+                                        depositPaymentType === 'crypto'
+                                            ? 'border-primary-500 bg-primary-500/10'
+                                            : `border-${tc.cardBorder} hover:border-${tc.cardBorder}`
+                                    }`}
+                                >
+                                    <Wallet className={`w-5 h-5 mx-auto mb-1 ${tc.textPrimary}`} />
+                                    <span className={`text-sm ${tc.textPrimary}`}>{t('balance.modals.cryptoWallet', 'Crypto гаманець')}</span>
+                                </button>
+                            </div>
+                        </div>
+
                          <div className="space-y-3 mb-4">
                             <label className={`block text-sm font-medium ${tc.textPrimary}`}>
-                                {t('balance.payment.cardNumberLabel')}
+                                {depositPaymentType === 'card'
+                                    ? t('balance.payment.cardNumberLabel', 'Номер картки для переказу')
+                                    : t('balance.payment.walletAddressLabel', 'Криpto адреса для переказу')}
                             </label>
-                            {paymentDetails.length > 0 ? paymentDetails.map((detail) => (
+                            {paymentDetails.filter(d =>
+                                depositPaymentType === 'card'
+                                    ? d.currency === 'BANK_TRANSFER'
+                                    : d.currency !== 'BANK_TRANSFER'
+                            ).length > 0 ? paymentDetails.filter(d =>
+                                depositPaymentType === 'card'
+                                    ? d.currency === 'BANK_TRANSFER'
+                                    : d.currency !== 'BANK_TRANSFER'
+                            ).map((detail) => (
                                 <div key={detail.id} className={`p-3 ${tc.hover} rounded-lg`}>
+                                    <p className={`text-xs ${tc.textTertiary}`}>{detail.currency.replace('_', ' ')} - {detail.network}</p>
                                     <div className="flex items-center justify-between mt-1">
-                                        <p className={`text-lg ${tc.textPrimary} font-mono break-all`}>{detail.bank_details}</p>
+                                        <p className={`text-sm ${tc.textPrimary} font-mono break-all`}>
+                                            {detail.bank_details || detail.wallet_address}
+                                        </p>
                                         <button
                                             type="button"
-                                            onClick={() => copyToClipboard(detail.bank_details, detail.id)}
-                                            className={`p-2 ${tc.hoverBg} rounded-lg`}
+                                            onClick={() => copyToClipboard(detail.bank_details || detail.wallet_address, detail.id)}
+                                            className={`p-2 ${tc.hoverBg} rounded-lg flex-shrink-0`}
                                         >
                                             {copiedField === detail.id ? <CheckCheck className="w-4 h-4 text-green-400" /> : <Copy className={`w-4 h-4 ${tc.textSecondary}`} />}
                                         </button>
                                     </div>
                                 </div>
-                            )) : <p className={`text-sm ${tc.textSecondary}`}>{t('balance.payment.noCardNumber')}</p>}
+                            )) : <p className={`text-sm ${tc.textSecondary}`}>{t('balance.payment.noMethods')}</p>}
                         </div>
 
                         <div className="mb-6">
@@ -902,7 +1040,7 @@ export default function BalancePage() {
                     onClose={() => setShowWithdrawModal(false)}
                     onSuccess={handleModalSuccess}
                     currentBalance={parseFloat(user?.balance || '0')}
-                     paymentDetails={paymentDetails}
+                     allPaymentDetails={paymentDetails}
                     copyToClipboard={copyToClipboard}
                     copiedField={copiedField}
                 />

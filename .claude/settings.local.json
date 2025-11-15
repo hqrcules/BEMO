@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(find:*)",
+      "Bash(python manage.py makemigrations:*)",
+      "Bash(docker compose exec backend python manage.py makemigrations:*)",
+      "Bash(docker compose exec:*)",
+      "Bash(docker compose:*)",
+      "Bash(python manage.py shell:*)",
+      "Bash(timeout 10 docker compose:*)",
+      "Bash(exit 0)",
+      "Bash(timeout 65 docker compose logs:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

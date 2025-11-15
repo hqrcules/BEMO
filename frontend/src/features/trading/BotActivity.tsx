@@ -96,8 +96,8 @@ export default function BotActivity({ stats }: BotActivityProps) {
           <div className={`stat-card transition-all duration-300 ${flashProfit ? 'scale-105 ring-2 ring-green-500/50 shadow-lg shadow-green-500/20' : ''}`}>
             <TrendingUp className={`w-8 h-8 mb-3 transition-all duration-300 ${flashProfit ? (theme === 'dark' ? 'text-green-400' : 'text-green-600') + ' scale-110' : 'text-green-500'}`} />
             <p className={`text-sm ${tc.textSecondary} mb-1`}>{t('bot.activity.sessionProfit')}</p>
-            <p className={`text-2xl font-bold transition-all duration-300 ${flashProfit ? (theme === 'dark' ? 'text-green-400' : 'text-green-600') + ' scale-110' : 'text-green-500'}`}>
-              +€{parseFloat(activeSession.total_profit).toFixed(2)}
+            <p className={`text-2xl font-bold transition-all duration-300 ${flashProfit ? (theme === 'dark' ? 'text-green-400' : 'text-green-600') + ' scale-110' : parseFloat(activeSession.total_profit) >= 0 ? 'text-green-500' : 'text-red-500'}`}>
+              {parseFloat(activeSession.total_profit) >= 0 ? '+' : ''}€{parseFloat(activeSession.total_profit).toFixed(2)}
             </p>
             <p className={`text-xs ${tc.textTertiary} mt-1`}>{t('bot.activity.today')}</p>
           </div>

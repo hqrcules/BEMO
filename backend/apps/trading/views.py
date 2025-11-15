@@ -233,6 +233,20 @@ class TradingSessionViewSet(viewsets.ReadOnlyModelViewSet):
         Start bot trading
         URL: /api/trading/sessions/start-bot/
         """
+        # Check if bot is enabled for this user
+        if not request.user.is_bot_enabled:
+            return Response(
+                {'status': 'error', 'message': 'Bot is disabled. Please enable it first.'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        # Check if user has a bot subscription
+        if request.user.bot_type == 'none':
+            return Response(
+                {'status': 'error', 'message': 'You need to purchase a bot subscription first'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
         # Check if user already has active session
         if TradingSession.objects.filter(user=request.user, is_active=True).exists():
             return Response(

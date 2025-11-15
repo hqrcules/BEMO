@@ -5,10 +5,10 @@ export interface User {
   full_name: string;
   balance: string;
   bot_type: 'none' | 'basic' | 'premium' | 'specialist';
+  is_bot_enabled: boolean;
   is_verified: boolean;
   is_staff?: boolean;
   is_superuser?: boolean;
-  is_bot_active: boolean; // Додано
   created_at: string;
   last_login: string | null;
 }

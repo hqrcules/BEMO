@@ -55,7 +55,7 @@ class BotConfigurationFactory:
             duration_range=(45, 280),
             min_open_duration=timedelta(minutes=1),
             max_open_duration=timedelta(minutes=12),
-            trades_per_run_range=(2, 5),
+            trades_per_run_range=(1, 1),  # Changed to 1 trade per run
             max_open_positions=3,
             high_yield_chance=Decimal('0.5'),
             high_profit_range=(Decimal('3'), Decimal('8')),
@@ -72,7 +72,7 @@ class BotConfigurationFactory:
             duration_range=(90, 540),
             min_open_duration=timedelta(minutes=2),
             max_open_duration=timedelta(minutes=22),
-            trades_per_run_range=(3, 7),
+            trades_per_run_range=(1, 1),  # Changed to 1 trade per run
             max_open_positions=5,
             high_yield_chance=Decimal('1'),
             high_profit_range=(Decimal('5'), Decimal('12')),
@@ -89,7 +89,7 @@ class BotConfigurationFactory:
             duration_range=(240, 840),
             min_open_duration=timedelta(minutes=4),
             max_open_duration=timedelta(minutes=35),
-            trades_per_run_range=(4, 10),
+            trades_per_run_range=(1, 1),  # Changed to 1 trade per run
             max_open_positions=8,
             high_yield_chance=Decimal('2'),
             high_profit_range=(Decimal('8'), Decimal('18')),
@@ -275,11 +275,17 @@ class TradingBotSimulator:
         return prices
 
     def start_session(self) -> Optional[TradingSession]:
-        """Start or resume trading session"""
+        """Start or resume trading session with optimized cleanup"""
         try:
-            self.session = TradingSession.objects.get(user=self.user, is_active=True)
+            self.session = TradingSession.objects.select_related('user').get(
+                user=self.user,
+                is_active=True
+            )
             logger.info(f"Resumed active session for {self.user.email}")
         except TradingSession.DoesNotExist:
+            # Cleanup old sessions before creating new one
+            self._cleanup_old_sessions()
+
             self.session = TradingSession.objects.create(
                 user=self.user,
                 bot_type=self.bot_type,
@@ -290,6 +296,48 @@ class TradingBotSimulator:
             logger.info(f"Started new session for {self.user.email}")
 
         return self.session
+
+    def _cleanup_old_sessions(self) -> int:
+        """
+        Cleanup old inactive sessions and their trades to keep database lean.
+        Keeps only the last 3 sessions per user for history.
+        """
+        # Get all inactive sessions for this user, ordered by most recent first
+        old_sessions = TradingSession.objects.filter(
+            user=self.user,
+            is_active=False
+        ).order_by('-ended_at')
+
+        # Keep only the last 3 sessions
+        sessions_to_keep = 3
+        sessions_to_delete = old_sessions[sessions_to_keep:]
+
+        if not sessions_to_delete:
+            return 0
+
+        # Get session IDs to delete
+        session_ids = list(sessions_to_delete.values_list('id', flat=True))
+
+        # Delete associated trades in bulk (much faster than cascading)
+        trades_deleted = BotTrade.objects.filter(
+            user=self.user
+        ).exclude(
+            # Keep trades from sessions we're keeping
+            id__in=BotTrade.objects.filter(
+                user=self.user,
+                opened_at__gte=old_sessions[sessions_to_keep-1].started_at if old_sessions.count() > sessions_to_keep else timezone.now()
+            ).values_list('id', flat=True)
+        ).delete()[0]
+
+        # Delete old sessions
+        sessions_deleted = sessions_to_delete.delete()[0]
+
+        logger.info(
+            f"Cleaned up {sessions_deleted} old sessions and {trades_deleted} trades "
+            f"for {self.user.email}"
+        )
+
+        return sessions_deleted
 
     def _calculate_profit_loss(
         self,
@@ -325,7 +373,7 @@ class TradingBotSimulator:
         return profit_loss, profit_loss_percent
 
     def _send_bot_trade_update(self, trade: BotTrade, new_balance: Decimal):
-        """Send WebSocket notification about new trade"""
+        """Send WebSocket notification about trade (open or closed)"""
         if not self.channel_layer:
             return
 
@@ -342,16 +390,18 @@ class TradingBotSimulator:
                         'symbol': trade.symbol,
                         'side': trade.side,
                         'entry_price': str(trade.entry_price),
-                        'exit_price': str(trade.exit_price),
+                        'exit_price': str(trade.exit_price) if trade.exit_price else None,
                         'quantity': str(trade.quantity),
                         'profit_loss': str(trade.profit_loss),
                         'profit_loss_percent': str(trade.profit_loss_percent),
+                        'is_open': trade.is_open,
                         'opened_at': trade.opened_at.isoformat() if trade.opened_at else None,
                         'closed_at': trade.closed_at.isoformat() if trade.closed_at else None,
                     }
                 }
             )
-            logger.info(f"Sent bot_trade_update to user {self.user.email}")
+            status = "OPENED" if trade.is_open else "CLOSED"
+            logger.info(f"Sent bot_trade_update ({status}) to user {self.user.email}: {trade.symbol}")
         except Exception as e:
             logger.error(f"Error sending WebSocket message: {e}")
 
@@ -388,8 +438,8 @@ class TradingBotSimulator:
 
     def generate_trade(self) -> bool:
         """
-        Generate a single closed trade
-        Returns True if trade was generated
+        Generate a single OPEN position (optimized for live trading display)
+        Returns True if position was opened
         """
         if not self.session or not self.session.is_active:
             self.start_session()
@@ -402,7 +452,10 @@ class TradingBotSimulator:
             is_open=True
         ).count()
 
+        logger.info(f"Open positions: {open_positions_count}/{self.config.max_open_positions} for {self.user.email}")
+
         if open_positions_count >= self.config.max_open_positions:
+            logger.info(f"Max open positions reached ({open_positions_count}/{self.config.max_open_positions}) for {self.user.email}")
             return False
 
         if not self.trading_pairs:
@@ -426,64 +479,37 @@ class TradingBotSimulator:
         if quantity <= 0:
             return False
 
-        # Generate profit target and calculate exit price
-        profit_target = self._generate_profit_target()
-        duration_seconds = random.randint(*self.config.duration_range)
-
-        exit_price = self.market.calculate_realistic_exit(
-            entry_price, profit_target, side, duration_seconds
-        )
-
-        if exit_price <= 0:
-            exit_price = entry_price * Decimal('0.99')
-
-        profit_loss, profit_loss_percent = self._calculate_profit_loss(
-            entry_price, exit_price, quantity, side
-        )
-
-        # Create timestamps
+        # Create timestamps - position opens NOW
         current_time = timezone.now()
-        closed_at = current_time - timedelta(seconds=random.randint(10, 600))
-        opened_at = closed_at - timedelta(seconds=duration_seconds)
 
-        # Create trade directly
+        # Create OPEN position (no exit price yet)
         trade = BotTrade.objects.create(
             user=self.user,
             symbol=symbol,
             side=side,
             entry_price=entry_price,
-            exit_price=exit_price,
+            exit_price=None,  # Will be set when position closes
             quantity=quantity,
-            profit_loss=profit_loss,
-            profit_loss_percent=profit_loss_percent,
-            is_open=False,
-            opened_at=opened_at,
-            closed_at=closed_at
+            profit_loss=Decimal('0.00'),  # No P/L yet
+            profit_loss_percent=Decimal('0.00'),
+            is_open=True,  # Position is OPEN
+            opened_at=current_time,
+            closed_at=None
         )
 
-        # Create transaction
-        Transaction.objects.create(
-            user=self.user,
-            transaction_type='bot_profit' if profit_loss > 0 else 'bot_loss',
-            amount=abs(profit_loss),
-            status='completed',
-            processed_at=closed_at
+        # Update session (increment trade count)
+        from django.db.models import F
+        TradingSession.objects.filter(id=self.session.id).update(
+            total_trades=F('total_trades') + 1
         )
 
-        # Update session
-        self.session.current_balance += profit_loss
-        self.session.total_trades += 1
-        self.session.total_profit += profit_loss
-        if profit_loss > 0:
-            self.session.winning_trades += 1
-        self.session.save()
+        # Refresh session
+        self.session.refresh_from_db()
 
-        # Update user balance
-        self.user.balance += profit_loss
-        self.user.save()
-
-        # Send WebSocket notification
+        # Send WebSocket notification for new OPEN position
         self._send_bot_trade_update(trade, self.user.balance)
+
+        logger.info(f"Opened position: {symbol} {side.upper()} @ {entry_price} for {self.user.email}")
 
         return True
 
@@ -509,17 +535,62 @@ class TradingBotSimulator:
 
     def close_open_positions(self) -> int:
         """
-        Close all open positions for this user
+        Close open positions that have been running long enough (optimized with bulk operations)
+        Only closes positions open for at least min_open_duration
         Returns number of positions closed
         """
-        open_positions = BotTrade.objects.filter(user=self.user, is_open=True)
-        closed_count = 0
+        current_time = timezone.now()
 
-        for position in open_positions:
+        # Only close positions that have been open for minimum duration
+        min_time_ago = current_time - self.config.min_open_duration
+        max_time_ago = current_time - self.config.max_open_duration
+
+        # First, check ALL open positions
+        all_open = BotTrade.objects.filter(user=self.user, is_open=True)
+        logger.info(f"Total open positions for {self.user.email}: {all_open.count()}")
+
+        # Fetch positions ready to close (open for min duration or longer)
+        open_positions = list(BotTrade.objects.filter(
+            user=self.user,
+            is_open=True,
+            opened_at__lte=min_time_ago  # Only positions open long enough
+        ))
+
+        logger.info(f"Positions ready to close (open >= {self.config.min_open_duration}): {len(open_positions)}")
+
+        if not open_positions:
+            return 0
+
+        # Close positions based on how long they've been open:
+        # - If open longer than max_duration: ALWAYS close (100%)
+        # - If open between min and max duration: 70% chance to close
+        positions_to_close = []
+        for pos in open_positions:
+            if pos.opened_at <= max_time_ago:
+                # Been open too long - always close
+                positions_to_close.append(pos)
+            elif random.random() < 0.7:
+                # 70% chance to close positions that are ready
+                positions_to_close.append(pos)
+
+        if not positions_to_close:
+            logger.debug(f"No positions ready to close for {self.user.email}")
+            return 0
+
+        logger.info(f"Closing {len(positions_to_close)} out of {len(open_positions)} open positions for {self.user.email}")
+
+        closed_count = 0
+        total_profit_loss = Decimal('0')
+        winning_count = 0
+        positions_to_update = []
+        transactions_to_create = []
+
+        # Process positions ready to close
+        for position in positions_to_close:
             try:
                 # Generate exit conditions
                 profit_target = self._generate_profit_target()
-                duration_seconds = int((timezone.now() - position.opened_at).total_seconds())
+                duration_seconds = int((current_time - position.opened_at).total_seconds())
 
                 exit_price = self.market.calculate_realistic_exit(
                     position.entry_price,
@@ -538,42 +609,70 @@ class TradingBotSimulator:
                     position.side
                 )
 
-                # Update position
+                # Prepare position for bulk update
                 position.exit_price = exit_price
                 position.profit_loss = profit_loss
                 position.profit_loss_percent = profit_loss_percent
                 position.is_open = False
-                position.closed_at = timezone.now()
-                position.save()
+                position.closed_at = current_time
+                positions_to_update.append(position)
 
-                # Create transaction
-                Transaction.objects.create(
+                # Prepare transaction for bulk create
+                transactions_to_create.append(Transaction(
                     user=self.user,
                     transaction_type='bot_profit' if profit_loss > 0 else 'bot_loss',
                     amount=abs(profit_loss),
                     status='completed',
-                    processed_at=position.closed_at
-                )
+                    processed_at=current_time
+                ))
 
-                # Update session and user balance
-                if self.session:
-                    self.session.current_balance += profit_loss
-                    self.session.total_profit += profit_loss
-                    if profit_loss > 0:
-                        self.session.winning_trades += 1
-                    self.session.save()
-
-                self.user.balance += profit_loss
-                self.user.save()
-
-                # Send WebSocket notification
-                self._send_bot_trade_update(position, self.user.balance)
-
+                # Track totals
+                total_profit_loss += profit_loss
+                if profit_loss > 0:
+                    winning_count += 1
                 closed_count += 1
 
             except Exception as e:
-                logger.error(f"Error closing position {position.id}: {e}")
+                logger.error(f"Error processing position {position.id}: {e}")
                 continue
 
-        logger.info(f"Closed {closed_count} positions for {self.user.email}")
+        # Optimized: Use single atomic transaction for all updates
+        if positions_to_update:
+            with db_transaction.atomic():
+                from django.db.models import F
+
+                # Bulk update positions
+                BotTrade.objects.bulk_update(
+                    positions_to_update,
+                    ['exit_price', 'profit_loss', 'profit_loss_percent', 'is_open', 'closed_at'],
+                    batch_size=100
+                )
+
+                # Bulk create transactions
+                Transaction.objects.bulk_create(transactions_to_create, batch_size=100)
+
+                # Update session with single query
+                if self.session:
+                    TradingSession.objects.filter(id=self.session.id).update(
+                        current_balance=F('current_balance') + total_profit_loss,
+                        total_profit=F('total_profit') + total_profit_loss,
+                        winning_trades=F('winning_trades') + winning_count
+                    )
+
+                # Update user balance with single query
+                from apps.accounts.models import User
+                User.objects.filter(id=self.user.id).update(
+                    balance=F('balance') + total_profit_loss
+                )
+
+            # Refresh to get updated values
+            if self.session:
+                self.session.refresh_from_db()
+            self.user.refresh_from_db()
+
+            # Send WebSocket notifications for closed positions
+            for position in positions_to_update:
+                self._send_bot_trade_update(position, self.user.balance)
+
+        logger.info(f"Closed {closed_count} positions for {self.user.email} (total P/L: {total_profit_loss})")
         return closed_count

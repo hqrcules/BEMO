@@ -142,11 +142,9 @@ export default function RegisterPage() {
         // Registration successful and user is automatically logged in
         if (response.data.user) {
           dispatch(setUser(response.data.user));
-          navigate('/dashboard');
-        } else {
-          // Fallback: redirect to login if auto-login failed
-          navigate('/login', { state: { message: t('auth.validation.accountCreated') } });
         }
+        // Always redirect to dashboard after successful registration
+        navigate('/dashboard');
       }
     } catch (error: any) {
       if (error.response?.data?.error) {

@@ -65,6 +65,10 @@ class User(AbstractBaseUser, PermissionsMixin):
         default='none',
         help_text='Active bot subscription type'
     )
+    is_bot_enabled = models.BooleanField(
+        default=False,
+        help_text='Master switch to enable/disable bot trading'
+    )
     wallet_address = models.CharField(
         max_length=255,
         blank=True,

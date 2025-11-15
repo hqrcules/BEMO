@@ -53,6 +53,7 @@ def login_view(request):
             'full_name': user.full_name or user.email,
             'balance': str(user.balance),
             'bot_type': user.bot_type,
+            'is_bot_enabled': user.is_bot_enabled,
             'is_verified': user.is_verified,
             'is_staff': user.is_staff,
             'is_superuser': user.is_superuser,
@@ -192,6 +193,7 @@ def profile_view(request):
         'full_name': user.full_name or user.email,
         'balance': str(user.balance),
         'bot_type': user.bot_type,
+        'is_bot_enabled': user.is_bot_enabled,
         'is_verified': user.is_verified,
         'is_staff': user.is_staff,
         'is_superuser': user.is_superuser,
@@ -290,3 +292,115 @@ def user_profile_view(request):
             'success': False,
             'error': serializer.errors
         }, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def toggle_bot_view(request):
+    """Toggle bot enabled/disabled status"""
+    user = request.user
+
+    # Check if user has a bot subscription
+    if user.bot_type == 'none':
+        return Response({
+            'success': False,
+            'message': 'You need to purchase a bot subscription first'
+        }, status=status.HTTP_400_BAD_REQUEST)
+
+    # Toggle the bot enabled status
+    user.is_bot_enabled = not user.is_bot_enabled
+    user.save()
+
+    # If bot is being disabled, close the active trading session
+    if not user.is_bot_enabled:
+        from apps.trading.models import TradingSession
+        from django.utils import timezone
+
+        # End any active trading sessions
+        active_sessions = TradingSession.objects.filter(
+            user=user,
+            is_active=True
+        )
+
+        for session in active_sessions:
+            session.is_active = False
+            session.ended_at = timezone.now()
+            session.save()
+
+    return Response({
+        'success': True,
+        'is_bot_enabled': user.is_bot_enabled,
+        'message': f"Bot {'enabled' if user.is_bot_enabled else 'disabled'} successfully"
+    }, status=status.HTTP_200_OK)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def upgrade_bot_view(request):
+    """Upgrade bot subscription to a higher tier"""
+    user = request.user
+    target_bot_type = request.data.get('bot_type')
+
+    # Bot types and their costs
+    bot_pricing = {
+        'basic': 250.0,
+        'premium': 500.0,
+        'specialist': 1000.0,
+    }
+
+    # Validate target bot type
+    if target_bot_type not in bot_pricing:
+        return Response({
+            'success': False,
+            'message': 'Invalid bot type'
+        }, status=status.HTTP_400_BAD_REQUEST)
+
+    # Check if user is trying to downgrade or stay same
+    bot_hierarchy = {'none': 0, 'basic': 1, 'premium': 2, 'specialist': 3}
+    current_level = bot_hierarchy.get(user.bot_type, 0)
+    target_level = bot_hierarchy.get(target_bot_type, 0)
+
+    if target_level <= current_level:
+        return Response({
+            'success': False,
+            'message': 'You can only upgrade to a higher tier bot'
+        }, status=status.HTTP_400_BAD_REQUEST)
+
+    # Calculate upgrade cost (difference between tiers)
+    current_cost = bot_pricing.get(user.bot_type, 0.0)
+    target_cost = bot_pricing.get(target_bot_type, 0.0)
+    upgrade_cost = target_cost - current_cost
+
+    # Check if user has sufficient balance
+    if user.balance < upgrade_cost:
+        return Response({
+            'success': False,
+            'message': f'Insufficient balance. Need €{upgrade_cost:.2f} for upgrade',
+            'required': upgrade_cost,
+            'current_balance': float(user.balance)
+        }, status=status.HTTP_400_BAD_REQUEST)
+
+    # Deduct balance and upgrade bot
+    from decimal import Decimal
+    user.balance -= Decimal(str(upgrade_cost))
+    user.bot_type = target_bot_type
+    user.save()
+
+    # Create transaction record for bot upgrade
+    from apps.transactions.models import Transaction
+    Transaction.objects.create(
+        user=user,
+        transaction_type='bot_purchase',
+        amount=Decimal(str(upgrade_cost)),
+        status='completed',
+        payment_method='balance',
+        admin_notes=f'Bot upgraded from {current_level} to {target_bot_type}'
+    )
+
+    return Response({
+        'success': True,
+        'bot_type': user.bot_type,
+        'new_balance': str(user.balance),
+        'upgrade_cost': upgrade_cost,
+        'message': f'Successfully upgraded to {target_bot_type} bot!'
+    }, status=status.HTTP_200_OK)

@@ -49,9 +49,17 @@ export const transactionService = {
     const res = await api.post('/api/transactions/deposit/', fd, { headers: { 'Content-Type': 'multipart/form-data' } });
     return res.data;
   },
-  async requestWithdrawal(data: { amount: number; }): Promise<{
+  async requestWithdrawal(data: FormData | { amount: number; }): Promise<{
     transaction: Transaction; message: string; user_balance: string;
   }> {
+    // Check if data is FormData (for new withdrawals with receipt)
+    if (data instanceof FormData) {
+      const res = await api.post('/api/transactions/withdraw/', data, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
+      return res.data;
+    }
+    // Legacy support for old format without receipt
     const res = await api.post('/api/transactions/withdraw/', data);
     return res.data;
   },

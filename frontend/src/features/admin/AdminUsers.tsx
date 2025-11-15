@@ -12,6 +12,13 @@ export default function AdminUsers() {
 
   useEffect(() => {
     loadUsers();
+
+    // Auto-refresh users list every 5 seconds to show newly registered/logged in users
+    const interval = setInterval(() => {
+      loadUsers();
+    }, 5000);
+
+    return () => clearInterval(interval);
   }, []);
 
   const loadUsers = async () => {

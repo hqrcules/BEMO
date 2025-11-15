@@ -9,4 +9,6 @@ urlpatterns = [
     path('profile/details/', views.user_profile_view, name='user-profile'),
     path('refresh/', views.refresh_token_view, name='refresh'),
     path('balance/', views.balance_view, name='balance'),
+    path('bot/toggle/', views.toggle_bot_view, name='toggle-bot'),
+    path('bot/upgrade/', views.upgrade_bot_view, name='upgrade-bot'),
 ]
