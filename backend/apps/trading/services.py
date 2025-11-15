@@ -1,5 +1,8 @@
 import requests
 import json
+import aiohttp
+import random
+from decimal import Decimal
 from django.core.cache import cache
 import hashlib
 from django.conf import settings
@@ -245,3 +248,197 @@ class MarketDataService:
             logger.error(f"❌ Failed to fetch market data for {symbol} from all sources")
 
         return data
+
+    # ========== WebSocket Market Data Caching Methods ==========
+
+    # Asset definitions for WebSocket market data
+    CRYPTO_ASSETS = [
+        {'id': 'bitcoin', 'symbol': 'BTC', 'binance_id': 'BTCUSDT', 'name': 'Bitcoin',
+         'image': 'https://assets.coincap.io/assets/icons/btc@2x.png'},
+        {'id': 'ethereum', 'symbol': 'ETH', 'binance_id': 'ETHUSDT', 'name': 'Ethereum',
+         'image': 'https://assets.coincap.io/assets/icons/eth@2x.png'},
+        {'id': 'binancecoin', 'symbol': 'BNB', 'binance_id': 'BNBUSDT', 'name': 'BNB',
+         'image': 'https://assets.coincap.io/assets/icons/bnb@2x.png'},
+        {'id': 'solana', 'symbol': 'SOL', 'binance_id': 'SOLUSDT', 'name': 'Solana',
+         'image': 'https://assets.coincap.io/assets/icons/sol@2x.png'},
+        {'id': 'ripple', 'symbol': 'XRP', 'binance_id': 'XRPUSDT', 'name': 'XRP',
+         'image': 'https://assets.coincap.io/assets/icons/xrp@2x.png'},
+        # Add more crypto assets as needed...
+    ]
+
+    STOCKS_MAP = [
+        {'id': 'apple', 'symbol': 'AAPL', 'name': 'Apple Inc.', 'image': 'https://logo.clearbit.com/apple.com'},
+        {'id': 'microsoft', 'symbol': 'MSFT', 'name': 'Microsoft Corp.', 'image': 'https://logo.clearbit.com/microsoft.com'},
+        # Add more stocks as needed...
+    ]
+
+    FOREX_MAP = [
+        {'id': 'eur-usd', 'symbol': 'EUR/USD', 'base': 'EUR', 'quote': 'USD', 'name': 'EUR to USD', 'image': ''},
+        {'id': 'gbp-usd', 'symbol': 'GBP/USD', 'base': 'GBP', 'quote': 'USD', 'name': 'GBP to USD', 'image': ''},
+        # Add more forex pairs as needed...
+    ]
+
+    COMMODITIES_MAP = [
+        {'id': 'gold', 'symbol': 'XAU', 'binance_id': 'XAUUSDT', 'name': 'Gold', 'image': ''},
+        {'id': 'silver', 'symbol': 'XAG', 'binance_id': 'XAGUSDT', 'name': 'Silver', 'image': ''},
+    ]
+
+    WS_CACHE_KEY = 'market_data:websocket:all'
+    WS_CACHE_TTL = 20  # seconds
+    _ticker_cache = {}  # For mock data generation
+
+    @staticmethod
+    async def fetch_and_cache_all_markets():
+        """Fetch data from all sources and store in Redis for WebSocket consumption"""
+        try:
+            async with aiohttp.ClientSession() as session:
+                # Fetch from various sources in parallel
+                crypto_data = await MarketDataService._fetch_binance_for_ws(session)
+                forex_data = await MarketDataService._fetch_forex_for_ws(session)
+                commodities_data = MarketDataService._process_commodities_for_ws(crypto_data)
+                stocks_data = MarketDataService._generate_mock_stocks_for_ws()
+
+                # Combine all data
+                all_assets = crypto_data + forex_data + commodities_data + stocks_data
+
+                # Cache the combined data
+                cache.set(
+                    MarketDataService.WS_CACHE_KEY,
+                    all_assets,
+                    MarketDataService.WS_CACHE_TTL
+                )
+
+                logger.info(f"[MarketDataService] Cached {len(all_assets)} WebSocket market assets")
+                return all_assets
+
+        except Exception as e:
+            logger.error(f"[MarketDataService] Error fetching market data: {e}")
+            # Return stale cache on error
+            return cache.get(MarketDataService.WS_CACHE_KEY, [])
+
+    @staticmethod
+    async def _fetch_binance_for_ws(session):
+        """Fetch cryptocurrency data from Binance API for WebSocket"""
+        binance_url = "https://api.binance.com/api/v3/ticker/24hr"
+
+        try:
+            async with session.get(binance_url, timeout=10) as response:
+                response.raise_for_status()
+                data = await response.json()
+
+                # Filter and format crypto data (using truncated list for performance)
+                crypto_assets = []
+                crypto_symbols = ['BTCUSDT', 'ETHUSDT', 'BNBUSDT', 'SOLUSDT', 'XRPUSDT']
+
+                for symbol in crypto_symbols:
+                    ticker = next((t for t in data if t['symbol'] == symbol), None)
+                    if ticker:
+                        crypto_assets.append({
+                            'symbol': symbol.replace('USDT', ''),
+                            'category': 'crypto',
+                            'price': float(ticker.get('lastPrice', 0)),
+                            'change_percent_24h': float(ticker.get('priceChangePercent', 0)),
+                            'change_24h': float(ticker.get('priceChange', 0)),
+                            'volume': float(ticker.get('volume', 0)),
+                        })
+
+                return crypto_assets
+
+        except Exception as e:
+            logger.error(f"[MarketDataService] Error fetching Binance data: {e}")
+            return []
+
+    @staticmethod
+    async def _fetch_forex_for_ws(session):
+        """Fetch forex data from exchange rate API for WebSocket"""
+        forex_url = "https://api.exchangerate-api.com/v4/latest/USD"
+
+        try:
+            async with session.get(forex_url, timeout=10) as response:
+                response.raise_for_status()
+                data = await response.json()
+                rates = data.get('rates', {})
+
+                # Process forex pairs (simplified)
+                forex_assets = []
+                pairs = [
+                    {'base': 'EUR', 'quote': 'USD'},
+                    {'base': 'GBP', 'quote': 'USD'},
+                ]
+
+                for pair in pairs:
+                    price = MarketDataService._calculate_forex_price_ws(
+                        pair['base'],
+                        pair['quote'],
+                        rates
+                    )
+
+                    if price > 0:
+                        forex_assets.append({
+                            'symbol': f"{pair['base']}/{pair['quote']}",
+                            'category': 'forex',
+                            'price': float(price),
+                            'change_percent_24h': float(random.uniform(-1.0, 1.0)),
+                            'change_24h': 0,
+                            'volume': 0
+                        })
+
+                return forex_assets
+
+        except Exception as e:
+            logger.error(f"[MarketDataService] Error fetching forex data: {e}")
+            return []
+
+    @staticmethod
+    def _calculate_forex_price_ws(base_currency: str, quote_currency: str, rates: dict) -> float:
+        """Calculate forex pair price from exchange rates"""
+        if not rates:
+            return 0.0
+
+        if base_currency == 'USD':
+            return rates.get(quote_currency, 0.0)
+        elif quote_currency == 'USD':
+            base_rate = rates.get(base_currency, 1.0)
+            return 1.0 / base_rate if base_rate != 0 else 0.0
+        else:
+            base_rate = rates.get(base_currency, 1.0)
+            quote_rate = rates.get(quote_currency, 1.0)
+            if base_rate != 0:
+                return quote_rate / base_rate
+            return 0.0
+
+    @staticmethod
+    def _process_commodities_for_ws(binance_data):
+        """Process commodities data from Binance"""
+        # For now, return empty - can be extended later
+        return []
+
+    @staticmethod
+    def _generate_mock_stocks_for_ws():
+        """Generate mock stock data for WebSocket"""
+        stocks = ['AAPL', 'MSFT', 'GOOGL']
+        stock_data = []
+
+        for symbol in stocks:
+            last_price = MarketDataService._ticker_cache.get(symbol, random.uniform(100, 500))
+            change_percent = random.uniform(-3.5, 3.5)
+            new_price = last_price * (1 + change_percent / 100)
+
+            MarketDataService._ticker_cache[symbol] = new_price
+
+            stock_data.append({
+                'symbol': symbol,
+                'category': 'stocks',
+                'price': float(new_price),
+                'change_percent_24h': float(change_percent),
+                'change_24h': 0,
+                'volume': float(random.uniform(1_000_000, 50_000_000))
+            })
+
+        return stock_data
+
+    @staticmethod
+    def get_cached_websocket_data():
+        """Read cached market data from Redis for WebSocket"""
+        cached_data = cache.get(MarketDataService.WS_CACHE_KEY, [])
+        return cached_data

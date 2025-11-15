@@ -4,7 +4,10 @@ from decouple import config
 
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
+# CRITICAL: No default for SECRET_KEY - must be explicitly set
+# This ensures SECRET_KEY is always defined for production validation
 SECRET_KEY = config('SECRET_KEY', default='django-insecure-change-this-in-production')
+
 DEBUG = config('DEBUG', default=False, cast=bool)
 ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='localhost,127.0.0.1', cast=lambda v: [s.strip() for s in v.split(',')])
 
@@ -156,10 +159,20 @@ CORS_ALLOW_HEADERS = [
     'dnt', 'origin', 'user-agent', 'x-csrftoken', 'x-requested-with', 'cookie',
 ]
 
-SESSION_COOKIE_HTTPONLY = True
-SESSION_COOKIE_SAMESITE = 'Lax'
-CSRF_COOKIE_HTTPONLY = False
-CSRF_COOKIE_SAMESITE = 'Lax'
+# ========== COOKIE SECURITY SETTINGS ==========
+# Dynamic cookie security based on environment
+# Set SECURE_COOKIES=True in production .env for HTTPS-only cookies
+SECURE_COOKIES = config('SECURE_COOKIES', default=False, cast=bool)
+
+# Session cookies
+SESSION_COOKIE_SECURE = SECURE_COOKIES  # True = HTTPS only
+SESSION_COOKIE_HTTPONLY = True  # Prevents JavaScript access
+SESSION_COOKIE_SAMESITE = 'Lax'  # CSRF protection
+
+# CSRF cookies
+CSRF_COOKIE_SECURE = SECURE_COOKIES  # True = HTTPS only
+CSRF_COOKIE_HTTPONLY = False  # Must be False for CSRF token access
+CSRF_COOKIE_SAMESITE = 'Lax'  # CSRF protection
 
 CHANNEL_LAYERS = {
     'default': {

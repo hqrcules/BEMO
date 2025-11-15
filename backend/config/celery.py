@@ -15,6 +15,10 @@ app.conf.beat_schedule = {
         'task': 'apps.trading.tasks.run_bot_simulation',
         'schedule': crontab(),
     },
+    'update-market-data-cache': {
+        'task': 'trading.update_market_data',
+        'schedule': 20.0,  # Every 20 seconds
+    },
 }
 
 app.conf.update(

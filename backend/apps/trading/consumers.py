@@ -6,6 +6,7 @@ from datetime import datetime
 from decimal import Decimal
 from django.conf import settings
 from channels.generic.websocket import AsyncWebsocketConsumer
+from .services import MarketDataService
 
 
 class MarketConsumer(AsyncWebsocketConsumer):
@@ -285,15 +286,26 @@ class MarketConsumer(AsyncWebsocketConsumer):
     async def connect(self):
         await self.accept()
         self.running = True
-        self.price_task = asyncio.create_task(self.fetch_real_prices())
+
+        # Track authenticated vs anonymous users
+        user = self.scope.get('user')
+        if user and user.is_authenticated:
+            self.is_authenticated = True
+            print(f"[Market WS] Authenticated user connected: {user.email}")
+        else:
+            self.is_authenticated = False
+            print(f"[Market WS] Anonymous user connected")
+
+        # Changed: Use cached data instead of fetching directly
+        self.broadcast_task = asyncio.create_task(self.broadcast_cached_data())
         print(f"[WS] WebSocket connected ({self.channel_name})")
 
     async def disconnect(self, close_code):
         self.running = False
-        if hasattr(self, 'price_task') and not self.price_task.done():
-            self.price_task.cancel()
+        if hasattr(self, 'broadcast_task') and not self.broadcast_task.done():
+            self.broadcast_task.cancel()
             try:
-                await self.price_task
+                await self.broadcast_task
             except asyncio.CancelledError:
                 pass
         print(f"[WS] WebSocket disconnected (code={close_code})")
@@ -477,6 +489,36 @@ class MarketConsumer(AsyncWebsocketConsumer):
 
         print("Price update task stopped")
 
+    async def broadcast_cached_data(self):
+        """
+        New optimized method: Send cached data to client every 5 seconds
+        Data is fetched by Celery task, reducing duplicate API calls
+        """
+        while self.running:
+            try:
+                # Read data from Redis cache (populated by Celery task)
+                cached_data = MarketDataService.get_cached_websocket_data()
+
+                if cached_data:
+                    await self.send(text_data=json.dumps({
+                        'type': 'market_update',
+                        'data': cached_data,
+                        'timestamp': datetime.now().isoformat(),
+                        'source': 'cache'  # Indicates data came from cache
+                    }))
+                    print(f"[WS] Sent {len(cached_data)} assets from cache")
+                else:
+                    # If cache is empty, fallback to direct fetch (first run)
+                    print("[WS] Cache empty, waiting for Celery task to populate...")
+
+                await asyncio.sleep(5)
+
+            except Exception as e:
+                print(f"[WS] Error broadcasting cached data: {e}")
+                await asyncio.sleep(5)
+
+        print("Cached data broadcast task stopped")
+
     async def receive(self, text_data):
         try:
             data = json.loads(text_data)
@@ -497,22 +539,33 @@ class MarketConsumer(AsyncWebsocketConsumer):
 class BalanceConsumer(AsyncWebsocketConsumer):
 
     async def connect(self):
-        self.user = self.scope['user']
+        """
+        Connect to balance WebSocket - REQUIRES AUTHENTICATION
+        Closes connection immediately if user is not authenticated
+        """
+        user = self.scope.get('user')
 
-        if self.user.is_authenticated:
-            self.group_name = f'user_{self.user.id}'
-            await self.channel_layer.group_add(self.group_name, self.channel_name)
-            await self.accept()
+        # CRITICAL: Balance data requires authentication
+        if not user or not user.is_authenticated:
+            print("[Balance WS] Rejected: User not authenticated")
+            await self.close(code=4001)  # Custom close code for auth failure
+            return
 
-            print(f"[Balance WS] Connected for user {self.user.email}")
+        self.user = user
+        self.group_name = f'user_{self.user.id}'
 
-            await self.send(text_data=json.dumps({
-                'type': 'balance_update',
-                'balance': str(self.user.balance),
-                'timestamp': datetime.now().isoformat()
-            }))
-        else:
-            await self.close()
+        # Add to user-specific channel group
+        await self.channel_layer.group_add(self.group_name, self.channel_name)
+        await self.accept()
+
+        print(f"[Balance WS] Authenticated connection: {self.user.email}")
+
+        # Send initial balance
+        await self.send(text_data=json.dumps({
+            'type': 'balance_update',
+            'balance': str(self.user.balance),
+            'timestamp': datetime.now().isoformat()
+        }))
 
     async def disconnect(self, close_code):
         if hasattr(self, 'user') and self.user.is_authenticated:

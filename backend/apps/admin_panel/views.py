@@ -87,7 +87,6 @@ class AdminUserViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=['patch'])
     def update_balance(self, request, pk=None):
         """Update user balance"""
-        user = self.get_object()
         balance = request.data.get('balance')
 
         if balance is None:
@@ -98,6 +97,8 @@ class AdminUserViewSet(viewsets.ModelViewSet):
 
         try:
             with transaction.atomic():
+                # CRITICAL: Lock the user row to prevent race conditions
+                user = User.objects.select_for_update().get(pk=pk)
                 old_balance = user.balance
                 user.balance = Decimal(str(balance))
                 user.save()
@@ -147,7 +148,6 @@ class AdminUserViewSet(viewsets.ModelViewSet):
 
     @action(detail=True, methods=['post'], url_path='create-trade')
     def create_trade(self, request, pk=None):
-        user = self.get_object()
         data = request.data
 
         required_fields = ['symbol', 'side', 'entry_price', 'exit_price', 'quantity']
@@ -159,6 +159,9 @@ class AdminUserViewSet(viewsets.ModelViewSet):
 
         try:
             with transaction.atomic():
+                # CRITICAL: Lock the user row to prevent race conditions
+                user = User.objects.select_for_update().get(pk=pk)
+
                 entry_price = Decimal(str(data['entry_price']))
                 exit_price = Decimal(str(data['exit_price']))
                 quantity = Decimal(str(data['quantity']))
@@ -277,7 +280,8 @@ class AdminTransactionViewSet(viewsets.ModelViewSet):
     def approve(self, request, pk=None):
         """Approve transaction with real-time updates"""
         with transaction.atomic():
-            transaction_obj = self.get_object()
+            # Lock transaction to prevent duplicate approvals
+            transaction_obj = Transaction.objects.select_for_update().get(pk=pk)
 
             if transaction_obj.status != 'pending':
                 return Response(
@@ -285,12 +289,13 @@ class AdminTransactionViewSet(viewsets.ModelViewSet):
                     status=status.HTTP_400_BAD_REQUEST
                 )
 
+            # CRITICAL: Lock the user row to prevent race conditions
+            user = User.objects.select_for_update().get(pk=transaction_obj.user.pk)
+
             # Update transaction
             transaction_obj.status = 'completed'
             transaction_obj.processed_at = timezone.now()
             transaction_obj.processed_by = request.user
-
-            user = transaction_obj.user
 
             if transaction_obj.transaction_type == 'deposit':
                 user.balance += transaction_obj.amount
@@ -322,6 +327,7 @@ class AdminTransactionViewSet(viewsets.ModelViewSet):
 
                 if bot_purchased:
                     # user.balance -= bot_cost
+                    # INSIDE atomic block - will rollback if this fails
                     Transaction.objects.create(
                         user=user,
                         transaction_type='bot_purchase',
@@ -334,6 +340,7 @@ class AdminTransactionViewSet(viewsets.ModelViewSet):
 
             elif transaction_obj.transaction_type == 'withdrawal':
                 total_to_deduct = transaction_obj.total_amount()
+                # Check balance inside locked transaction
                 if user.balance >= total_to_deduct:
                     user.balance -= total_to_deduct
                 else:

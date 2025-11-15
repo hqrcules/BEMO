@@ -4,7 +4,13 @@ from django.contrib.auth.password_validation import validate_password
 from drf_spectacular.utils import extend_schema_field
 from datetime import date
 import re
+import bleach
 from .models import User
+from .validators import (
+    validate_crypto_wallet_address,
+    validate_full_name,
+    validate_email_format
+)
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -128,9 +134,37 @@ class ProfileUpdateSerializer(serializers.ModelSerializer):
         model = User
         fields = ['full_name']
 
+    def validate_full_name(self, value):
+        """
+        Sanitize full name to prevent XSS
+        """
+        if not value:
+            return value
+
+        # Strip HTML tags
+        cleaned = bleach.clean(value, tags=[], strip=True)
+
+        # Remove script-like patterns
+        cleaned = re.sub(r'<[^>]+>', '', cleaned)
+
+        # Trim whitespace
+        cleaned = cleaned.strip()
+
+        # Validate using custom validator
+        validate_full_name(cleaned)
+
+        return cleaned
+
 
 class UserProfileSerializer(serializers.ModelSerializer):
     """Serializer for user profile with wallet address"""
+
+    wallet_address = serializers.CharField(
+        max_length=100,
+        required=False,
+        allow_blank=True,
+        validators=[validate_crypto_wallet_address]
+    )
 
     class Meta:
         model = User
@@ -160,12 +194,45 @@ class UserProfileSerializer(serializers.ModelSerializer):
         ]
 
     def validate_wallet_address(self, value):
-        """Validate wallet address format"""
-        if value and len(value) < 26:
-            raise serializers.ValidationError(
-                'Wallet address must be at least 26 characters long.'
-            )
-        return value
+        """
+        Additional sanitization for wallet address
+        Prevents XSS and injection attacks
+        """
+        if not value:
+            return value
+
+        # Strip any HTML/JavaScript tags
+        cleaned = bleach.clean(value, tags=[], strip=True)
+
+        # Remove any whitespace
+        cleaned = cleaned.strip()
+
+        # For extra security, only keep alphanumeric characters
+        # (wallet addresses should only contain these)
+        cleaned = re.sub(r'[^a-zA-Z0-9]', '', cleaned)
+
+        return cleaned
+
+    def validate_full_name(self, value):
+        """
+        Sanitize full name to prevent XSS
+        """
+        if not value:
+            return value
+
+        # Strip HTML tags
+        cleaned = bleach.clean(value, tags=[], strip=True)
+
+        # Remove script-like patterns
+        cleaned = re.sub(r'<[^>]+>', '', cleaned)
+
+        # Trim whitespace
+        cleaned = cleaned.strip()
+
+        # Validate using custom validator
+        validate_full_name(cleaned)
+
+        return cleaned
 
 
 class UserDetailSerializer(serializers.ModelSerializer):
@@ -261,9 +328,16 @@ class RegisterSerializer(serializers.ModelSerializer):
         ]
 
     def validate_email(self, value):
-        """Validate email uniqueness"""
+        """Validate email uniqueness and format"""
+        # Additional email validation for security
+        validate_email_format(value)
+
+        # Strip and lowercase
+        value = value.strip().lower()
+
         if User.objects.filter(email=value).exists():
             raise serializers.ValidationError('User with this email already exists.')
+
         return value
 
     def validate_phone(self, value):

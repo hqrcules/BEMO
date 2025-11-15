@@ -1,8 +1,16 @@
 import uuid
+from decimal import Decimal
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils import timezone
 from .managers import UserManager
+from .validators import (
+    validate_crypto_wallet_address,
+    validate_positive_decimal,
+    validate_bot_type,
+    validate_full_name
+)
 
 
 class User(AbstractBaseUser, PermissionsMixin):
@@ -56,13 +64,15 @@ class User(AbstractBaseUser, PermissionsMixin):
     balance = models.DecimalField(
         max_digits=15,
         decimal_places=2,
-        default=0.00,
-        help_text='Current account balance'
+        default=Decimal('0.00'),
+        validators=[validate_positive_decimal],
+        help_text='Current account balance (must be >= 0)'
     )
     bot_type = models.CharField(
         max_length=20,
         choices=BOT_TYPE_CHOICES,
         default='none',
+        validators=[validate_bot_type],
         help_text='Active bot subscription type'
     )
     is_bot_enabled = models.BooleanField(
@@ -72,6 +82,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     wallet_address = models.CharField(
         max_length=255,
         blank=True,
+        validators=[validate_crypto_wallet_address],
         help_text='Cryptocurrency wallet address for withdrawals'
     )
 
@@ -119,3 +130,46 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     def get_short_name(self):
         return self.email.split('@')[0]
+
+    def clean(self):
+        """
+        Model-level validation to prevent inconsistent data
+        Called before save() if full_clean() is used
+        """
+        super().clean()
+
+        # Prevent negative balance
+        if self.balance < 0:
+            raise ValidationError({
+                'balance': 'Balance cannot be negative'
+            })
+
+        # Bot type validation: Cannot enable bot without subscription
+        if self.is_bot_enabled and self.bot_type == 'none':
+            raise ValidationError({
+                'is_bot_enabled': 'Cannot enable bot without a subscription. Please upgrade to Basic, Premium, or Specialist.'
+            })
+
+        # Wallet address validation: Strip whitespace
+        if self.wallet_address:
+            self.wallet_address = self.wallet_address.strip()
+
+        # Full name validation
+        if self.full_name:
+            self.full_name = self.full_name.strip()
+            # Validate using custom validator
+            try:
+                validate_full_name(self.full_name)
+            except ValidationError as e:
+                raise ValidationError({'full_name': e.message})
+
+    def save(self, *args, **kwargs):
+        """
+        Override save to always perform full validation
+        Ensures data integrity at database level
+        """
+        # Always run full_clean before saving
+        # This calls clean() and field validators
+        self.full_clean()
+
+        super().save(*args, **kwargs)

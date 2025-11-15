@@ -2,7 +2,8 @@ import os
 from django.core.asgi import get_asgi_application
 from channels.routing import ProtocolTypeRouter, URLRouter
 from channels.security.websocket import AllowedHostsOriginValidator
-from core.middleware.jwt_auth_middleware import CookieJWTAuthMiddleware
+# Updated to use new JWT auth middleware with enhanced security
+from core.websocket_auth import JWTAuthMiddlewareStack
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings.development')
 
@@ -15,7 +16,7 @@ websocket_urlpatterns = trading_ws
 application = ProtocolTypeRouter({
     "http": django_asgi_app,
     "websocket": AllowedHostsOriginValidator(
-        CookieJWTAuthMiddleware(
+        JWTAuthMiddlewareStack(
             URLRouter(websocket_urlpatterns)
         )
     ),

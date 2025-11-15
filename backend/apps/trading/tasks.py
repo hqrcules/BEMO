@@ -2,6 +2,8 @@ from celery import shared_task
 from django.utils import timezone
 from apps.accounts.models import User
 from .bot.simulator import TradingBotSimulator
+from .services import MarketDataService
+import asyncio
 import logging
 
 logger = logging.getLogger(__name__)
@@ -190,3 +192,37 @@ def close_stale_positions():
         'closed_count': closed_count,
         'timestamp': timezone.now().isoformat()
     }
+
+
+@shared_task(name='trading.update_market_data')
+def update_market_data_cache():
+    """
+    Periodic task to refresh market data cache for WebSocket consumers
+    Runs every 20 seconds to update Redis cache with latest market prices
+    """
+    try:
+        # Get or create event loop
+        try:
+            loop = asyncio.get_event_loop()
+        except RuntimeError:
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
+
+        # Run async function
+        result = loop.run_until_complete(MarketDataService.fetch_and_cache_all_markets())
+
+        logger.info(f"✅ Market data cache updated successfully: {len(result)} assets")
+        return {
+            'success': True,
+            'assets_count': len(result),
+            'timestamp': timezone.now().isoformat()
+        }
+
+    except Exception as e:
+        logger.error(f"❌ Market data update failed: {e}")
+        # Don't raise exception - use stale cache data instead
+        return {
+            'success': False,
+            'error': str(e),
+            'timestamp': timezone.now().isoformat()
+        }
