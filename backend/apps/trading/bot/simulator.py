@@ -329,8 +329,8 @@ class TradingBotSimulator:
             ).values_list('id', flat=True)
         ).delete()[0]
 
-        # Delete old sessions
-        sessions_deleted = sessions_to_delete.delete()[0]
+        # Delete old sessions using the IDs list (can't use sliced queryset with delete())
+        sessions_deleted = TradingSession.objects.filter(id__in=session_ids).delete()[0]
 
         logger.info(
             f"Cleaned up {sessions_deleted} old sessions and {trades_deleted} trades "

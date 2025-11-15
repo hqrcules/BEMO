@@ -66,10 +66,11 @@ CSRF_TRUSTED_ORIGINS = [
     'https://corinna-diagnosable-spiritlessly.ngrok-free.dev', # <--- ДОДАТИ ЦЕЙ РЯДОК
 ]
 
-# Disable caching in development
+# Redis cache for market data and WebSocket broadcasting
 CACHES = {
     'default': {
-        'BACKEND': 'django.core.cache.backends.dummy.DummyCache',
+        'BACKEND': 'django.core.cache.backends.redis.RedisCache',
+        'LOCATION': config('REDIS_URL', default='redis://redis:6379/1'),
     }
 }
 

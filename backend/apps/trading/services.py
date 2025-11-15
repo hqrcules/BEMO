@@ -47,7 +47,7 @@ class MarketDataService:
         stock_symbols = {
             'AAPL', 'MSFT', 'NVDA', 'GOOGL', 'AMZN', 'META', 'TSLA', 'BRK.B', 'AVGO',
             'WMT', 'JPM', 'V', 'UNH', 'XOM', 'JNJ', 'MA', 'PG', 'NFLX', 'HD', 'COST',
-            'KO', 'PEP', 'ADBE', 'CRM', 'CSCO', 'INTC', 'AMD', 'ORCL', 'DIS', 'MCD',
+            'KO', 'PEP', 'CRM', 'CSCO', 'INTC', 'AMD', 'ORCL', 'DIS', 'MCD',
             'BA', 'NKE', 'PFE', 'MRK', 'ABT', 'VZ', 'T', 'CMCSA', 'CVX',
             'WFC', 'MS', 'GS', 'IBM', 'QCOM', 'TXN', 'SBUX', 'AXP', 'FDX', 'UPS'
         }
@@ -263,24 +263,194 @@ class MarketDataService:
          'image': 'https://assets.coincap.io/assets/icons/sol@2x.png'},
         {'id': 'ripple', 'symbol': 'XRP', 'binance_id': 'XRPUSDT', 'name': 'XRP',
          'image': 'https://assets.coincap.io/assets/icons/xrp@2x.png'},
-        # Add more crypto assets as needed...
+        {'id': 'cardano', 'symbol': 'ADA', 'binance_id': 'ADAUSDT', 'name': 'Cardano',
+         'image': 'https://assets.coincap.io/assets/icons/ada@2x.png'},
+        {'id': 'avalanche', 'symbol': 'AVAX', 'binance_id': 'AVAXUSDT', 'name': 'Avalanche',
+         'image': 'https://assets.coincap.io/assets/icons/avax@2x.png'},
+        {'id': 'dogecoin', 'symbol': 'DOGE', 'binance_id': 'DOGEUSDT', 'name': 'Dogecoin',
+         'image': 'https://assets.coincap.io/assets/icons/doge@2x.png'},
+        {'id': 'polkadot', 'symbol': 'DOT', 'binance_id': 'DOTUSDT', 'name': 'Polkadot',
+         'image': 'https://assets.coincap.io/assets/icons/dot@2x.png'},
+        {'id': 'polygon', 'symbol': 'MATIC', 'binance_id': 'MATICUSDT', 'name': 'Polygon',
+         'image': 'https://assets.coincap.io/assets/icons/matic@2x.png'},
+        {'id': 'chainlink', 'symbol': 'LINK', 'binance_id': 'LINKUSDT', 'name': 'Chainlink',
+         'image': 'https://assets.coincap.io/assets/icons/link@2x.png'},
+        {'id': 'litecoin', 'symbol': 'LTC', 'binance_id': 'LTCUSDT', 'name': 'Litecoin',
+         'image': 'https://assets.coincap.io/assets/icons/ltc@2x.png'},
+        {'id': 'uniswap', 'symbol': 'UNI', 'binance_id': 'UNIUSDT', 'name': 'Uniswap',
+         'image': 'https://assets.coincap.io/assets/icons/uni@2x.png'},
+        {'id': 'atom', 'symbol': 'ATOM', 'binance_id': 'ATOMUSDT', 'name': 'Cosmos',
+         'image': 'https://assets.coincap.io/assets/icons/atom@2x.png'},
+        {'id': 'stellar', 'symbol': 'XLM', 'binance_id': 'XLMUSDT', 'name': 'Stellar',
+         'image': 'https://assets.coincap.io/assets/icons/xlm@2x.png'},
+        {'id': 'tron', 'symbol': 'TRX', 'binance_id': 'TRXUSDT', 'name': 'TRON',
+         'image': 'https://assets.coincap.io/assets/icons/trx@2x.png'},
+        {'id': 'algorand', 'symbol': 'ALGO', 'binance_id': 'ALGOUSDT', 'name': 'Algorand',
+         'image': 'https://assets.coincap.io/assets/icons/algo@2x.png'},
+        {'id': 'vechain', 'symbol': 'VET', 'binance_id': 'VETUSDT', 'name': 'VeChain',
+         'image': 'https://assets.coincap.io/assets/icons/vet@2x.png'},
+        {'id': 'filecoin', 'symbol': 'FIL', 'binance_id': 'FILUSDT', 'name': 'Filecoin',
+         'image': 'https://assets.coincap.io/assets/icons/fil@2x.png'},
+        {'id': 'hedera', 'symbol': 'HBAR', 'binance_id': 'HBARUSDT', 'name': 'Hedera',
+         'image': 'https://assets.coincap.io/assets/icons/hbar@2x.png'},
+        {'id': 'shiba', 'symbol': 'SHIB', 'binance_id': 'SHIBUSDT', 'name': 'Shiba Inu',
+         'image': 'https://assets.coincap.io/assets/icons/shib@2x.png'},
+        {'id': 'near', 'symbol': 'NEAR', 'binance_id': 'NEARUSDT', 'name': 'NEAR Protocol',
+         'image': 'https://assets.coincap.io/assets/icons/near@2x.png'},
+        {'id': 'aptos', 'symbol': 'APT', 'binance_id': 'APTUSDT', 'name': 'Aptos',
+         'image': 'https://assets.coincap.io/assets/icons/apt@2x.png'},
+        {'id': 'arbitrum', 'symbol': 'ARB', 'binance_id': 'ARBUSDT', 'name': 'Arbitrum',
+         'image': 'https://assets.coincap.io/assets/icons/arb@2x.png'},
+        {'id': 'optimism', 'symbol': 'OP', 'binance_id': 'OPUSDT', 'name': 'Optimism',
+         'image': 'https://assets.coincap.io/assets/icons/op@2x.png'},
+        {'id': 'injective', 'symbol': 'INJ', 'binance_id': 'INJUSDT', 'name': 'Injective',
+         'image': 'https://assets.coincap.io/assets/icons/inj@2x.png'},
+        {'id': 'sui', 'symbol': 'SUI', 'binance_id': 'SUIUSDT', 'name': 'Sui',
+         'image': 'https://assets.coincap.io/assets/icons/sui@2x.png'},
+        {'id': 'ton', 'symbol': 'TON', 'binance_id': 'TONUSDT', 'name': 'Toncoin',
+         'image': 'https://assets.coincap.io/assets/icons/ton@2x.png'},
+        {'id': 'pepe', 'symbol': 'PEPE', 'binance_id': 'PEPEUSDT', 'name': 'Pepe',
+         'image': '🐸'},
+        {'id': 'render', 'symbol': 'RNDR', 'binance_id': 'RNDRUSDT', 'name': 'Render',
+         'image': 'https://assets.coincap.io/assets/icons/rndr@2x.png'},
+        {'id': 'immutablex', 'symbol': 'IMX', 'binance_id': 'IMXUSDT', 'name': 'Immutable X',
+         'image': 'https://assets.coincap.io/assets/icons/imx@2x.png'},
+        {'id': 'ftm', 'symbol': 'FTM', 'binance_id': 'FTMUSDT', 'name': 'Fantom',
+         'image': 'https://assets.coincap.io/assets/icons/ftm@2x.png'},
+        {'id': 'aave', 'symbol': 'AAVE', 'binance_id': 'AAVEUSDT', 'name': 'Aave',
+         'image': 'https://assets.coincap.io/assets/icons/aave@2x.png'},
+        {'id': 'maker', 'symbol': 'MKR', 'binance_id': 'MKRUSDT', 'name': 'Maker',
+         'image': 'https://assets.coincap.io/assets/icons/mkr@2x.png'},
+        {'id': 'theta', 'symbol': 'THETA', 'binance_id': 'THETAUSDT', 'name': 'Theta Network',
+         'image': 'https://assets.coincap.io/assets/icons/theta@2x.png'},
+        {'id': 'sandbox', 'symbol': 'SAND', 'binance_id': 'SANDUSDT', 'name': 'The Sandbox',
+         'image': 'https://assets.coincap.io/assets/icons/sand@2x.png'},
+        {'id': 'mana', 'symbol': 'MANA', 'binance_id': 'MANAUSDT', 'name': 'Decentraland',
+         'image': 'https://assets.coincap.io/assets/icons/mana@2x.png'},
+        {'id': 'axs', 'symbol': 'AXS', 'binance_id': 'AXSUSDT', 'name': 'Axie Infinity',
+         'image': 'https://assets.coincap.io/assets/icons/axs@2x.png'},
+        {'id': 'grt', 'symbol': 'GRT', 'binance_id': 'GRTUSDT', 'name': 'The Graph',
+         'image': 'https://assets.coincap.io/assets/icons/grt@2x.png'},
+        {'id': 'eos', 'symbol': 'EOS', 'binance_id': 'EOSUSDT', 'name': 'EOS',
+         'image': 'https://assets.coincap.io/assets/icons/eos@2x.png'},
+        {'id': 'iota', 'symbol': 'IOTA', 'binance_id': 'IOTAUSDT', 'name': 'IOTA',
+         'image': 'https://assets.coincap.io/assets/icons/miota@2x.png'},
+        {'id': 'ape', 'symbol': 'APE', 'binance_id': 'APEUSDT', 'name': 'ApeCoin',
+         'image': 'https://assets.coincap.io/assets/icons/ape@2x.png'},
+        {'id': 'ldo', 'symbol': 'LDO', 'binance_id': 'LDOUSDT', 'name': 'Lido DAO',
+         'image': 'https://assets.coincap.io/assets/icons/ldo@2x.png'},
+        {'id': 'woo', 'symbol': 'WOO', 'binance_id': 'WOOUSDT', 'name': 'WOO Network',
+         'image': 'https://assets.coincap.io/assets/icons/woo@2x.png'},
+        {'id': 'flow', 'symbol': 'FLOW', 'binance_id': 'FLOWUSDT', 'name': 'Flow',
+         'image': 'https://assets.coincap.io/assets/icons/flow@2x.png'},
+        {'id': 'chz', 'symbol': 'CHZ', 'binance_id': 'CHZUSDT', 'name': 'Chiliz',
+         'image': 'https://assets.coincap.io/assets/icons/chz@2x.png'},
+        {'id': 'xtz', 'symbol': 'XTZ', 'binance_id': 'XTZUSDT', 'name': 'Tezos',
+         'image': 'https://assets.coincap.io/assets/icons/xtz@2x.png'},
+        {'id': 'egld', 'symbol': 'EGLD', 'binance_id': 'EGLDUSDT', 'name': 'MultiversX',
+         'image': 'https://assets.coincap.io/assets/icons/egld@2x.png'},
+        {'id': 'bch', 'symbol': 'BCH', 'binance_id': 'BCHUSDT', 'name': 'Bitcoin Cash',
+         'image': 'https://assets.coincap.io/assets/icons/bch@2x.png'},
+        {'id': 'etc', 'symbol': 'ETC', 'binance_id': 'ETCUSDT', 'name': 'Ethereum Classic',
+         'image': 'https://assets.coincap.io/assets/icons/etc@2x.png'},
     ]
 
     STOCKS_MAP = [
+        # Tech Giants
         {'id': 'apple', 'symbol': 'AAPL', 'name': 'Apple Inc.', 'image': 'https://logo.clearbit.com/apple.com'},
         {'id': 'microsoft', 'symbol': 'MSFT', 'name': 'Microsoft Corp.', 'image': 'https://logo.clearbit.com/microsoft.com'},
-        # Add more stocks as needed...
+        {'id': 'google', 'symbol': 'GOOGL', 'name': 'Alphabet Inc.', 'image': 'https://logo.clearbit.com/google.com'},
+        {'id': 'amazon', 'symbol': 'AMZN', 'name': 'Amazon.com Inc.', 'image': 'https://logo.clearbit.com/amazon.com'},
+        {'id': 'meta', 'symbol': 'META', 'name': 'Meta Platforms Inc.', 'image': 'https://logo.clearbit.com/meta.com'},
+
+        # Semiconductors & Hardware
+        {'id': 'nvidia', 'symbol': 'NVDA', 'name': 'NVIDIA Corp.', 'image': 'https://logo.clearbit.com/nvidia.com'},
+        {'id': 'amd', 'symbol': 'AMD', 'name': 'Advanced Micro Devices', 'image': 'https://logo.clearbit.com/amd.com'},
+        {'id': 'intel', 'symbol': 'INTC', 'name': 'Intel Corp.', 'image': 'https://logo.clearbit.com/intel.com'},
+        {'id': 'tsmc', 'symbol': 'TSM', 'name': 'Taiwan Semiconductor', 'image': '🔬'},
+        {'id': 'qualcomm', 'symbol': 'QCOM', 'name': 'Qualcomm Inc.', 'image': 'https://logo.clearbit.com/qualcomm.com'},
+        {'id': 'broadcom', 'symbol': 'AVGO', 'name': 'Broadcom Inc.', 'image': 'https://logo.clearbit.com/broadcom.com'},
+
+        # Electric Vehicles & Auto
+        {'id': 'tesla', 'symbol': 'TSLA', 'name': 'Tesla Inc.', 'image': 'https://logo.clearbit.com/tesla.com'},
+        {'id': 'ford', 'symbol': 'F', 'name': 'Ford Motor Co.', 'image': 'https://logo.clearbit.com/ford.com'},
+        {'id': 'gm', 'symbol': 'GM', 'name': 'General Motors', 'image': 'https://logo.clearbit.com/gm.com'},
+
+        # Software & Cloud
+        {'id': 'salesforce', 'symbol': 'CRM', 'name': 'Salesforce Inc.', 'image': 'https://logo.clearbit.com/salesforce.com'},
+        {'id': 'oracle', 'symbol': 'ORCL', 'name': 'Oracle Corp.', 'image': 'https://logo.clearbit.com/oracle.com'},
+        {'id': 'sap', 'symbol': 'SAP', 'name': 'SAP SE', 'image': 'https://logo.clearbit.com/sap.com'},
+        {'id': 'servicenow', 'symbol': 'NOW', 'name': 'ServiceNow Inc.', 'image': 'https://logo.clearbit.com/servicenow.com'},
+        {'id': 'snowflake', 'symbol': 'SNOW', 'name': 'Snowflake Inc.', 'image': 'https://logo.clearbit.com/snowflake.com'},
+
+        # Streaming & Entertainment
+        {'id': 'netflix', 'symbol': 'NFLX', 'name': 'Netflix Inc.', 'image': 'https://logo.clearbit.com/netflix.com'},
+        {'id': 'disney', 'symbol': 'DIS', 'name': 'Walt Disney Co.', 'image': 'https://logo.clearbit.com/disney.com'},
+        {'id': 'spotify', 'symbol': 'SPOT', 'name': 'Spotify Technology', 'image': 'https://logo.clearbit.com/spotify.com'},
+
+        # E-commerce & Retail
+        {'id': 'shopify', 'symbol': 'SHOP', 'name': 'Shopify Inc.', 'image': 'https://logo.clearbit.com/shopify.com'},
+        {'id': 'walmart', 'symbol': 'WMT', 'name': 'Walmart Inc.', 'image': 'https://logo.clearbit.com/walmart.com'},
+        {'id': 'costco', 'symbol': 'COST', 'name': 'Costco Wholesale', 'image': 'https://logo.clearbit.com/costco.com'},
+        {'id': 'target', 'symbol': 'TGT', 'name': 'Target Corp.', 'image': 'https://logo.clearbit.com/target.com'},
+
+        # Fintech & Payments
+        {'id': 'visa', 'symbol': 'V', 'name': 'Visa Inc.', 'image': '💳'},
+        {'id': 'mastercard', 'symbol': 'MA', 'name': 'Mastercard Inc.', 'image': 'https://logo.clearbit.com/mastercard.com'},
+        {'id': 'paypal', 'symbol': 'PYPL', 'name': 'PayPal Holdings', 'image': 'https://logo.clearbit.com/paypal.com'},
+        {'id': 'square', 'symbol': 'SQ', 'name': 'Block Inc.', 'image': 'https://logo.clearbit.com/squareup.com'},
+        {'id': 'coinbase', 'symbol': 'COIN', 'name': 'Coinbase Global', 'image': 'https://logo.clearbit.com/coinbase.com'},
+
+        # Banks & Financial Services
+        {'id': 'jpmorgan', 'symbol': 'JPM', 'name': 'JPMorgan Chase', 'image': 'https://logo.clearbit.com/jpmorganchase.com'},
+        {'id': 'wellsfargo', 'symbol': 'WFC', 'name': 'Wells Fargo', 'image': 'https://logo.clearbit.com/wellsfargo.com'},
+        {'id': 'goldmansachs', 'symbol': 'GS', 'name': 'Goldman Sachs', 'image': 'https://logo.clearbit.com/goldmansachs.com'},
+
+        # Energy
+        {'id': 'exxon', 'symbol': 'XOM', 'name': 'Exxon Mobil', 'image': 'https://logo.clearbit.com/exxonmobil.com'},
+        {'id': 'chevron', 'symbol': 'CVX', 'name': 'Chevron Corp.', 'image': 'https://logo.clearbit.com/chevron.com'},
+
+        # Healthcare & Pharma
+        {'id': 'jnj', 'symbol': 'JNJ', 'name': 'Johnson & Johnson', 'image': 'https://logo.clearbit.com/jnj.com'},
+        {'id': 'pfizer', 'symbol': 'PFE', 'name': 'Pfizer Inc.', 'image': 'https://logo.clearbit.com/pfizer.com'},
+        {'id': 'abbvie', 'symbol': 'ABBV', 'name': 'AbbVie Inc.', 'image': 'https://logo.clearbit.com/abbvie.com'},
+        {'id': 'moderna', 'symbol': 'MRNA', 'name': 'Moderna Inc.', 'image': 'https://logo.clearbit.com/modernatx.com'},
+
+        # Food & Beverage
+        {'id': 'cocacola', 'symbol': 'KO', 'name': 'Coca-Cola Co.', 'image': 'https://logo.clearbit.com/coca-cola.com'},
+        {'id': 'pepsi', 'symbol': 'PEP', 'name': 'PepsiCo Inc.', 'image': 'https://logo.clearbit.com/pepsi.com'},
+        {'id': 'starbucks', 'symbol': 'SBUX', 'name': 'Starbucks Corp.', 'image': 'https://logo.clearbit.com/starbucks.com'},
+        {'id': 'mcdonalds', 'symbol': 'MCD', 'name': "McDonald's Corp.", 'image': 'https://logo.clearbit.com/mcdonalds.com'},
+
+        # Social Media & Communication
+        {'id': 'twitter', 'symbol': 'TWTR', 'name': 'Twitter/X Corp.', 'image': '🐦'},
+        {'id': 'snap', 'symbol': 'SNAP', 'name': 'Snap Inc.', 'image': 'https://logo.clearbit.com/snap.com'},
+        {'id': 'pinterest', 'symbol': 'PINS', 'name': 'Pinterest Inc.', 'image': 'https://logo.clearbit.com/pinterest.com'},
+
+        # Other Tech
+        {'id': 'uber', 'symbol': 'UBER', 'name': 'Uber Technologies', 'image': 'https://logo.clearbit.com/uber.com'},
+        {'id': 'airbnb', 'symbol': 'ABNB', 'name': 'Airbnb Inc.', 'image': 'https://logo.clearbit.com/airbnb.com'},
+        {'id': 'zoom', 'symbol': 'ZM', 'name': 'Zoom Video', 'image': 'https://logo.clearbit.com/zoom.us'},
+        {'id': 'datadog', 'symbol': 'DDOG', 'name': 'Datadog Inc.', 'image': 'https://logo.clearbit.com/datadoghq.com'},
     ]
 
     FOREX_MAP = [
-        {'id': 'eur-usd', 'symbol': 'EUR/USD', 'base': 'EUR', 'quote': 'USD', 'name': 'EUR to USD', 'image': ''},
-        {'id': 'gbp-usd', 'symbol': 'GBP/USD', 'base': 'GBP', 'quote': 'USD', 'name': 'GBP to USD', 'image': ''},
-        # Add more forex pairs as needed...
+        {'id': 'eur-usd', 'symbol': 'EUR/USD', 'base': 'EUR', 'quote': 'USD', 'name': 'Euro to US Dollar', 'image': '💶'},
+        {'id': 'gbp-usd', 'symbol': 'GBP/USD', 'base': 'GBP', 'quote': 'USD', 'name': 'British Pound to US Dollar', 'image': '💷'},
+        {'id': 'jpy-usd', 'symbol': 'USD/JPY', 'base': 'USD', 'quote': 'JPY', 'name': 'US Dollar to Japanese Yen', 'image': '💴'},
+        {'id': 'aud-usd', 'symbol': 'AUD/USD', 'base': 'AUD', 'quote': 'USD', 'name': 'Australian Dollar to US Dollar', 'image': '🇦🇺'},
+        {'id': 'cad-usd', 'symbol': 'USD/CAD', 'base': 'USD', 'quote': 'CAD', 'name': 'US Dollar to Canadian Dollar', 'image': '🇨🇦'},
+        {'id': 'chf-usd', 'symbol': 'USD/CHF', 'base': 'USD', 'quote': 'CHF', 'name': 'US Dollar to Swiss Franc', 'image': '🇨🇭'},
+        {'id': 'nzd-usd', 'symbol': 'NZD/USD', 'base': 'NZD', 'quote': 'USD', 'name': 'New Zealand Dollar to US Dollar', 'image': '🇳🇿'},
+        {'id': 'eur-gbp', 'symbol': 'EUR/GBP', 'base': 'EUR', 'quote': 'GBP', 'name': 'Euro to British Pound', 'image': '💶'},
     ]
 
     COMMODITIES_MAP = [
-        {'id': 'gold', 'symbol': 'XAU', 'binance_id': 'XAUUSDT', 'name': 'Gold', 'image': ''},
-        {'id': 'silver', 'symbol': 'XAG', 'binance_id': 'XAGUSDT', 'name': 'Silver', 'image': ''},
+        {'id': 'gold', 'symbol': 'XAU', 'binance_id': 'XAUUSDT', 'name': 'Gold', 'image': '🥇'},
+        {'id': 'silver', 'symbol': 'XAG', 'binance_id': 'XAGUSDT', 'name': 'Silver', 'image': '🥈'},
+        {'id': 'oil', 'symbol': 'WTI', 'name': 'Crude Oil WTI', 'image': '🛢️'},
+        {'id': 'natgas', 'symbol': 'NG', 'name': 'Natural Gas', 'image': '🔥'},
+        {'id': 'copper', 'symbol': 'HG', 'name': 'Copper', 'image': '🟫'},
     ]
 
     WS_CACHE_KEY = 'market_data:websocket:all'
@@ -295,7 +465,7 @@ class MarketDataService:
                 # Fetch from various sources in parallel
                 crypto_data = await MarketDataService._fetch_binance_for_ws(session)
                 forex_data = await MarketDataService._fetch_forex_for_ws(session)
-                commodities_data = MarketDataService._process_commodities_for_ws(crypto_data)
+                commodities_data = await MarketDataService._fetch_commodities_for_ws(session)
                 stocks_data = MarketDataService._generate_mock_stocks_for_ws()
 
                 # Combine all data
@@ -326,20 +496,27 @@ class MarketDataService:
                 response.raise_for_status()
                 data = await response.json()
 
-                # Filter and format crypto data (using truncated list for performance)
+                # Create lookup dict for crypto assets
+                crypto_lookup = {asset['binance_id']: asset for asset in MarketDataService.CRYPTO_ASSETS}
+
+                # Filter and format crypto data - fetch all configured assets
                 crypto_assets = []
-                crypto_symbols = ['BTCUSDT', 'ETHUSDT', 'BNBUSDT', 'SOLUSDT', 'XRPUSDT']
+                crypto_symbols = [asset['binance_id'] for asset in MarketDataService.CRYPTO_ASSETS]
 
                 for symbol in crypto_symbols:
                     ticker = next((t for t in data if t['symbol'] == symbol), None)
                     if ticker:
+                        # Get asset config for name and image
+                        asset_config = crypto_lookup.get(symbol, {})
                         crypto_assets.append({
                             'symbol': symbol.replace('USDT', ''),
+                            'name': asset_config.get('name', symbol.replace('USDT', '')),
                             'category': 'crypto',
                             'price': float(ticker.get('lastPrice', 0)),
                             'change_percent_24h': float(ticker.get('priceChangePercent', 0)),
                             'change_24h': float(ticker.get('priceChange', 0)),
                             'volume': float(ticker.get('volume', 0)),
+                            'image': asset_config.get('image', ''),
                         })
 
                 return crypto_assets
@@ -359,28 +536,26 @@ class MarketDataService:
                 data = await response.json()
                 rates = data.get('rates', {})
 
-                # Process forex pairs (simplified)
+                # Process all configured forex pairs
                 forex_assets = []
-                pairs = [
-                    {'base': 'EUR', 'quote': 'USD'},
-                    {'base': 'GBP', 'quote': 'USD'},
-                ]
 
-                for pair in pairs:
+                for forex_config in MarketDataService.FOREX_MAP:
                     price = MarketDataService._calculate_forex_price_ws(
-                        pair['base'],
-                        pair['quote'],
+                        forex_config['base'],
+                        forex_config['quote'],
                         rates
                     )
 
                     if price > 0:
                         forex_assets.append({
-                            'symbol': f"{pair['base']}/{pair['quote']}",
+                            'symbol': forex_config['symbol'],
+                            'name': forex_config.get('name', forex_config['symbol']),
                             'category': 'forex',
                             'price': float(price),
                             'change_percent_24h': float(random.uniform(-1.0, 1.0)),
                             'change_24h': 0,
-                            'volume': 0
+                            'volume': 0,
+                            'image': forex_config.get('image', '🌐'),
                         })
 
                 return forex_assets
@@ -408,31 +583,94 @@ class MarketDataService:
             return 0.0
 
     @staticmethod
-    def _process_commodities_for_ws(binance_data):
-        """Process commodities data from Binance"""
-        # For now, return empty - can be extended later
-        return []
+    async def _fetch_commodities_for_ws(session):
+        """Fetch commodities data - mix of real data from Binance and mock data"""
+        commodities_data = []
+        binance_url = "https://api.binance.com/api/v3/ticker/24hr"
+
+        try:
+            # Fetch Binance data for gold and silver
+            async with session.get(binance_url, timeout=10) as response:
+                response.raise_for_status()
+                binance_data = await response.json()
+
+                # Process each commodity
+                for commodity in MarketDataService.COMMODITIES_MAP:
+                    if 'binance_id' in commodity:
+                        # Try to get from binance_data
+                        ticker = next((t for t in binance_data if t.get('symbol') == commodity['binance_id']), None)
+                        if ticker:
+                            commodities_data.append({
+                                'symbol': commodity['symbol'],
+                                'name': commodity['name'],
+                                'category': 'commodities',
+                                'price': float(ticker.get('lastPrice', 0)),
+                                'change_percent_24h': float(ticker.get('priceChangePercent', 0)),
+                                'change_24h': float(ticker.get('priceChange', 0)),
+                                'volume': float(ticker.get('volume', 0)),
+                                'image': commodity.get('image', '📊'),
+                            })
+                        else:
+                            # Fallback to mock if not found
+                            commodities_data.append(MarketDataService._generate_mock_commodity(commodity))
+                    else:
+                        # Generate mock data for other commodities
+                        commodities_data.append(MarketDataService._generate_mock_commodity(commodity))
+
+        except Exception as e:
+            logger.error(f"[MarketDataService] Error fetching commodities: {e}")
+            # Return mock data for all commodities on error
+            for commodity in MarketDataService.COMMODITIES_MAP:
+                commodities_data.append(MarketDataService._generate_mock_commodity(commodity))
+
+        return commodities_data
+
+    @staticmethod
+    def _generate_mock_commodity(commodity):
+        """Generate mock data for a single commodity"""
+        last_price = MarketDataService._ticker_cache.get(commodity['symbol'], random.uniform(50, 100))
+        change_percent = random.uniform(-2.5, 2.5)
+        new_price = last_price * (1 + change_percent / 100)
+        MarketDataService._ticker_cache[commodity['symbol']] = new_price
+
+        return {
+            'symbol': commodity['symbol'],
+            'name': commodity['name'],
+            'category': 'commodities',
+            'price': float(new_price),
+            'change_percent_24h': float(change_percent),
+            'change_24h': 0,
+            'volume': float(random.uniform(500_000, 10_000_000)),
+            'image': commodity.get('image', '📊'),
+        }
 
     @staticmethod
     def _generate_mock_stocks_for_ws():
         """Generate mock stock data for WebSocket"""
-        stocks = ['AAPL', 'MSFT', 'GOOGL']
         stock_data = []
 
-        for symbol in stocks:
+        # Create lookup dict for stocks
+        stock_lookup = {stock['symbol']: stock for stock in MarketDataService.STOCKS_MAP}
+
+        for symbol in stock_lookup.keys():
             last_price = MarketDataService._ticker_cache.get(symbol, random.uniform(100, 500))
             change_percent = random.uniform(-3.5, 3.5)
             new_price = last_price * (1 + change_percent / 100)
 
             MarketDataService._ticker_cache[symbol] = new_price
 
+            # Get stock config for name and image
+            stock_config = stock_lookup.get(symbol, {})
+
             stock_data.append({
                 'symbol': symbol,
+                'name': stock_config.get('name', symbol),
                 'category': 'stocks',
                 'price': float(new_price),
                 'change_percent_24h': float(change_percent),
                 'change_24h': 0,
-                'volume': float(random.uniform(1_000_000, 50_000_000))
+                'volume': float(random.uniform(1_000_000, 50_000_000)),
+                'image': stock_config.get('image', '📈'),
             })
 
         return stock_data
