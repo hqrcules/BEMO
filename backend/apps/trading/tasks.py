@@ -194,35 +194,73 @@ def close_stale_positions():
     }
 
 
-@shared_task(name='trading.update_market_data')
-def update_market_data_cache():
+@shared_task(
+    name='trading.update_market_data',
+    bind=True,
+    max_retries=3,
+    default_retry_delay=10
+)
+def update_market_data_cache(self):
     """
     Periodic task to refresh market data cache for WebSocket consumers
-    Runs every 20 seconds to update Redis cache with latest market prices
+
+    Runs every 20 seconds via Celery Beat
+    Fetches data from Binance, Forex API, and generates mock stocks
+    Stores combined data in Redis for WebSocket consumption
+
+    Features:
+    - Automatic retry with exponential backoff on failures
+    - Stale cache fallback for API outages
+    - Comprehensive logging for monitoring
+
+    Returns:
+        dict: Status with assets_count or error details
     """
     try:
+        logger.info("[Celery] Starting market data cache update")
+
         # Get or create event loop
         try:
             loop = asyncio.get_event_loop()
+            if loop.is_closed():
+                loop = asyncio.new_event_loop()
+                asyncio.set_event_loop(loop)
         except RuntimeError:
             loop = asyncio.new_event_loop()
             asyncio.set_event_loop(loop)
 
-        # Run async function
-        result = loop.run_until_complete(MarketDataService.fetch_and_cache_all_markets())
+        # Run async function to fetch and cache market data
+        result = loop.run_until_complete(
+            MarketDataService.fetch_and_cache_all_markets()
+        )
 
-        logger.info(f"✅ Market data cache updated successfully: {len(result)} assets")
+        logger.info(f"✅ [Celery] Market data cached: {len(result)} assets")
         return {
-            'success': True,
+            'status': 'success',
             'assets_count': len(result),
-            'timestamp': timezone.now().isoformat()
+            'timestamp': timezone.now().isoformat(),
+            'retry_count': self.request.retries
         }
 
     except Exception as e:
-        logger.error(f"❌ Market data update failed: {e}")
-        # Don't raise exception - use stale cache data instead
-        return {
-            'success': False,
-            'error': str(e),
-            'timestamp': timezone.now().isoformat()
-        }
+        logger.error(f"❌ [Celery] Market data update failed: {e}")
+
+        # Retry with exponential backoff
+        try:
+            countdown = 2 ** self.request.retries  # 2s, 4s, 8s
+            logger.warning(
+                f"[Celery] Retrying market data update in {countdown}s "
+                f"(attempt {self.request.retries + 1}/{self.max_retries})"
+            )
+            raise self.retry(exc=e, countdown=countdown)
+        except self.MaxRetriesExceededError:
+            logger.error(
+                f"[Celery] Max retries exceeded for market data update. "
+                f"Using stale cache data."
+            )
+            return {
+                'status': 'failed',
+                'error': str(e),
+                'timestamp': timezone.now().isoformat(),
+                'retry_count': self.request.retries
+            }

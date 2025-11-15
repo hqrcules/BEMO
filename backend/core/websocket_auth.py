@@ -2,7 +2,9 @@
 WebSocket JWT Authentication Middleware
 
 Provides JWT-based authentication for Django Channels WebSocket connections.
-Supports token from both query parameters and cookies.
+
+SECURITY: Uses ONLY HTTP-only cookies for token transport.
+Query parameter authentication is disabled to prevent token exposure in logs.
 """
 from channels.auth import AuthMiddlewareStack
 from channels.db import database_sync_to_async
@@ -10,7 +12,6 @@ from django.contrib.auth.models import AnonymousUser
 from rest_framework_simplejwt.tokens import AccessToken
 from rest_framework_simplejwt.exceptions import InvalidToken, TokenError
 from apps.accounts.models import User
-from urllib.parse import parse_qs
 import logging
 
 logger = logging.getLogger(__name__)
@@ -58,9 +59,8 @@ class JWTAuthMiddleware:
     """
     Custom middleware for JWT authentication in WebSocket connections
 
-    Extracts token from:
-    1. Query string (?token=xxx)
-    2. Cookies (access_token)
+    SECURITY: Extracts token ONLY from HTTP-only cookies (access_token)
+    Does NOT accept tokens from query parameters to prevent token leakage in logs
     """
 
     def __init__(self, app):
@@ -70,31 +70,28 @@ class JWTAuthMiddleware:
         """
         Authenticate WebSocket connection and add user to scope
 
+        SECURITY: Token extracted from cookies ONLY. Query params are ignored
+        to prevent token exposure in server logs, proxy logs, and browser history.
+
         Args:
             scope: ASGI connection scope
             receive: ASGI receive channel
             send: ASGI send channel
         """
-        # Extract token from query string
-        query_string = scope.get('query_string', b'').decode()
-        params = parse_qs(query_string)
-        token = params.get('token', [None])[0]  # Get first value or None
+        # Parse cookies from headers
+        headers = dict(scope.get('headers', []))
+        cookie_header = headers.get(b'cookie', b'').decode()
 
-        # If no token in query string, try cookies
-        if not token:
-            # Parse cookies from headers
-            headers = dict(scope.get('headers', []))
-            cookie_header = headers.get(b'cookie', b'').decode()
+        # Simple cookie parsing
+        cookies = {}
+        if cookie_header:
+            for cookie in cookie_header.split('; '):
+                if '=' in cookie:
+                    key, value = cookie.split('=', 1)
+                    cookies[key] = value
 
-            # Simple cookie parsing
-            cookies = {}
-            if cookie_header:
-                for cookie in cookie_header.split('; '):
-                    if '=' in cookie:
-                        key, value = cookie.split('=', 1)
-                        cookies[key] = value
-
-            token = cookies.get('access_token')
+        # Extract token from cookies ONLY (security requirement)
+        token = cookies.get('access_token')
 
         # Authenticate user with token
         if token:
@@ -107,7 +104,7 @@ class JWTAuthMiddleware:
         if user.is_authenticated:
             logger.info(f"[WS Auth] Authenticated connection: {user.email}")
         else:
-            logger.debug("[WS Auth] Anonymous connection")
+            logger.debug("[WS Auth] Anonymous connection (no valid cookie token)")
 
         return await self.app(scope, receive, send)
 

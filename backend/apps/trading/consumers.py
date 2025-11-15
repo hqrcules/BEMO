@@ -491,12 +491,21 @@ class MarketConsumer(AsyncWebsocketConsumer):
 
     async def broadcast_cached_data(self):
         """
-        New optimized method: Send cached data to client every 5 seconds
-        Data is fetched by Celery task, reducing duplicate API calls
+        Optimized method: Send cached data to client every 5 seconds
+
+        Data is fetched by Celery task every 20 seconds and stored in Redis.
+        This eliminates duplicate API calls when multiple clients are connected.
+
+        Benefits:
+        - No direct API calls from WebSocket
+        - Reads from Redis cache (< 1ms latency)
+        - Single source of truth
+        - Automatic fallback to stale cache on errors
         """
         while self.running:
             try:
-                # Read data from Redis cache (populated by Celery task)
+                # Read from Redis cache (populated by Celery task)
+                from apps.trading.services import MarketDataService
                 cached_data = MarketDataService.get_cached_websocket_data()
 
                 if cached_data:
@@ -504,20 +513,20 @@ class MarketConsumer(AsyncWebsocketConsumer):
                         'type': 'market_update',
                         'data': cached_data,
                         'timestamp': datetime.now().isoformat(),
-                        'source': 'cache'  # Indicates data came from cache
+                        'source': 'cache'  # Indicates data is from Redis cache
                     }))
-                    print(f"[WS] Sent {len(cached_data)} assets from cache")
+                    print(f"[Market WS] ✅ Sent {len(cached_data)} assets from cache")
                 else:
-                    # If cache is empty, fallback to direct fetch (first run)
-                    print("[WS] Cache empty, waiting for Celery task to populate...")
+                    # Cache is empty - Celery task hasn't run yet or failed
+                    print("[Market WS] ⚠️ No cached data available, waiting for Celery task...")
 
-                await asyncio.sleep(5)
+                await asyncio.sleep(5)  # Broadcast every 5 seconds
 
             except Exception as e:
-                print(f"[WS] Error broadcasting cached data: {e}")
+                print(f"[Market WS] ❌ Broadcast error: {e}")
                 await asyncio.sleep(5)
 
-        print("Cached data broadcast task stopped")
+        print("[Market WS] Broadcast task stopped")
 
     async def receive(self, text_data):
         try:

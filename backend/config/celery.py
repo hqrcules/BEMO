@@ -18,6 +18,9 @@ app.conf.beat_schedule = {
     'update-market-data-cache': {
         'task': 'trading.update_market_data',
         'schedule': 20.0,  # Every 20 seconds
+        'options': {
+            'expires': 15.0,  # Task expires after 15s if not started
+        }
     },
 }
 
