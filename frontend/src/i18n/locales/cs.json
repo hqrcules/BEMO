@@ -16,33 +16,69 @@
     "loginButton": "Přihlásit se",
     "noAccount": "Nemáte účet?",
     "signUp": "Zaregistrovat se",
-    "platformSlogan": "Profesionální obchodní platforma",
+    "hasAccount": "Máte již účet?",
+    "loginHere": "Přihlaste se zde",
+    "platformSlogan": "Profesionální Obchodní Platforma",
+    "register": {
+      "title": "Vytvořit účet",
+      "subtitle": "Přidejte se k nám a začněte investovat ještě dnes",
+      "firstName": "Jméno",
+      "firstNamePlaceholder": "Jan",
+      "lastName": "Příjmení",
+      "lastNamePlaceholder": "Novák",
+      "phone": "Telefon",
+      "phonePlaceholder": "+1 234 567 8900",
+      "emailPlaceholder": "vas@email.com",
+      "dateOfBirth": "Datum narození",
+      "confirmPassword": "Potvrdit heslo",
+      "rememberMe": "Pamatovat si mě 7 dní",
+      "creating": "Vytváření účtu...",
+      "createButton": "Vytvořit účet",
+      "errorTitle": "Chyba"
+    },
+    "validation": {
+      "firstNameRequired": "Jméno je povinné",
+      "lastNameRequired": "Příjmení je povinné",
+      "phoneRequired": "Telefon je povinný",
+      "emailRequired": "E-mail je povinný",
+      "emailInvalid": "Zadejte platnou e-mailovou adresu",
+      "phoneInvalid": "Telefon může obsahovat pouze číslice, +, - a mezery",
+      "dateOfBirthRequired": "Datum narození je povinné",
+      "dateInvalidFormat": "Datum musí být ve formátu RRRR-MM-DD",
+      "dateInvalid": "Neplatné datum",
+      "passwordRequired": "Heslo je povinné",
+      "confirmPasswordRequired": "Potvrďte prosím heslo",
+      "passwordMinLength": "Heslo musí mít alespoň 6 znaků",
+      "passwordsNotMatch": "Hesla se neshodují",
+      "registrationFailed": "Registrace se nezdařila. Zkuste to prosím znovu.",
+      "accountCreated": "Účet byl úspěšně vytvořen! Prosím přihlaste se."
+    },
     "hero": {
-      "title1": "Obchodujte s kryptoměnou",
+      "title1": "Obchodujte s kryptoměnami",
       "title2": "s důvěrou"
     },
-    "heroSubtitle": "Připojte se k tisícům obchodníků, kteří důvěřují naší platformě",
+    "heroSubtitle": "Přidejte se k tisícům obchodníků, kteří důvěřují naší platformě",
     "features": {
       "security": {
         "title": "Bezpečnost",
         "description": "Ochrana prostředků pomocí šifrování na bankovní úrovni"
       },
       "instantDeals": {
-        "title": "Okamžité obchody",
+        "title": "Okamžité Obchody",
         "description": "Obchodní bot pracuje 24/7 pro maximální zisk"
       },
       "provenPlatform": {
-        "title": "Osvědčená platforma",
-        "description": "Více než 1000+ aktivních uživatelů a objem obchodů 2,5 mil. €"
+        "title": "Osvědčená Platforma",
+        "description": "Přes 1000+ aktivních uživatelů a objem obchodů 2,5 milionu €"
       }
     },
     "stats": {
       "users": "Uživatelé",
-      "volume": "Objem obchodů",
+      "volume": "Objem Obchodů",
       "support": "Podpora"
     },
     "welcomeTitle": "Vítejte",
-    "welcomeSubtitle": "Přihlaste se ke svému účtu a pokračujte",
+    "welcomeSubtitle": "Přihlaste se ke svému účtu pro pokračování",
     "errorTitle": "Chyba přihlášení",
     "emailLabel": "E-mailová adresa",
     "passwordLabel": "Heslo",
@@ -55,40 +91,40 @@
   "dashboard": {
     "greeting": "Vítejte",
     "greetingName": "Vítejte, {{name}}!",
-    "portfolioGrowth": "Vaše portfolio vzrostlo",
+    "portfolioGrowth": "Vaše portfolio vzrostlo o",
     "last24h": "za posledních 24 hodin",
     "totalBalance": "Celkový Zůstatek",
-    "pnl24h": "24h Z/Z",
+    "pnl24h": "24h PNL",
     "assets": "Aktiva",
-    "cryptocurrencies": "kryptoměny",
+    "cryptocurrencies": "kryptoměn",
     "income": "Příjem",
     "monthly": "měsíčně",
     "deposit": "Vklad",
     "trade": "Obchodovat",
     "marketStats": "Statistiky Trhu",
-    "volume24h": "24h Objem",
-    "avgChange": "Průměrná Změna",
+    "volume24h": "Objem 24h",
+    "avgChange": "Prům. Změna",
     "activeTraders": "Aktivní Obchodníci",
-    "fearGreedIndex": "Index Strachu a Chamtivosti",
+    "fearGreedIndex": "Index Strachu & Chamtivosti",
     "greed": "Chamtivost",
-    "topGainers": "Největší Růsty",
+    "topGainers": "Největší Růst",
     "viewAll": "Zobrazit Vše",
     "quickActions": "Rychlé Akce",
-    "withdraw": "Vybrat",
+    "withdraw": "Výběr",
     "trading": "Obchodování",
     "gainers": "Rostoucí",
     "losers": "Klesající",
     "assetsLast24h": "aktiv za 24h",
     "live": "Živě",
     "offline": "Offline",
-    "topLosers": "Největší Poklesy",
+    "topLosers": "Největší Pokles",
     "recentActivity": "Nedávná Aktivita",
     "promoTitle": "Získejte Bonus!",
-    "promoSubtitle": "Pozvěte přítele a získejte 50$ na svůj účet",
-    "promoButton": "Pozvat přítele",
-    "mockTime1": "před 2 min",
-    "mockTime2": "před 15 min",
-    "mockTime3": "před 1 hodinou"
+    "promoSubtitle": "Pozvěte přítele a získejte $50 na svůj účet",
+    "promoButton": "Pozvat Přítele",
+    "mockTime1": "Před 2 min",
+    "mockTime2": "Před 15 min",
+    "mockTime3": "Před 1 hodinou"
   },
   "market": {
     "title": "Trh",
@@ -96,7 +132,7 @@
       "realtime": "V reálném čase",
       "disconnected": "Odpojeno"
     },
-    "availableBalance": "Dostupný zůstatek",
+    "availableBalance": "Dostupný Zůstatek",
     "tabs": {
       "crypto": "Kryptoměny",
       "stocks": "Akcie",
@@ -110,134 +146,187 @@
       "grid": "Mřížka"
     },
     "assetsCount": "{{count}} aktiv",
-    "noAssetsFound": "Nebyly nalezeny žádné aktiva",
+    "noAssetsFound": "Nebyla nalezena žádná aktiva",
     "table": {
       "asset": "Aktivum",
       "price": "Cena",
       "change24h": "Změna 24h",
+      "volume": "Objem",
       "chart": "Graf",
       "action": "Akce"
     },
-    "buy": "Koupit"
+    "buy": "Koupit",
+    "error": {
+      "title": "Připojení selhalo",
+      "websocketUrl": "WebSocket URL:",
+      "backendInfo": "Ujistěte se, že váš backend server běží a je dostupný.",
+      "retry": "Zkusit znovu připojit"
+    },
+    "loading": {
+      "connecting": "Připojování k tržním datům..."
+    },
+    "chart": {
+      "error": {
+        "noData": "Pro interval {{interval}} nejsou dostupná žádná data. Zkuste jiný interval.",
+        "insufficientData": "Nedostatek dat pro {{interval}} (pouze {{count}} svíček). Zkuste kratší interval.",
+        "loadFailed": "Načtení dat grafu selhalo. Zkuste jiný interval nebo aktivum.",
+        "network": "Chyba sítě: {{message}}",
+        "title": "Chyba grafu"
+      },
+      "24h": "24h",
+      "interval": "Interval grafu",
+      "high24h": "24h Maximum",
+      "low24h": "24h Minimum",
+      "bullish": "Býčí",
+      "bearish": "Medvědí",
+      "candleCount_one": "{{count}} svíčka",
+      "candleCount_few": "{{count}} svíčky",
+      "candleCount_many": "{{count}} svíček",
+      "candleCount_other": "{{count}} svíček"
+    }
   },
   "trading": {
     "title": "Obchodování",
     "search": "Hledat kryptoměnu...",
     "name": "Název",
     "price": "Cena",
-    "change24h": "24h Změna",
+    "change24h": "Změna 24h",
     "volume": "Objem",
     "chart": "Graf",
-    "buy": "Koupit",
-    "sell": "Prodat",
-    "amount": "Částka",
+    "buy": "Nákup",
+    "sell": "Prodej",
+    "amount": "Množství",
     "total": "Celkem",
-    "available": "Dostupné",
-    "orderType": "Typ Objednávky",
+    "available": "K dispozici",
+    "orderType": "Typ příkazu",
     "market": "Tržní",
     "limit": "Limitní",
     "stop": "Stop",
-    "placeOrder": "Zadat Objednávku",
-    "openOrders": "Otevřené Objednávky",
-    "orderHistory": "Historie Objednávek",
-    "noOrders": "Zatím žádné objednávky"
+    "placeOrder": "Zadat příkaz",
+    "openOrders": "Otevřené příkazy",
+    "orderHistory": "Historie příkazů",
+    "noOrders": "Zatím žádné příkazy"
   },
   "balance": {
     "loading": "Načítání údajů o zůstatku...",
-    "title": "Zůstatek a transakce",
+    "title": "Zůstatek & Transakce",
     "subtitle": "Spravujte své vklady a výběry",
-    "availableBalance": "Dostupný zůstatek",
+    "availableBalance": "Dostupný Zůstatek",
     "deposit": "Vklad",
     "withdraw": "Výběr",
-    "totalDeposits": "Celkové vklady",
-    "totalWithdrawals": "Celkové výběry",
+    "totalDeposits": "Celkové Vklady",
+    "totalWithdrawals": "Celkové Výběry",
     "operations": "Operace",
-    "transactionHistory": "Historie transakcí",
+    "transactionHistory": "Historie Transakcí",
     "viewReceipt": "Zobrazit",
     "refreshing": "Aktualizace...",
     "refresh": "Aktualizovat",
+    "wallet": {
+      "title": "Údaje pro výběr",
+      "description": "Přidejte adresu své kryptoměnové peněženky pro příjem výběrů.",
+      "currentAddress": "Aktuální Adresa Peněženky",
+      "addressLabel": "Adresa Kryptoměnové Peněženky",
+      "hint": "Zadejte platnou adresu kryptoměnové peněženky pro výběry",
+      "save": "Uložit adresu",
+      "saving": "Ukládání...",
+      "cancel": "Zrušit",
+      "edit": "Upravit adresu",
+      "copy": "Kopírovat adresu",
+      "successSaved": "Adresa peněženky byla úspěšně uložena!",
+      "errorSaving": "Chyba při ukládání adresy peněženky"
+    },
     "table": {
       "type": "Typ",
       "amount": "Částka",
       "method": "Metoda",
       "status": "Stav",
       "date": "Datum",
-      "receipt": "Účtenka"
+      "receipt": "Doklad"
     },
     "types": {
       "deposit": "Vklad",
       "withdrawal": "Výběr",
-      "bot_profit": "Zisk z bota",
-      "commission": "Provize"
+      "bot_profit": "Zisk Bota",
+      "commission": "Poplatek"
     },
     "status": {
       "completed": "Dokončeno",
-      "pending": "Čekající",
-      "rejected": "Odmítnuto"
+      "pending": "Čeká na vyřízení",
+      "rejected": "Zamítnuto"
     },
     "noTransactions": {
       "title": "Zatím žádné transakce",
-      "subtitle": "Vložte prostředky, abyste mohli začít",
-      "button": "Vložit na zůstatek"
+      "subtitle": "Pro začátek vložte prostředky",
+      "button": "Vložit na Zůstatek"
     },
     "modals": {
       "selectPackage": "Vyberte vkladový balíček",
       "fromAmount": "od 250 €",
-      "depositTitle": "Vložit na zůstatek",
+      "depositTitle": "Vložit na Zůstatek",
       "errorMinAmount": "Minimální částka vkladu je {{amount}} €",
-      "withdrawTitle": "Vybrat prostředky",
-      "amountLabel": "Částka vkladu",
+      "withdrawTitle": "Vybrat Prostředky",
+      "amountLabel": "Částka Vkladu",
       "minAmount": "Minimální částka",
       "transferAmount": "Částka k převodu",
-      "withdrawAmountLabel": "Částka výběru",
-      "methodLabel": "Platební metoda",
-      "withdrawMethodLabel": "Metoda výběru",
-      "receiptLabel": "Doklad o platbě",
+      "withdrawAmountLabel": "Částka Výběru",
+      "methodLabel": "Platební Metoda",
+      "withdrawMethodLabel": "Metoda Výběru",
+      "receiptLabel": "Doklad o Platbě",
       "uploadClick": "Klikněte pro nahrání",
-      "uploadHint": "PNG, JPG nebo PDF do 5 MB",
+      "uploadHint": "PNG, JPG nebo PDF do 5MB",
       "sending": "Odesílání...",
       "processing": "Zpracovávání...",
-      "confirmDeposit": "Potvrdit vklad",
+      "confirmDeposit": "Potvrdit Vklad",
       "back": "Zpět",
-      "depositSuccess": "Žádost o vklad byla úspěšně vytvořena a odeslána ke schválení administrátorovi.",
-      "sendButton": "Odeslat ke kontrole",
-      "errorReceipt": "Prosím, nahrajte doklad o platbě",
+      "depositSuccess": "Požadavek na vklad byl úspěšně vytvořen a odeslán ke schválení administrátorovi.",
+      "sendButton": "Odeslat ke schválení",
+      "errorReceipt": "Prosím nahrajte doklad o platbě",
       "errorDeposit": "Chyba při vytváření vkladu",
       "availableToWithdraw": "K dispozici pro výběr",
-      "walletAddressLabel": "Adresa peněženky",
-      "requesting": "Odesílání žádosti...",
-      "requestButton": "Požádat o výběr",
+      "walletAddressLabel": "Adresa Peněženky",
+      "requesting": "Odesílání požadavku...",
+      "requestButton": "Požádat o Výběr",
       "errorInsufficientFunds": "Nedostatek prostředků na zůstatku",
-      "errorWithdraw": "Chyba při vytváření žádosti o výběr",
+      "errorWithdraw": "Chyba při vytváření požadavku na výběr",
       "withdrawMinimum": "Minimum",
-      "commission": "provize"
+      "commission": "poplatek",
+      "calc": {
+        "amount": "Požadovaná částka",
+        "commission": "Poplatek (25%)",
+        "youReceive": "Obdržíte"
+      },
+      "yourRequisites": "Vaše údaje (IBAN / Karta)",
+      "errorRequisites": "Prosím zadejte své údaje pro výběr",
+      "errorMinAmountWithdraw": "Minimální částka výběru: 50 €"
     },
     "methods": {
-      "card": "Bankovní karta",
+      "card": "Bankovní Karta",
       "crypto": "Kryptoměna",
-      "transfer": "Bankovní převod"
+      "transfer": "Bankovní Převod"
     },
     "depositOptions": {
       "basic": {
-        "title": "Základní balíček",
+        "title": "Základní Balíček",
         "description": "Ideální pro začátečníky"
       },
       "premium": {
-        "title": "Prémiový balíček",
-        "description": "Vylepšené obchodní možnosti"
+        "title": "Premium Balíček",
+        "description": "Rozšířené obchodní možnosti"
       },
       "trader": {
-        "title": "Obchodujte s obchodníkem",
+        "title": "Obchodování s Traderem",
         "description": "Plný přístup ke všem nástrojům"
       },
       "custom": {
-        "title": "Vlastní částka",
-        "description": "Minimálně 250 €"
+        "title": "Vlastní Částka",
+        "description": "Minimum 250 €"
       }
     },
     "payment": {
       "cardNumberLabel": "Číslo karty pro platbu",
-      "noCardNumber": "Číslo karty pro platbu není uvedeno. Obraťte se na podporu.",
+      "noCardNumber": "Číslo karty pro platbu není zadáno. Kontaktujte prosím podporu.",
+      "methodsTitle": "Číslo karty pro platbu",
+      "noMethods": "Nejsou k dispozici žádné platební metody",
       "attached": "Připojeno: ",
       "replyPlaceholder": "Odpovědět uživateli...",
       "downloadAttachment": "Stáhnout přílohu"
@@ -247,14 +336,14 @@
     "loading": "Načítání chatu...",
     "header": {
       "title": "Podpora Bemo Investment",
-      "subtitle": "Online • Obvykle odpovídá do hodiny"
+      "subtitle": "Online • Obvykle odpoví do hodiny"
     },
     "emptyChat": {
-      "title": "Zahajte konverzaci s podporou",
+      "title": "Začněte konverzaci s podporou",
       "subtitle": "Náš tým je připraven vám pomoci s jakýmikoli dotazy ohledně obchodování, vkladů nebo výběrů"
     },
     "chat": {
-      "supportTeam": "Tým podpory",
+      "supportTeam": "Tým Podpory",
       "attachment": "Příloha"
     },
     "input": {
@@ -264,12 +353,12 @@
     },
     "cards": {
       "faq": {
-        "title": "Často kladené otázky",
+        "title": "Často Kladené Otázky",
         "subtitle": "Odpovědi na populární otázky o platformě"
       },
       "docs": {
         "title": "Dokumentace",
-        "subtitle": "Průvodci používáním všech funkcí"
+        "subtitle": "Návody k používání všech funkcí"
       },
       "security": {
         "title": "Bezpečnost",
@@ -277,9 +366,10 @@
       }
     },
     "time": {
-      "minutesAgo_one": "před {{count}} minutou",
-      "minutesAgo_few": "před {{count}} minutami",
-      "minutesAgo_many": "před {{count}} minutami"
+      "minutesAgo_one": "před {{count}} min",
+      "minutesAgo_few": "před {{count}} min",
+      "minutesAgo_many": "před {{count}} min",
+      "minutesAgo_other": "před {{count}} min"
     }
   },
   "profile": {
@@ -287,66 +377,142 @@
     "verified": "Ověřeno",
     "tabs": {
       "profile": "Profil",
-      "security": "Zabezpečení",
+      "security": "Bezpečnost",
       "activity": "Aktivita"
     },
     "accountInfo": {
-      "title": "Informace o účtu",
+      "title": "Informace o Účtu",
       "emailLabel": "E-mailová adresa",
       "emailHint": "E-mail nelze změnit",
-      "fullNameLabel": "Celé jméno",
+      "fullNameLabel": "Celé Jméno",
       "fullNamePlaceholder": "Jan Novák",
-      "userIdLabel": "ID uživatele"
+      "userIdLabel": "ID Uživatele"
     },
     "buttons": {
       "saving": "Ukládání...",
-      "save": "Uložit změny",
+      "save": "Uložit Změny",
       "changing": "Změna...",
-      "changePassword": "Změnit heslo"
+      "changePassword": "Změnit Heslo"
     },
     "status": {
-      "title": "Stav účtu",
+      "title": "Stav Účtu",
       "verification": "Ověření",
       "yes": "Ano",
       "no": "Ne",
-      "botType": "Typ bota",
+      "botType": "Typ Bota",
       "balance": "Zůstatek"
     },
     "dates": {
       "title": "Data",
-      "registration": "Datum registrace",
-      "lastLogin": "Poslední přihlášení"
+      "registration": "Datum Registrace",
+      "lastLogin": "Poslední Přihlášení"
     },
     "security": {
-      "title": "Změnit heslo",
-      "currentPassword": "Současné heslo",
+      "title": "Změnit Heslo",
+      "currentPassword": "Aktuální heslo",
       "newPassword": "Nové heslo",
       "confirmNewPassword": "Potvrdit nové heslo"
     },
     "tips": {
-      "title": "Bezpečnostní tipy",
+      "title": "Bezpečnostní Tipy",
       "tip1": "Používejte silné heslo",
-      "tip2": "Nesdělujte své heslo ostatním",
-      "tip3": "Heslo pravidelně měňte",
+      "tip2": "Nesdílejte své heslo s ostatními",
+      "tip3": "Pravidelně měňte své heslo",
       "tip4": "Používejte jedinečné heslo"
     },
     "activity": {
-      "title": "Aktivita účtu",
-      "level": "Úroveň účtu",
+      "title": "Aktivita Účtu",
+      "level": "Úroveň Účtu",
       "withUs": "S námi",
       "days": "dní",
       "verification": "Ověření"
     },
     "messages": {
-      "profileUpdateSuccess": "Profil úspěšně aktualizován!",
+      "profileUpdateSuccess": "Profil byl úspěšně aktualizován!",
       "profileUpdateError": "Chyba při aktualizaci profilu",
       "passwordMismatch": "Nová hesla se neshodují",
-      "passwordUpdateSuccess": "Heslo úspěšně změněno!",
+      "passwordUpdateSuccess": "Heslo bylo úspěšně změněno!",
       "passwordUpdateError": "Chyba při změně hesla"
+    }
+  },
+  "bot": {
+    "title": "Obchodování Botem",
+    "subtitle": "Automatizované obchodování s vybraným botem",
+    "lastPrice": "Poslední Cena",
+    "loadingPositions": "Načítání pozic...",
+    "loadingTradeHistory": "Načítání historie obchodů...",
+    "info": {
+      "title": "Automatizovaný Obchodní Bot",
+      "subtitle": "Provádějte strategie s přesností. Obchodujte 24/7. Bezpečně. Adaptivně. Efektivně.",
+      "openBalance": "Otevřít Zůstatek",
+      "description": "Tento obchodní systém eliminuje emoční rozhodnutí využitím autonomních algoritmů. Vytvořeno pro přesnost a stabilitu — analyzuje, reaguje a provádí nepřetržitě za jakýchkoli tržních podmínek, chrání vaše aktiva a maximalizuje příležitosti.",
+      "features": {
+        "trading247": {
+          "title": "Obchodování 24/7",
+          "description": "Neustálé sledování trhu"
+        },
+        "riskControl": {
+          "title": "Kontrola Rizika",
+          "description": "Automatizovaná ochrana kapitálu"
+        },
+        "fastExecution": {
+          "title": "Rychlé Provedení",
+          "description": "Latence pod 100 ms"
+        },
+        "adaptiveAI": {
+          "title": "Adaptivní AI",
+          "description": "Chytrá obchodní logika"
+        }
+      }
+    },
+    "activity": {
+      "title": "Aktivita Bota",
+      "description": "Váš {{botType}} bot je aktivní a obchoduje",
+      "active": "Aktivní",
+      "stopped": "Zastaveno",
+      "sessionProfit": "Zisk Seance",
+      "winRate": "Míra Výher",
+      "totalTrades": "Celkem Obchodů",
+      "losingTrades": "Ztrátové Obchody",
+      "today": "dnes"
+    },
+    "controls": {
+      "title": "Ovládání",
+      "tradingPair": "Obchodní Pár",
+      "pause": "Pozastavit",
+      "start": "Spustit",
+      "stop": "Zastavit"
+    },
+    "stats": {
+      "today": "Dnes",
+      "profit": "Zisk:",
+      "closedTrades": "Uzavřené Obchody:",
+      "openPositions": "Otevřené Pozice:"
+    },
+    "chart": {
+      "title": "Graf {{pair}}",
+      "loading": "Načítání dat grafu..."
+    },
+    "positions": {
+      "title": "Otevřené Pozice",
+      "entry": "Vstup:",
+      "noPositions": "Žádné otevřené pozice"
+    },
+    "history": {
+      "title": "Historie Obchodů",
+      "headers": {
+        "symbol": "Symbol",
+        "type": "Typ",
+        "profitLoss": "Zisk/Ztráta",
+        "closeDate": "Datum Uzavření"
+      },
+      "noTrades": "Zatím žádné obchody"
     }
   },
   "common": {
     "loading": "Načítání...",
+    "loadingUserData": "Načítání uživatelských dat...",
+    "processing": "Zpracovávání...",
     "error": "Chyba",
     "success": "Úspěch",
     "cancel": "Zrušit",
@@ -356,8 +522,8 @@
     "edit": "Upravit",
     "delete": "Smazat",
     "search": "Hledat",
-    "filter": "Filter",
-    "sort": "Řadit",
+    "filter": "Filtr",
+    "sort": "Třídit",
     "language": "Jazyk"
   }
 }

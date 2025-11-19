@@ -4,19 +4,87 @@
     "market": "Рынок",
     "balance": "Баланс",
     "support": "Поддержка",
-    "profile": "Профиль"
+    "profile": "Профиль",
+    "currency": "Валюта",
+    "language": "Язык"
   },
   "auth": {
     "login": "Вход",
     "logout": "Выход",
     "email": "Email",
     "password": "Пароль",
+    "firstName": "Имя",
+    "lastName": "Фамилия",
+    "phone": "Номер телефона",
+    "dateOfBirth": "Дата рождения",
+    "confirmPassword": "Подтвердите пароль",
+    "operatorIdent": "ИДЕНТИФИКАТОР_ОПЕРАТОРА",
+    "authKey": "КЛЮЧ_АВТОРИЗАЦИИ",
+    "access": "ДОСТУП",
+    "needAccess": "Нужен системный доступ?",
+    "createAccount": "Создать аккаунт BEMO",
+    "newAccount": "ИНИЦИАЛИЗАЦИЯ НОВОГО АККАУНТА",
+    "alreadyHaveAccount": "Уже оператор?",
+    "back": "Назад",
+    "nextStep": "Следующий шаг",
+    "complete": "ЗАВЕРШИТЬ ИНИЦИАЛИЗАЦИЮ",
+    "stages": {
+      "personal": "Личные",
+      "contact": "Контакт",
+      "security": "Безопасность"
+    },
+    "errors": {
+      "required": "Обязательно",
+      "ageMin18": "Должно быть 18 лет или старше",
+      "invalidEmail": "Неверный формат email",
+      "invalidPhone": "Неверный формат телефона (используйте международный формат)",
+      "passwordWeak": "Пароль должен содержать минимум 8 символов, буквы и цифры",
+      "passwordMismatch": "Пароли не совпадают",
+      "authFailure": "Ошибка авторизации",
+      "unknown": "Произошла неизвестная ошибка"
+    },
     "welcome": "С возвращением",
     "loginSubtitle": "Введите свои данные для доступа к аккаунту",
     "loginButton": "Войти",
     "noAccount": "Нет аккаунта?",
     "signUp": "Зарегистрироваться",
+    "hasAccount": "Уже есть аккаунт?",
+    "loginHere": "Войдите здесь",
     "platformSlogan": "Профессиональная торговая платформа",
+    "register": {
+      "title": "Создать аккаунт",
+      "subtitle": "Присоединяйтесь к нам и начните инвестировать сегодня",
+      "firstName": "Имя",
+      "firstNamePlaceholder": "Иван",
+      "lastName": "Фамилия",
+      "lastNamePlaceholder": "Иванов",
+      "phone": "Телефон",
+      "phonePlaceholder": "+1 234 567 8900",
+      "emailPlaceholder": "your@email.com",
+      "dateOfBirth": "Дата рождения",
+      "confirmPassword": "Подтвердите пароль",
+      "rememberMe": "Запомнить меня на 7 дней",
+      "creating": "Создание аккаунта...",
+      "createButton": "Создать аккаунт",
+      "errorTitle": "Ошибка"
+    },
+    "validation": {
+      "firstNameRequired": "Имя обязательно",
+      "lastNameRequired": "Фамилия обязательна",
+      "phoneRequired": "Телефон обязателен",
+      "emailRequired": "Email обязателен",
+      "emailInvalid": "Пожалуйста, введите действительный email",
+      "phoneInvalid": "Телефон может содержать только цифры, +, - и пробелы",
+      "dateOfBirthRequired": "Дата рождения обязательна",
+      "dateInvalidFormat": "Дата должна быть в формате ГГГГ-ММ-ДД",
+      "dateInvalid": "Неверная дата",
+      "passwordRequired": "Пароль обязателен",
+      "confirmPasswordRequired": "Пожалуйста, подтвердите пароль",
+      "passwordMinLength": "Пароль должен быть не менее 6 символов",
+      "passwordsNotMatch": "Пароли не совпадают",
+      "registrationFailed": "Регистрация не удалась. Пожалуйста, попробуйте еще раз.",
+      "accountCreated": "Аккаунт успешно создан! Пожалуйста, войдите."
+    },
     "hero": {
       "title1": "Торгуйте криптовалютой",
       "title2": "с уверенностью"
@@ -53,6 +121,7 @@
     "footer": "© 2025 Bemo Investment. Все права защищены."
   },
   "dashboard": {
+    "greeting": "Добро пожаловать",
     "greetingName": "Добро пожаловать, {{name}}!",
     "portfolioGrowth": "Ваш портфель растёт на",
     "last24h": "за последние 24 часа",
@@ -90,7 +159,7 @@
     "mockTime3": "1 час назад"
   },
   "market": {
-    "title": "Маркет",
+    "title": "Рынок",
     "status": {
       "realtime": "В реальном времени",
       "disconnected": "Отключено"
@@ -114,19 +183,63 @@
       "asset": "Актив",
       "price": "Цена",
       "change24h": "Изменение 24ч",
+      "volume": "Объем",
       "chart": "График",
       "action": "Действие"
     },
-    "buy": "Купить"
+    "buy": "Купить",
+    "error": {
+      "title": "Сбой подключения",
+      "websocketUrl": "WebSocket URL:",
+      "backendInfo": "Убедитесь, что ваш бэкенд-сервер запущен и доступен.",
+      "retry": "Повторить подключение"
+    },
+    "loading": {
+      "connecting": "Подключение к рыночным данным..."
+    },
+    "chart": {
+      "error": {
+        "noData": "Нет данных для интервала {{interval}}. Попробуйте другой интервал.",
+        "insufficientData": "Недостаточно данных для {{interval}} (всего {{count}} свечей). Попробуйте меньший интервал.",
+        "loadFailed": "Не удалось загрузить данные графика. Попробуйте другой интервал или актив.",
+        "network": "Сетевая ошибка: {{message}}",
+        "title": "Ошибка графика"
+      },
+      "24h": "24ч",
+      "interval": "Интервал графика",
+      "high24h": "Макс. 24ч",
+      "low24h": "Мин. 24ч",
+      "bullish": "Бычий",
+      "bearish": "Медвежий",
+      "candleCount_one": "{{count}} свеча",
+      "candleCount_few": "{{count}} свечи",
+      "candleCount_many": "{{count}} свечей"
+    }
   },
   "trading": {
+    "title": "Торговля",
+    "search": "Поиск криптовалюты...",
+    "name": "Название",
+    "price": "Цена",
+    "change24h": "Изм. 24ч",
+    "volume": "Объем",
+    "chart": "График",
     "buy": "Покупка",
-    "sell": "Продажа"
+    "sell": "Продажа",
+    "amount": "Количество",
+    "total": "Всего",
+    "available": "Доступно",
+    "orderType": "Тип ордера",
+    "market": "Рыночный",
+    "limit": "Лимитный",
+    "stop": "Стоп",
+    "placeOrder": "Разместить ордер",
+    "openOrders": "Открытые ордера",
+    "orderHistory": "История ордеров",
+    "noOrders": "Ордеров пока нет"
   },
   "balance": {
     "loading": "Загрузка данных баланса...",
-    "refreshing": "Обновление...",
-    "refresh": "Обновить",
     "title": "Баланс и транзакции",
     "subtitle": "Управление депозитами и выводом средств",
     "availableBalance": "Доступный баланс",
@@ -136,9 +249,23 @@
     "totalWithdrawals": "Всего выведено",
     "operations": "Операций",
     "transactionHistory": "История транзакций",
-    "transactionsCount": "Транзакций: {{count}}",
-    "commission": "Комиссия",
     "viewReceipt": "Просмотр",
+    "refreshing": "Обновление...",
+    "refresh": "Обновить",
+    "wallet": {
+      "title": "Реквизиты для вывода",
+      "description": "Добавьте адрес своего криптовалютного кошелька для получения выплат.",
+      "currentAddress": "Текущий адрес кошелька",
+      "addressLabel": "Адрес крипто-кошелька",
+      "hint": "Введите действительный адрес кошелька для вывода",
+      "save": "Сохранить адрес",
+      "saving": "Сохранение...",
+      "cancel": "Отмена",
+      "edit": "Изменить адрес",
+      "copy": "Копировать адрес",
+      "successSaved": "Адрес кошелька успешно сохранен!",
+      "errorSaving": "Ошибка сохранения адреса кошелька"
+    },
     "table": {
       "type": "Тип",
       "amount": "Сумма",
@@ -164,37 +291,44 @@
       "button": "Пополнить баланс"
     },
     "modals": {
-        "depositTitle": "Пополнение баланса",
-        "withdrawTitle": "Вывод средств",
-        "amountLabel": "Сумма пополнения",
-        "withdrawAmountLabel": "Сумма вывода",
-        "methodLabel": "Способ оплаты",
-        "withdrawMethodLabel": "Способ вывода",
-        "receiptLabel": "Чек об оплате",
-        "uploadClick": "Нажмите для загрузки",
-        "uploadHint": "PNG, JPG или PDF до 5MB",
-        "sending": "Отправка...",
-        "sendButton": "Отправить на проверку",
-        "errorReceipt": "Пожалуйста, загрузите чек об оплате",
-        "errorDeposit": "Ошибка создания депозита",
-        "availableToWithdraw": "Доступно для вывода",
-        "walletAddressLabel": "Адрес кошелька",
-        "requesting": "Отправка запроса...",
-        "requestButton": "Запросить вывод",
-        "errorInsufficientFunds": "Недостаточно средств на балансе",
-        "errorWithdraw": "Ошибка создания запроса на вывод",
-        "selectPackage": "Выберите пакет пополнения",
-        "fromAmount": "от €250",
-        "minAmount": "Минимальная сумма",
-        "transferAmount": "Сумма к переводу",
-        "additionalNotes": "Дополнительные заметки",
-        "notesPlaceholder": "Номер транзакции, комментарии...",
-        "confirmDeposit": "Подтвердить пополнение",
-        "processing": "Обработка...",
-        "back": "Назад",
-        "depositSuccess": "Запрос на пополнение успешно создан и отправлен на проверку администратору.",
-        "withdrawMinimum": "Минимум",
-        "commission": "комиссия"
+      "selectPackage": "Выберите пакет пополнения",
+      "fromAmount": "от €250",
+      "depositTitle": "Пополнение баланса",
+      "errorMinAmount": "Минимальная сумма пополнения €{{amount}}",
+      "withdrawTitle": "Вывод средств",
+      "amountLabel": "Сумма пополнения",
+      "minAmount": "Минимальная сумма",
+      "transferAmount": "Сумма к переводу",
+      "withdrawAmountLabel": "Сумма вывода",
+      "methodLabel": "Способ оплаты",
+      "withdrawMethodLabel": "Способ вывода",
+      "receiptLabel": "Чек об оплате",
+      "uploadClick": "Нажмите для загрузки",
+      "uploadHint": "PNG, JPG или PDF до 5MB",
+      "sending": "Отправка...",
+      "processing": "Обработка...",
+      "confirmDeposit": "Подтвердить пополнение",
+      "back": "Назад",
+      "depositSuccess": "Запрос на пополнение успешно создан и отправлен на проверку администратору.",
+      "sendButton": "Отправить на проверку",
+      "errorReceipt": "Пожалуйста, загрузите чек об оплате",
+      "errorDeposit": "Ошибка создания депозита",
+      "availableToWithdraw": "Доступно для вывода",
+      "walletAddressLabel": "Адрес кошелька",
+      "requesting": "Отправка запроса...",
+      "requestButton": "Запросить вывод",
+      "errorInsufficientFunds": "Недостаточно средств на балансе",
+      "errorWithdraw": "Ошибка создания запроса на вывод",
+      "withdrawMinimum": "Минимум",
+      "commission": "комиссия",
+      "calc": {
+        "amount": "Сумма запроса",
+        "commission": "Комиссия (25%)",
+        "youReceive": "Вы получите"
+      },
+      "yourRequisites": "Ваши реквизиты (IBAN / Карта)",
+      "errorRequisites": "Пожалуйста, укажите реквизиты для вывода",
+      "errorMinAmountWithdraw": "Минимальная сумма вывода: €50"
     },
     "methods": {
       "card": "Банковская карта",
@@ -222,6 +356,8 @@
     "payment": {
       "cardNumberLabel": "Номер карты для оплаты",
       "noCardNumber": "Номер карты для оплаты не указан. Пожалуйста, обратитесь в поддержку.",
+      "methodsTitle": "Номер карты для оплаты",
+      "noMethods": "Нет доступных методов оплаты",
       "attached": "Прикреплен: ",
       "replyPlaceholder": "Ответить пользователю...",
       "downloadAttachment": "Скачать вложение"
@@ -263,7 +399,8 @@
     "time": {
       "minutesAgo_one": "{{count}} минуту назад",
       "minutesAgo_few": "{{count}} минуты назад",
-      "minutesAgo_many": "{{count}} минут назад"
+      "minutesAgo_many": "{{count}} минут назад",
+      "minutesAgo_other": "{{count}} минут назад"
     }
   },
   "profile": {
@@ -329,7 +466,95 @@
       "passwordUpdateError": "Ошибка изменения пароля"
     }
   },
+  "bot": {
+    "title": "Торговля ботом",
+    "subtitle": "Автоматизированная торговля с вашим выбранным ботом",
+    "lastPrice": "Последняя цена",
+    "loadingPositions": "Загрузка позиций...",
+    "loadingTradeHistory": "Загрузка истории сделок...",
+    "info": {
+      "title": "Автоматизированный торговый бот",
+      "subtitle": "Выполняйте стратегии с точностью. Торгуйте 24/7. Безопасно. Адаптивно. Эффективно.",
+      "openBalance": "Открыть баланс",
+      "description": "Эта торговая система исключает эмоциональные решения, используя автономные алгоритмы. Создана для точности и стабильности — она анализирует, реагирует и исполняет непрерывно в любых рыночных условиях, защищая ваши активы и максимизируя возможности.",
+      "features": {
+        "trading247": {
+          "title": "Торговля 24/7",
+          "description": "Постоянный мониторинг рынка"
+        },
+        "riskControl": {
+          "title": "Контроль рисков",
+          "description": "Автоматическая защита капитала"
+        },
+        "fastExecution": {
+          "title": "Быстрое исполнение",
+          "description": "Задержка менее 100 мс"
+        },
+        "adaptiveAI": {
+          "title": "Адаптивный ИИ",
+          "description": "Умная логика сделок"
+        }
+      }
+    },
+    "activity": {
+      "title": "Активность бота",
+      "description": "Ваш бот {{botType}} активен и торгует",
+      "active": "Активен",
+      "stopped": "Остановлен",
+      "sessionProfit": "Прибыль сессии",
+      "winRate": "Процент побед",
+      "totalTrades": "Всего сделок",
+      "losingTrades": "Убыточные сделки",
+      "today": "сегодня"
+    },
+    "controls": {
+      "title": "Управление",
+      "tradingPair": "Торговая пара",
+      "pause": "Пауза",
+      "start": "Старт",
+      "stop": "Стоп"
+    },
+    "stats": {
+      "today": "Сегодня",
+      "profit": "Прибыль:",
+      "closedTrades": "Закрытые сделки:",
+      "openPositions": "Открытые позиции:"
+    },
+    "chart": {
+      "title": "График {{pair}}",
+      "loading": "Загрузка данных графика..."
+    },
+    "positions": {
+      "title": "Открытые позиции",
+      "entry": "Вход:",
+      "noPositions": "Нет открытых позиций"
+    },
+    "history": {
+      "title": "История сделок",
+      "headers": {
+        "symbol": "Символ",
+        "type": "Тип",
+        "profitLoss": "Прибыль/Убыток",
+        "closeDate": "Дата закрытия"
+      },
+      "noTrades": "Сделок пока нет"
+    }
+  },
   "common": {
-    "loading": "Загрузка..."
+    "loading": "Загрузка...",
+    "loadingUserData": "Загрузка данных пользователя...",
+    "processing": "Обработка...",
+    "error": "Ошибка",
+    "success": "Успех",
+    "cancel": "Отмена",
+    "confirm": "Подтвердить",
+    "close": "Закрыть",
+    "save": "Сохранить",
+    "edit": "Изменить",
+    "delete": "Удалить",
+    "search": "Поиск",
+    "filter": "Фильтр",
+    "sort": "Сортировка",
+    "language": "Язык"
   }
 }

@@ -3,7 +3,7 @@
     "home": "Home",
     "market": "Markt",
     "balance": "Saldo",
-    "support": "Ondersteuning",
+    "support": "Support",
     "profile": "Profiel"
   },
   "auth": {
@@ -14,9 +14,45 @@
     "welcome": "Welkom terug",
     "loginSubtitle": "Voer uw gegevens in om toegang te krijgen tot uw account",
     "loginButton": "Inloggen",
-    "noAccount": "Heeft u geen account?",
-    "signUp": "Aanmelden",
+    "noAccount": "Geen account?",
+    "signUp": "Registreren",
+    "hasAccount": "Heeft u al een account?",
+    "loginHere": "Log hier in",
     "platformSlogan": "Professioneel Handelsplatform",
+    "register": {
+      "title": "Account aanmaken",
+      "subtitle": "Sluit u bij ons aan en begin vandaag nog met beleggen",
+      "firstName": "Voornaam",
+      "firstNamePlaceholder": "Jan",
+      "lastName": "Achternaam",
+      "lastNamePlaceholder": "Jansen",
+      "phone": "Telefoon",
+      "phonePlaceholder": "+1 234 567 8900",
+      "emailPlaceholder": "your@email.com",
+      "dateOfBirth": "Geboortedatum",
+      "confirmPassword": "Bevestig wachtwoord",
+      "rememberMe": "Onthoud mij 7 dagen",
+      "creating": "Account aanmaken...",
+      "createButton": "Account aanmaken",
+      "errorTitle": "Fout"
+    },
+    "validation": {
+      "firstNameRequired": "Voornaam is verplicht",
+      "lastNameRequired": "Achternaam is verplicht",
+      "phoneRequired": "Telefoon is verplicht",
+      "emailRequired": "E-mail is verplicht",
+      "emailInvalid": "Voer een geldig e-mailadres in",
+      "phoneInvalid": "Telefoon mag alleen cijfers, +, - en spaties bevatten",
+      "dateOfBirthRequired": "Geboortedatum is verplicht",
+      "dateInvalidFormat": "Datum moet in YYYY-MM-DD formaat zijn",
+      "dateInvalid": "Ongeldige datum",
+      "passwordRequired": "Wachtwoord is verplicht",
+      "confirmPasswordRequired": "Bevestig het wachtwoord",
+      "passwordMinLength": "Wachtwoord moet minimaal 6 tekens lang zijn",
+      "passwordsNotMatch": "Wachtwoorden komen niet overeen",
+      "registrationFailed": "Registratie mislukt. Probeer het opnieuw.",
+      "accountCreated": "Account succesvol aangemaakt! Log in."
+    },
     "hero": {
       "title1": "Handel in cryptocurrency",
       "title2": "met vertrouwen"
@@ -24,8 +60,8 @@
     "heroSubtitle": "Sluit u aan bij duizenden handelaren die ons platform vertrouwen",
     "features": {
       "security": {
-        "title": "Beveiliging",
-        "description": "Bescherming van fondsen met versleuteling op bankniveau"
+        "title": "Veiligheid",
+        "description": "Bescherming van fondsen met bank-level encryptie"
       },
       "instantDeals": {
         "title": "Directe Transacties",
@@ -33,13 +69,13 @@
       },
       "provenPlatform": {
         "title": "Bewezen Platform",
-        "description": "Meer dan 1000+ actieve gebruikers en €2,5M handelsvolume"
+        "description": "Meer dan 1000+ actieve gebruikers en €2.5M handelsvolume"
       }
     },
     "stats": {
       "users": "Gebruikers",
       "volume": "Handelsvolume",
-      "support": "Ondersteuning"
+      "support": "Support"
     },
     "welcomeTitle": "Welkom",
     "welcomeSubtitle": "Log in op uw account om door te gaan",
@@ -55,10 +91,10 @@
   "dashboard": {
     "greeting": "Welkom",
     "greetingName": "Welkom, {{name}}!",
-    "portfolioGrowth": "Uw portfolio is gestegen",
+    "portfolioGrowth": "Uw portefeuille is gestegen",
     "last24h": "in de afgelopen 24 uur",
     "totalBalance": "Totaal Saldo",
-    "pnl24h": "24u W/V",
+    "pnl24h": "24u PNL",
     "assets": "Activa",
     "cryptocurrencies": "cryptocurrencies",
     "income": "Inkomen",
@@ -71,8 +107,8 @@
     "activeTraders": "Actieve Handelaren",
     "fearGreedIndex": "Angst & Hebzucht Index",
     "greed": "Hebzucht",
-    "topGainers": "Topstijgers",
-    "viewAll": "Alles Bekijken",
+    "topGainers": "Top Stijgers",
+    "viewAll": "Alles bekijken",
     "quickActions": "Snelle Acties",
     "withdraw": "Opnemen",
     "trading": "Handelen",
@@ -81,11 +117,11 @@
     "assetsLast24h": "activa in 24u",
     "live": "Live",
     "offline": "Offline",
-    "topLosers": "Topdalers",
+    "topLosers": "Top Dalers",
     "recentActivity": "Recente Activiteit",
     "promoTitle": "Ontvang een Bonus!",
     "promoSubtitle": "Nodig een vriend uit en ontvang $50 op uw account",
-    "promoButton": "Een vriend uitnodigen",
+    "promoButton": "Vriend uitnodigen",
     "mockTime1": "2 min geleden",
     "mockTime2": "15 min geleden",
     "mockTime3": "1 uur geleden"
@@ -96,14 +132,14 @@
       "realtime": "Real-time",
       "disconnected": "Verbinding verbroken"
     },
-    "availableBalance": "Beschikbaar saldo",
+    "availableBalance": "Beschikbaar Saldo",
     "tabs": {
       "crypto": "Cryptocurrencies",
       "stocks": "Aandelen",
       "forex": "Forex",
       "commodities": "Grondstoffen"
     },
-    "searchPlaceholder": "Zoek op naam of symbool...",
+    "searchPlaceholder": "Zoeken op naam of symbool...",
     "favorites": "Favorieten",
     "view": {
       "table": "Tabel",
@@ -115,14 +151,41 @@
       "asset": "Activa",
       "price": "Prijs",
       "change24h": "24u Verandering",
+      "volume": "Volume",
       "chart": "Grafiek",
       "action": "Actie"
     },
-    "buy": "Kopen"
+    "buy": "Kopen",
+    "error": {
+      "title": "Verbinding mislukt",
+      "websocketUrl": "WebSocket URL:",
+      "backendInfo": "Zorg ervoor dat uw backend server draait en toegankelijk is.",
+      "retry": "Probeer opnieuw te verbinden"
+    },
+    "loading": {
+      "connecting": "Verbinden met marktgegevens..."
+    },
+    "chart": {
+      "error": {
+        "noData": "Geen gegevens beschikbaar voor {{interval}} interval. Probeer een ander interval.",
+        "insufficientData": "Onvoldoende gegevens voor {{interval}} (slechts {{count}} candles). Probeer een korter interval.",
+        "loadFailed": "Laden van grafiekgegevens mislukt. Probeer een ander interval of activa.",
+        "network": "Netwerkfout: {{message}}",
+        "title": "Grafiekfout"
+      },
+      "24h": "24u",
+      "interval": "Grafiekinterval",
+      "high24h": "24u Hoog",
+      "low24h": "24u Laag",
+      "bullish": "Bullish",
+      "bearish": "Bearish",
+      "candleCount_one": "{{count}} candle",
+      "candleCount_other": "{{count}} candles"
+    }
   },
   "trading": {
     "title": "Handelen",
-    "search": "Cryptocurrency zoeken...",
+    "search": "Zoek cryptocurrency...",
     "name": "Naam",
     "price": "Prijs",
     "change24h": "24u Verandering",
@@ -137,32 +200,46 @@
     "market": "Markt",
     "limit": "Limiet",
     "stop": "Stop",
-    "placeOrder": "Order Plaatsen",
+    "placeOrder": "Order plaatsen",
     "openOrders": "Open Orders",
     "orderHistory": "Ordergeschiedenis",
     "noOrders": "Nog geen orders"
   },
   "balance": {
-    "loading": "Saldogegevens laden...",
+    "loading": "Saldo gegevens laden...",
     "title": "Saldo & Transacties",
     "subtitle": "Beheer uw stortingen en opnames",
-    "availableBalance": "Beschikbaar saldo",
+    "availableBalance": "Beschikbaar Saldo",
     "deposit": "Storten",
     "withdraw": "Opnemen",
-    "totalDeposits": "Totaal stortingen",
-    "totalWithdrawals": "Totaal opnames",
+    "totalDeposits": "Totaal Stortingen",
+    "totalWithdrawals": "Totaal Opnames",
     "operations": "Operaties",
     "transactionHistory": "Transactiegeschiedenis",
     "viewReceipt": "Bekijken",
     "refreshing": "Vernieuwen...",
     "refresh": "Vernieuwen",
+    "wallet": {
+      "title": "Opnamegegevens",
+      "description": "Voeg uw cryptocurrency wallet-adres toe om opnames te ontvangen.",
+      "currentAddress": "Huidig Wallet-adres",
+      "addressLabel": "Cryptocurrency Wallet-adres",
+      "hint": "Voer een geldig cryptocurrency wallet-adres in voor opnames",
+      "save": "Adres opslaan",
+      "saving": "Opslaan...",
+      "cancel": "Annuleren",
+      "edit": "Adres bewerken",
+      "copy": "Adres kopiëren",
+      "successSaved": "Wallet-adres succesvol opgeslagen!",
+      "errorSaving": "Fout bij opslaan van wallet-adres"
+    },
     "table": {
       "type": "Type",
       "amount": "Bedrag",
       "method": "Methode",
       "status": "Status",
       "date": "Datum",
-      "receipt": "Bon"
+      "receipt": "Bewijs"
     },
     "types": {
       "deposit": "Storting",
@@ -172,20 +249,20 @@
     },
     "status": {
       "completed": "Voltooid",
-      "pending": "In behandeling",
-      "rejected": "Afgewezen"
+      "pending": "In afwachting",
+      "rejected": "Geweigerd"
     },
     "noTransactions": {
       "title": "Nog geen transacties",
       "subtitle": "Stort geld om te beginnen",
-      "button": "Saldo Storten"
+      "button": "Saldo storten"
     },
     "modals": {
       "selectPackage": "Selecteer een stortingspakket",
-      "fromAmount": "vanaf € 250",
-      "depositTitle": "Saldo Storten",
-      "errorMinAmount": "Minimaal stortingsbedrag is €{{amount}}",
-      "withdrawTitle": "Geld Opnemen",
+      "fromAmount": "vanaf €250",
+      "depositTitle": "Saldo storten",
+      "errorMinAmount": "Minimum stortingsbedrag is €{{amount}}",
+      "withdrawTitle": "Geld opnemen",
       "amountLabel": "Stortingsbedrag",
       "minAmount": "Minimumbedrag",
       "transferAmount": "Over te maken bedrag",
@@ -199,18 +276,26 @@
       "processing": "Verwerken...",
       "confirmDeposit": "Storting bevestigen",
       "back": "Terug",
-      "depositSuccess": "Stortingsverzoek succesvol aangemaakt en ter beoordeling naar de beheerder verzonden.",
-      "sendButton": "Ter beoordeling verzenden",
-      "errorReceipt": "Upload alstublieft een betalingsbewijs",
-      "errorDeposit": "Fout bij het aanmaken van de storting",
+      "depositSuccess": "Stortingsverzoek succesvol aangemaakt en verzonden voor admin review.",
+      "sendButton": "Verzenden voor review",
+      "errorReceipt": "Upload een betalingsbewijs",
+      "errorDeposit": "Fout bij aanmaken storting",
       "availableToWithdraw": "Beschikbaar voor opname",
       "walletAddressLabel": "Wallet-adres",
       "requesting": "Verzoek verzenden...",
       "requestButton": "Opname aanvragen",
       "errorInsufficientFunds": "Onvoldoende saldo",
-      "errorWithdraw": "Fout bij het aanmaken van opnameverzoek",
+      "errorWithdraw": "Fout bij aanmaken opnameverzoek",
       "withdrawMinimum": "Minimum",
-      "commission": "commissie"
+      "commission": "commissie",
+      "calc": {
+        "amount": "Gevraagd bedrag",
+        "commission": "Commissie (25%)",
+        "youReceive": "U ontvangt"
+      },
+      "yourRequisites": "Uw gegevens (IBAN / Kaart)",
+      "errorRequisites": "Specificeer uw opnamegegevens",
+      "errorMinAmountWithdraw": "Minimum opnamebedrag: €50"
     },
     "methods": {
       "card": "Bankkaart",
@@ -219,52 +304,54 @@
     },
     "depositOptions": {
       "basic": {
-        "title": "Basispakket",
+        "title": "Basis Pakket",
         "description": "Ideaal voor beginners"
       },
       "premium": {
-        "title": "Premiumpakket",
+        "title": "Premium Pakket",
         "description": "Verbeterde handelsmogelijkheden"
       },
       "trader": {
-        "title": "Handelen met een handelaar",
+        "title": "Handel met een Trader",
         "description": "Volledige toegang tot alle tools"
       },
       "custom": {
-        "title": "Aangepast bedrag",
-        "description": "Minimum € 250"
+        "title": "Aangepast Bedrag",
+        "description": "Minimum €250"
       }
     },
     "payment": {
       "cardNumberLabel": "Kaartnummer voor betaling",
-      "noCardNumber": "Kaartnummer voor betaling is niet opgegeven. Neem contact op met de ondersteuning.",
+      "noCardNumber": "Kaartnummer voor betaling is niet gespecificeerd. Neem contact op met support.",
+      "methodsTitle": "Kaartnummer voor betaling",
+      "noMethods": "Geen betaalmethoden beschikbaar",
       "attached": "Bijgevoegd: ",
-      "replyPlaceholder": "Antwoord gebruiker...",
+      "replyPlaceholder": "Antwoord aan gebruiker...",
       "downloadAttachment": "Bijlage downloaden"
     }
   },
   "support": {
     "loading": "Chat laden...",
     "header": {
-      "title": "Bemo Investment Ondersteuning",
-      "subtitle": "Online • Reageert meestal binnen een uur"
+      "title": "Bemo Investment Support",
+      "subtitle": "Online • Antwoordt meestal binnen een uur"
     },
     "emptyChat": {
-      "title": "Start een gesprek met de ondersteuning",
+      "title": "Start een gesprek met support",
       "subtitle": "Ons team staat klaar om u te helpen met vragen over handelen, storten of opnemen"
     },
     "chat": {
-      "supportTeam": "Ondersteuningsteam",
+      "supportTeam": "Support Team",
       "attachment": "Bijlage"
     },
     "input": {
       "attachTitle": "Bestand bijvoegen",
       "placeholder": "Voer een bericht in...",
-      "footer": "Gemiddelde reactietijd: 1 uur • We werken 24/7"
+      "footer": "Gemiddelde reactietijd: 1 uur • Wij werken 24/7"
     },
     "cards": {
       "faq": {
-        "title": "Veelgestelde vragen",
+        "title": "Veelgestelde Vragen",
         "subtitle": "Antwoorden op populaire vragen over het platform"
       },
       "docs": {
@@ -272,13 +359,13 @@
         "subtitle": "Handleidingen voor het gebruik van alle functies"
       },
       "security": {
-        "title": "Beveiliging",
+        "title": "Veiligheid",
         "subtitle": "Informatie over de bescherming van uw geld"
       }
     },
     "time": {
-      "minutesAgo_one": "{{count}} minuut geleden",
-      "minutesAgo_other": "{{count}} minuten geleden"
+      "minutesAgo_one": "{{count}} min geleden",
+      "minutesAgo_other": "{{count}} min geleden"
     }
   },
   "profile": {
@@ -286,14 +373,14 @@
     "verified": "Geverifieerd",
     "tabs": {
       "profile": "Profiel",
-      "security": "Beveiliging",
+      "security": "Veiligheid",
       "activity": "Activiteit"
     },
     "accountInfo": {
       "title": "Accountinformatie",
       "emailLabel": "E-mailadres",
       "emailHint": "E-mail kan niet worden gewijzigd",
-      "fullNameLabel": "Volledige naam",
+      "fullNameLabel": "Volledige Naam",
       "fullNamePlaceholder": "Jan Jansen",
       "userIdLabel": "Gebruikers-ID"
     },
@@ -308,7 +395,7 @@
       "verification": "Verificatie",
       "yes": "Ja",
       "no": "Nee",
-      "botType": "Bot-type",
+      "botType": "Bot Type",
       "balance": "Saldo"
     },
     "dates": {
@@ -323,7 +410,7 @@
       "confirmNewPassword": "Bevestig nieuw wachtwoord"
     },
     "tips": {
-      "title": "Beveiligingstips",
+      "title": "Veiligheidstips",
       "tip1": "Gebruik een sterk wachtwoord",
       "tip2": "Deel uw wachtwoord niet met anderen",
       "tip3": "Wijzig uw wachtwoord regelmatig",
@@ -338,14 +425,90 @@
     },
     "messages": {
       "profileUpdateSuccess": "Profiel succesvol bijgewerkt!",
-      "profileUpdateError": "Fout bij het bijwerken van profiel",
+      "profileUpdateError": "Fout bij bijwerken van profiel",
       "passwordMismatch": "Nieuwe wachtwoorden komen niet overeen",
       "passwordUpdateSuccess": "Wachtwoord succesvol gewijzigd!",
-      "passwordUpdateError": "Fout bij het wijzigen van wachtwoord"
+      "passwordUpdateError": "Fout bij wijzigen van wachtwoord"
+    }
+  },
+  "bot": {
+    "title": "Bot Handelen",
+    "subtitle": "Geautomatiseerd handelen met uw geselecteerde bot",
+    "lastPrice": "Laatste Prijs",
+    "loadingPositions": "Posities laden...",
+    "loadingTradeHistory": "Handelsgeschiedenis laden...",
+    "info": {
+      "title": "Geautomatiseerde Handelsbot",
+      "subtitle": "Voer strategieën nauwkeurig uit. Handel 24/7. Veilig. Adaptief. Efficiënt.",
+      "openBalance": "Saldo openen",
+      "description": "Dit handelssysteem elimineert emotionele beslissingen door gebruik te maken van autonome algoritmen. Gebouwd voor nauwkeurigheid en stabiliteit — het analyseert, reageert en voert continu uit onder alle marktomstandigheden, beschermt uw activa terwijl de kansen worden gemaximaliseerd.",
+      "features": {
+        "trading247": {
+          "title": "24/7 Handelen",
+          "description": "Constante marktmonitoring"
+        },
+        "riskControl": {
+          "title": "Risicobeheer",
+          "description": "Geautomatiseerde kapitaalbescherming"
+        },
+        "fastExecution": {
+          "title": "Snelle Uitvoering",
+          "description": "Latentie onder 100 ms"
+        },
+        "adaptiveAI": {
+          "title": "Adaptieve AI",
+          "description": "Slimme handelslogica"
+        }
+      }
+    },
+    "activity": {
+      "title": "Bot Activiteit",
+      "description": "Uw {{botType}} bot is actief en handelt",
+      "active": "Actief",
+      "stopped": "Gestopt",
+      "sessionProfit": "Sessiewinst",
+      "winRate": "Winstpercentage",
+      "totalTrades": "Totaal Trades",
+      "losingTrades": "Verliezende Trades",
+      "today": "vandaag"
+    },
+    "controls": {
+      "title": "Bediening",
+      "tradingPair": "Handelspaar",
+      "pause": "Pauzeren",
+      "start": "Starten",
+      "stop": "Stoppen"
+    },
+    "stats": {
+      "today": "Vandaag",
+      "profit": "Winst:",
+      "closedTrades": "Gesloten Trades:",
+      "openPositions": "Open Posities:"
+    },
+    "chart": {
+      "title": "{{pair}} Grafiek",
+      "loading": "Grafiekgegevens laden..."
+    },
+    "positions": {
+      "title": "Open Posities",
+      "entry": "Instap:",
+      "noPositions": "Geen open posities"
+    },
+    "history": {
+      "title": "Handelsgeschiedenis",
+      "headers": {
+        "symbol": "Symbool",
+        "type": "Type",
+        "profitLoss": "Winst/Verlies",
+        "closeDate": "Sluitingsdatum"
+      },
+      "noTrades": "Nog geen trades"
     }
   },
   "common": {
     "loading": "Laden...",
+    "loadingUserData": "Gebruikersgegevens laden...",
+    "processing": "Verwerken...",
     "error": "Fout",
     "success": "Succes",
     "cancel": "Annuleren",
@@ -355,7 +518,7 @@
     "edit": "Bewerken",
     "delete": "Verwijderen",
     "search": "Zoeken",
-    "filter": "Filteren",
+    "filter": "Filter",
     "sort": "Sorteren",
     "language": "Taal"
   }

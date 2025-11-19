@@ -17,6 +17,7 @@ import { formatCurrency } from '@/shared/utils/formatCurrency';
 import { RootState } from '@/store/store';
 import { useThemeClasses } from '@/shared/hooks/useThemeClasses';
 import { useTheme } from '@/contexts/ThemeContext';
+import { useTranslation } from 'react-i18next';
 
 interface AssetChartModalProps {
   asset: AssetItem;
@@ -42,6 +43,7 @@ export default function AssetChartModal({ asset, onClose }: AssetChartModalProps
   const currencyState = useAppSelector((state: RootState) => state.currency);
   const tc = useThemeClasses();
   const { theme } = useTheme();
+  const { t } = useTranslation();
 
   const intervals: { value: ChartInterval; label: string }[] = [
     { value: '1h', label: '1H' },
@@ -173,13 +175,13 @@ export default function AssetChartModal({ asset, onClose }: AssetChartModalProps
         const response = await marketService.getHistoryOHLC(asset.symbol, interval);
 
         if (!response.ohlc || response.ohlc.length === 0) {
-          setError(`No data available for ${interval.toUpperCase()} interval. Try another interval.`);
+          setError(t('market.chart.error.noData', { interval: interval.toUpperCase() }));
           setLoading(false);
           return;
         }
 
         if (response.ohlc.length < 5) {
-          setError(`Insufficient data for ${interval.toUpperCase()} (only ${response.ohlc.length} candles). Try a shorter interval.`);
+          setError(t('market.chart.error.insufficientData', { interval: interval.toUpperCase(), count: response.ohlc.length }));
           setLoading(false);
           return;
         }
@@ -224,23 +226,19 @@ export default function AssetChartModal({ asset, onClose }: AssetChartModalProps
       } catch (err: any) {
         console.error("Chart data fetch error:", err);
 
-        // Extract detailed error information
         const errorData = err?.response?.data;
-        let errorMessage = 'Failed to load chart data. Please try another interval or asset.';
+        let errorMessage = t('market.chart.error.loadFailed');
 
         if (errorData) {
-          // If backend provided detailed error
           if (errorData.error && errorData.details) {
             errorMessage = `${errorData.error}\n\n${errorData.details}`;
           } else if (errorData.error) {
             errorMessage = errorData.error;
           }
         } else if (err?.message) {
-          // Network or client-side error
-          errorMessage = `Network Error: ${err.message}`;
+          errorMessage = t('market.chart.error.network', { message: err.message });
         }
 
-        // Log comprehensive error details for debugging
         console.group('🔍 Chart Data Error Details');
         console.log('Symbol:', asset.symbol);
         console.log('Interval:', interval);
@@ -255,7 +253,7 @@ export default function AssetChartModal({ asset, onClose }: AssetChartModalProps
     };
 
     fetchChartData();
-  }, [asset.symbol, interval]);
+  }, [asset.symbol, interval, t]);
 
   useEffect(() => {
     document.body.style.overflow = 'hidden';
@@ -332,7 +330,7 @@ export default function AssetChartModal({ asset, onClose }: AssetChartModalProps
 
                   <div className={`flex items-center gap-1.5 text-xs ${tc.textTertiary} ${tc.hover} px-2.5 py-1.5 rounded border ${tc.cardBorder}`}>
                     <Calendar className="w-3.5 h-3.5" />
-                    <span>24h</span>
+                    <span>{t('market.chart.24h')}</span>
                   </div>
                 </div>
               </div>
@@ -351,7 +349,7 @@ export default function AssetChartModal({ asset, onClose }: AssetChartModalProps
           <div className="flex items-center justify-between flex-wrap gap-4">
             <div className="flex items-center gap-2">
               <Activity className={`w-4 h-4 ${tc.textTertiary}`} />
-              <span className={`text-sm font-medium ${tc.textSecondary}`}>Chart Interval</span>
+              <span className={`text-sm font-medium ${tc.textSecondary}`}>{t('market.chart.interval')}</span>
             </div>
 
             <div className={`flex items-center gap-1.5 ${tc.hover} border ${tc.cardBorder} rounded-xl p-1.5`}>
@@ -374,14 +372,14 @@ export default function AssetChartModal({ asset, onClose }: AssetChartModalProps
           {!loading && !error && (
             <div className="grid grid-cols-4 gap-3">
               <div className={`flex flex-col gap-1.5 px-4 py-3 ${tc.hover} border ${tc.cardBorder} rounded-lg`}>
-                <span className={`text-xs font-medium ${tc.textTertiary} uppercase tracking-wide`}>24H High</span>
+                <span className={`text-xs font-medium ${tc.textTertiary} uppercase tracking-wide`}>{t('market.chart.high24h')}</span>
                 <span className="text-base font-mono font-semibold text-green-400">
                   {formatPrice(chartStats.high)}
                 </span>
               </div>
 
               <div className={`flex flex-col gap-1.5 px-4 py-3 ${tc.hover} border ${tc.cardBorder} rounded-lg`}>
-                <span className={`text-xs font-medium ${tc.textTertiary} uppercase tracking-wide`}>24H Low</span>
+                <span className={`text-xs font-medium ${tc.textTertiary} uppercase tracking-wide`}>{t('market.chart.low24h')}</span>
                 <span className="text-base font-mono font-semibold text-red-400">
                   {formatPrice(chartStats.low)}
                 </span>
@@ -390,7 +388,7 @@ export default function AssetChartModal({ asset, onClose }: AssetChartModalProps
               <div className={`flex flex-col gap-1.5 px-4 py-3 ${tc.hover} border ${tc.cardBorder} rounded-lg`}>
                 <div className="flex items-center gap-1.5">
                   <BarChart3 className={`w-3.5 h-3.5 ${tc.textTertiary}`} />
-                  <span className={`text-xs font-medium ${tc.textTertiary} uppercase tracking-wide`}>Volume</span>
+                  <span className={`text-xs font-medium ${tc.textTertiary} uppercase tracking-wide`}>{t('market.table.volume')}</span>
                 </div>
                 <span className={`text-base font-mono font-semibold ${tc.textPrimary}`}>
                   {formatVolume(chartStats.volume)}
@@ -398,7 +396,7 @@ export default function AssetChartModal({ asset, onClose }: AssetChartModalProps
               </div>
 
               <div className={`flex flex-col gap-1.5 px-4 py-3 ${tc.hover} border ${tc.cardBorder} rounded-lg`}>
-                <span className={`text-xs font-medium ${tc.textTertiary} uppercase tracking-wide`}>Change</span>
+                <span className={`text-xs font-medium ${tc.textTertiary} uppercase tracking-wide`}>{t('market.table.change24h')}</span>
                 <span className={`text-base font-mono font-semibold ${
                   chartStats.change >= 0 ? 'text-green-400' : 'text-red-400'
                 }`}>
@@ -412,7 +410,7 @@ export default function AssetChartModal({ asset, onClose }: AssetChartModalProps
             {loading && (
               <div className={`absolute inset-0 flex flex-col justify-center items-center ${tc.cardBg} backdrop-blur-sm z-10`}>
                 <Loader2 className={`w-14 h-14 ${tc.textTertiary} animate-spin mb-4`} />
-                <p className={`${tc.textTertiary} text-sm font-medium`}>Loading chart data...</p>
+                <p className={`${tc.textTertiary} text-sm font-medium`}>{t('bot.chart.loading')}</p>
               </div>
             )}
 
@@ -420,7 +418,7 @@ export default function AssetChartModal({ asset, onClose }: AssetChartModalProps
               <div className="absolute inset-0 flex flex-col justify-center items-center text-center z-10 p-8">
                 <div className="bg-red-500/5 border border-red-500/20 rounded-xl p-8 max-w-md">
                   <AlertCircle className="w-12 h-12 text-red-400 mx-auto mb-4" />
-                  <h4 className="text-red-400 font-semibold text-base mb-2">Chart Error</h4>
+                  <h4 className="text-red-400 font-semibold text-base mb-2">{t('market.chart.error.title')}</h4>
                   <p className="text-red-400/70 text-sm whitespace-pre-line">{error}</p>
                 </div>
               </div>
@@ -434,15 +432,15 @@ export default function AssetChartModal({ asset, onClose }: AssetChartModalProps
               <div className="flex items-center gap-4">
                 <div className="flex items-center gap-2">
                   <div className="w-2.5 h-2.5 bg-green-500 rounded-sm" />
-                  <span>Bullish</span>
+                  <span>{t('market.chart.bullish')}</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <div className="w-2.5 h-2.5 bg-red-500 rounded-sm" />
-                  <span>Bearish</span>
+                  <span>{t('market.chart.bearish')}</span>
                 </div>
               </div>
               <span>
-                {chartStats.candleCount} candles
+                {t('market.chart.candleCount', { count: chartStats.candleCount })}
               </span>
             </div>
           )}

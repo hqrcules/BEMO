@@ -9,14 +9,50 @@
   "auth": {
     "login": "تسجيل الدخول",
     "logout": "تسجيل الخروج",
-    "email": "البريد الإلكتروني",
+    "email": "البريد الإلكتر الإلكتروني",
     "password": "كلمة المرور",
-    "welcome": "مرحباً بعودتك",
-    "loginSubtitle": "أدخل بياناتك للوصول إلى حسابك",
+    "welcome": "مرحبًا بعودتك",
+    "loginSubtitle": "أدخل بيانات اعتمادك للوصول إلى حسابك",
     "loginButton": "تسجيل الدخول",
     "noAccount": "ليس لديك حساب؟",
-    "signUp": "اشتراك",
+    "signUp": "إنشاء حساب",
+    "hasAccount": "لديك حساب بالفعل؟",
+    "loginHere": "سجل الدخول هنا",
     "platformSlogan": "منصة تداول احترافية",
+    "register": {
+      "title": "إنشاء حساب",
+      "subtitle": "انضم إلينا وابدأ الاستثمار اليوم",
+      "firstName": "الاسم الأول",
+      "firstNamePlaceholder": "جون",
+      "lastName": "اسم العائلة",
+      "lastNamePlaceholder": "دو",
+      "phone": "الهاتف",
+      "phonePlaceholder": "+1 234 567 8900",
+      "emailPlaceholder": "your@email.com",
+      "dateOfBirth": "تاريخ الميلاد",
+      "confirmPassword": "تأكيد كلمة المرور",
+      "rememberMe": "تذكرني لمدة 7 أيام",
+      "creating": "جاري إنشاء الحساب...",
+      "createButton": "إنشاء حساب",
+      "errorTitle": "خطأ"
+    },
+    "validation": {
+      "firstNameRequired": "الاسم الأول مطلوب",
+      "lastNameRequired": "اسم العائلة مطلوب",
+      "phoneRequired": "الهاتف مطلوب",
+      "emailRequired": "البريد الإلكتروني مطلوب",
+      "emailInvalid": "الرجاء إدخال عنوان بريد إلكتروني صالح",
+      "phoneInvalid": "يمكن أن يحتوي الهاتف على أرقام و+ و- ومسافات فقط",
+      "dateOfBirthRequired": "تاريخ الميلاد مطلوب",
+      "dateInvalidFormat": "يجب أن يكون التاريخ بتنسيق YYYY-MM-DD",
+      "dateInvalid": "تاريخ غير صالح",
+      "passwordRequired": "كلمة المرور مطلوبة",
+      "confirmPasswordRequired": "الرجاء تأكيد كلمة المرور",
+      "passwordMinLength": "يجب أن تتكون كلمة المرور من 6 أحرف على الأقل",
+      "passwordsNotMatch": "كلمتا المرور غير متطابقتين",
+      "registrationFailed": "فشل التسجيل. الرجاء المحاولة مرة أخرى.",
+      "accountCreated": "تم إنشاء الحساب بنجاح! الرجاء تسجيل الدخول."
+    },
     "hero": {
       "title1": "تداول العملات المشفرة",
       "title2": "بثقة"
@@ -41,59 +77,59 @@
       "volume": "حجم التداول",
       "support": "الدعم"
     },
-    "welcomeTitle": "مرحباً",
+    "welcomeTitle": "مرحبًا",
     "welcomeSubtitle": "سجل الدخول إلى حسابك للمتابعة",
     "errorTitle": "خطأ في تسجيل الدخول",
-    "emailLabel": "البريد الإلكتروني",
+    "emailLabel": "عنوان البريد الإلكتروني",
     "passwordLabel": "كلمة المرور",
-    "loggingIn": "جارٍ تسجيل الدخول...",
+    "loggingIn": "جاري تسجيل الدخول...",
     "demo": {
       "title": "تسجيل دخول سريع بحسابات تجريبية"
     },
     "footer": "© 2025 Bemo Investment. جميع الحقوق محفوظة."
   },
   "dashboard": {
-    "greeting": "أهلاً",
-    "greetingName": "أهلاً، {{name}}!",
-    "portfolioGrowth": "محفظتك ارتفعت",
+    "greeting": "مرحبًا",
+    "greetingName": "مرحبًا، {{name}}!",
+    "portfolioGrowth": "محفظتك مرتفعة",
     "last24h": "في آخر 24 ساعة",
-    "totalBalance": "الرصيد الإجمالي",
-    "pnl24h": "الربح والخسارة 24 ساعة",
+    "totalBalance": "إجمالي الرصيد",
+    "pnl24h": "أرباح وخسائر 24 ساعة",
     "assets": "الأصول",
-    "cryptocurrencies": "العملات المشفرة",
+    "cryptocurrencies": "عملات مشفرة",
     "income": "الدخل",
-    "monthly": "شهرياً",
+    "monthly": "شهريًا",
     "deposit": "إيداع",
     "trade": "تداول",
     "marketStats": "إحصائيات السوق",
-    "volume24h": "حجم التداول 24 ساعة",
+    "volume24h": "حجم 24 ساعة",
     "avgChange": "متوسط التغيير",
     "activeTraders": "المتداولون النشطون",
     "fearGreedIndex": "مؤشر الخوف والطمع",
     "greed": "الطمع",
-    "topGainers": "الأكثر ربحاً",
+    "topGainers": "أكبر الرابحين",
     "viewAll": "عرض الكل",
     "quickActions": "إجراءات سريعة",
     "withdraw": "سحب",
     "trading": "التداول",
     "gainers": "الرابحون",
     "losers": "الخاسرون",
-    "assetsLast24h": "الأصول في 24 ساعة",
+    "assetsLast24h": "أصول في 24 ساعة",
     "live": "مباشر",
     "offline": "غير متصل",
-    "topLosers": "الأكثر خسارة",
+    "topLosers": "أكبر الخاسرين",
     "recentActivity": "النشاط الأخير",
     "promoTitle": "احصل على مكافأة!",
     "promoSubtitle": "ادع صديقًا واحصل على 50 دولارًا في حسابك",
     "promoButton": "دعوة صديق",
     "mockTime1": "قبل دقيقتين",
     "mockTime2": "قبل 15 دقيقة",
-    "mockTime3": "قبل ساعة"
+    "mockTime3": "قبل ساعة واحدة"
   },
   "market": {
     "title": "السوق",
     "status": {
-      "realtime": "في الوقت الحقيقي",
+      "realtime": "الوقت الفعلي",
       "disconnected": "غير متصل"
     },
     "availableBalance": "الرصيد المتاح",
@@ -114,18 +150,49 @@
     "table": {
       "asset": "الأصل",
       "price": "السعر",
-      "change24h": "التغيير 24 ساعة",
+      "change24h": "تغيير 24 ساعة",
+      "volume": "الحجم",
       "chart": "الرسم البياني",
       "action": "إجراء"
     },
-    "buy": "شراء"
+    "buy": "شراء",
+    "error": {
+      "title": "فشل الاتصال",
+      "websocketUrl": "عنوان WebSocket:",
+      "backendInfo": "تأكد من أن خادم الواجهة الخلفية الخاص بك يعمل ويمكن الوصول إليه.",
+      "retry": "إعادة محاولة الاتصال"
+    },
+    "loading": {
+      "connecting": "جاري الاتصال ببيانات السوق..."
+    },
+    "chart": {
+      "error": {
+        "noData": "لا توجد بيانات متاحة للفاصل الزمني {{interval}}. جرب فاصلًا زمنيًا آخر.",
+        "insufficientData": "بيانات غير كافية للفاصل الزمني {{interval}} ({{count}} شمعة فقط). جرب فاصلًا زمنيًا أقصر.",
+        "loadFailed": "فشل تحميل بيانات الرسم البياني. يرجى تجربة فاصل زمني أو أصل آخر.",
+        "network": "خطأ في الشبكة: {{message}}",
+        "title": "خطأ في الرسم البياني"
+      },
+      "24h": "24 ساعة",
+      "interval": "الفاصل الزمني للرسم البياني",
+      "high24h": "أعلى سعر 24 ساعة",
+      "low24h": "أدنى سعر 24 ساعة",
+      "bullish": "صاعد",
+      "bearish": "هابط",
+      "candleCount_zero": "{{count}} شمعة",
+      "candleCount_one": "{{count}} شمعة",
+      "candleCount_two": "شمعتان",
+      "candleCount_few": "{{count}} شمعات",
+      "candleCount_many": "{{count}} شمعة",
+      "candleCount_other": "{{count}} شمعة"
+    }
   },
   "trading": {
     "title": "التداول",
-    "search": "ابحث عن عملة مشفرة...",
+    "search": "البحث عن عملة مشفرة...",
     "name": "الاسم",
     "price": "السعر",
-    "change24h": "التغيير 24 ساعة",
+    "change24h": "تغيير 24 ساعة",
     "volume": "الحجم",
     "chart": "الرسم البياني",
     "buy": "شراء",
@@ -151,11 +218,25 @@
     "withdraw": "سحب",
     "totalDeposits": "إجمالي الإيداعات",
     "totalWithdrawals": "إجمالي السحوبات",
-    "operations": "عمليات",
+    "operations": "العمليات",
     "transactionHistory": "سجل المعاملات",
     "viewReceipt": "عرض",
-    "refreshing": "جارٍ التحديث...",
+    "refreshing": "جاري التحديث...",
     "refresh": "تحديث",
+    "wallet": {
+      "title": "تفاصيل السحب",
+      "description": "أضف عنوان محفظة العملات المشفرة الخاص بك لتلقي السحوبات.",
+      "currentAddress": "عنوان المحفظة الحالي",
+      "addressLabel": "عنوان محفظة العملات المشفرة",
+      "hint": "أدخل عنوان محفظة عملات مشفرة صالح للسحب",
+      "save": "حفظ العنوان",
+      "saving": "جاري الحفظ...",
+      "cancel": "إلغاء",
+      "edit": "تعديل العنوان",
+      "copy": "نسخ العنوان",
+      "successSaved": "تم حفظ عنوان المحفظة بنجاح!",
+      "errorSaving": "خطأ في حفظ عنوان المحفظة"
+    },
     "table": {
       "type": "النوع",
       "amount": "المبلغ",
@@ -167,7 +248,7 @@
     "types": {
       "deposit": "إيداع",
       "withdrawal": "سحب",
-      "bot_profit": "ربح البوت",
+      "bot_profit": "ربح الروبوت",
       "commission": "عمولة"
     },
     "status": {
@@ -178,12 +259,12 @@
     "noTransactions": {
       "title": "لا توجد معاملات بعد",
       "subtitle": "قم بإيداع الأموال للبدء",
-      "button": "إيداع في الرصيد"
+      "button": "إيداع الرصيد"
     },
     "modals": {
-      "selectPackage": "اختر باقة الإيداع",
+      "selectPackage": "حدد باقة إيداع",
       "fromAmount": "من 250 يورو",
-      "depositTitle": "إيداع في الرصيد",
+      "depositTitle": "إيداع الرصيد",
       "errorMinAmount": "الحد الأدنى لمبلغ الإيداع هو {{amount}} يورو",
       "withdrawTitle": "سحب الأموال",
       "amountLabel": "مبلغ الإيداع",
@@ -194,23 +275,31 @@
       "withdrawMethodLabel": "طريقة السحب",
       "receiptLabel": "إيصال الدفع",
       "uploadClick": "انقر للتحميل",
-      "uploadHint": "PNG, JPG أو PDF حتى 5 ميجابايت",
-      "sending": "جارٍ الإرسال...",
-      "processing": "معالجة...",
+      "uploadHint": "PNG, JPG أو PDF بحجم يصل إلى 5 ميجابايت",
+      "sending": "جاري الإرسال...",
+      "processing": "جاري المعالجة...",
       "confirmDeposit": "تأكيد الإيداع",
       "back": "رجوع",
-      "depositSuccess": "تم إنشاء طلب الإيداع بنجاح وإرساله للمراجعة من قبل المسؤول.",
+      "depositSuccess": "تم إنشاء طلب الإيداع بنجاح وإرساله لمراجعة المسؤول.",
       "sendButton": "إرسال للمراجعة",
-      "errorReceipt": "يرجى تحميل إيصال الدفع",
+      "errorReceipt": "الرجاء تحميل إيصال الدفع",
       "errorDeposit": "خطأ في إنشاء الإيداع",
       "availableToWithdraw": "متاح للسحب",
       "walletAddressLabel": "عنوان المحفظة",
-      "requesting": "جارٍ إرسال الطلب...",
+      "requesting": "جاري إرسال الطلب...",
       "requestButton": "طلب السحب",
       "errorInsufficientFunds": "الأموال غير كافية في الرصيد",
       "errorWithdraw": "خطأ في إنشاء طلب السحب",
       "withdrawMinimum": "الحد الأدنى",
-      "commission": "عمولة"
+      "commission": "عمولة",
+      "calc": {
+        "amount": "المبلغ المطلوب",
+        "commission": "العمولة (25%)",
+        "youReceive": "سوف تتلقى"
+      },
+      "yourRequisites": "تفاصيل حسابك (IBAN / بطاقة)",
+      "errorRequisites": "الرجاء تحديد تفاصيل السحب الخاصة بك",
+      "errorMinAmountWithdraw": "الحد الأدنى لمبلغ السحب: 50 يورو"
     },
     "methods": {
       "card": "بطاقة بنكية",
@@ -219,12 +308,12 @@
     },
     "depositOptions": {
       "basic": {
-        "title": "الحزمة الأساسية",
+        "title": "الباقة الأساسية",
         "description": "مثالية للمبتدئين"
       },
       "premium": {
-        "title": "الحزمة المميزة",
-        "description": "قدرات تداول محسنة"
+        "title": "الباقة المميزة",
+        "description": "قدرات تداول معززة"
       },
       "trader": {
         "title": "تداول مع متداول",
@@ -237,17 +326,19 @@
     },
     "payment": {
       "cardNumberLabel": "رقم البطاقة للدفع",
-      "noCardNumber": "رقم البطاقة للدفع غير محدد. يرجى الاتصال بالدعم.",
+      "noCardNumber": "رقم البطاقة للدفع غير محدد. الرجاء الاتصال بالدعم.",
+      "methodsTitle": "رقم البطاقة للدفع",
+      "noMethods": "لا توجد طرق دفع متاحة",
       "attached": "مرفق: ",
       "replyPlaceholder": "الرد على المستخدم...",
-      "downloadAttachment": "تنزيل المرفق"
+      "downloadAttachment": "تحميل المرفق"
     }
   },
   "support": {
     "loading": "جاري تحميل الدردشة...",
     "header": {
       "title": "دعم Bemo Investment",
-      "subtitle": "متصل • عادةً ما يتم الرد في غضون ساعة"
+      "subtitle": "متصل • عادةً ما يرد في غضون ساعة"
     },
     "emptyChat": {
       "title": "ابدأ محادثة مع الدعم",
@@ -260,12 +351,12 @@
     "input": {
       "attachTitle": "إرفاق ملف",
       "placeholder": "أدخل رسالة...",
-      "footer": "متوسط وقت الاستجابة: 1 ساعة • نعمل 24/7"
+      "footer": "متوسط وقت الرد: 1 ساعة • نعمل على مدار الساعة طوال أيام الأسبوع"
     },
     "cards": {
       "faq": {
         "title": "الأسئلة الشائعة",
-        "subtitle": "إجابات على الأسئلة الشائعة حول المنصة"
+        "subtitle": "إجابات للأسئلة الشائعة حول المنصة"
       },
       "docs": {
         "title": "التوثيق",
@@ -287,7 +378,7 @@
   },
   "profile": {
     "defaultUser": "مستخدم",
-    "verified": "تم التحقق",
+    "verified": "موثق",
     "tabs": {
       "profile": "الملف الشخصي",
       "security": "الأمان",
@@ -295,7 +386,7 @@
     },
     "accountInfo": {
       "title": "معلومات الحساب",
-      "emailLabel": "البريد الإلكتروني",
+      "emailLabel": "عنوان البريد الإلكتروني",
       "emailHint": "لا يمكن تغيير البريد الإلكتروني",
       "fullNameLabel": "الاسم الكامل",
       "fullNamePlaceholder": "جون دو",
@@ -309,10 +400,10 @@
     },
     "status": {
       "title": "حالة الحساب",
-      "verification": "التحقق",
+      "verification": "التوثيق",
       "yes": "نعم",
       "no": "لا",
-      "botType": "نوع البوت",
+      "botType": "نوع الروبوت",
       "balance": "الرصيد"
     },
     "dates": {
@@ -329,8 +420,8 @@
     "tips": {
       "title": "نصائح الأمان",
       "tip1": "استخدم كلمة مرور قوية",
-      "tip2": "لا تشارك كلمة مرورك مع الآخرين",
-      "tip3": "قم بتغيير كلمة مرورك بانتظام",
+      "tip2": "لا تشارك كلمة المرور الخاصة بك مع الآخرين",
+      "tip3": "قم بتغيير كلمة المرور الخاصة بك بانتظام",
       "tip4": "استخدم كلمة مرور فريدة"
     },
     "activity": {
@@ -338,18 +429,94 @@
       "level": "مستوى الحساب",
       "withUs": "معنا",
       "days": "أيام",
-      "verification": "التحقق"
+      "verification": "التوثيق"
     },
     "messages": {
       "profileUpdateSuccess": "تم تحديث الملف الشخصي بنجاح!",
       "profileUpdateError": "خطأ في تحديث الملف الشخصي",
-      "passwordMismatch": "كلمات المرور الجديدة غير متطابقة",
+      "passwordMismatch": "كلمتا المرور الجديدتان غير متطابقتين",
       "passwordUpdateSuccess": "تم تغيير كلمة المرور بنجاح!",
       "passwordUpdateError": "خطأ في تغيير كلمة المرور"
     }
   },
+  "bot": {
+    "title": "تداول الروبوت",
+    "subtitle": "تداول آلي باستخدام الروبوت الذي اخترته",
+    "lastPrice": "آخر سعر",
+    "loadingPositions": "جاري تحميل المراكز...",
+    "loadingTradeHistory": "جاري تحميل سجل التداول...",
+    "info": {
+      "title": "روبوت التداول الآلي",
+      "subtitle": "تنفيذ الاستراتيجيات بدقة. تداول 24/7. آمن. متكيف. فعال.",
+      "openBalance": "فتح الرصيد",
+      "description": "يستبعد نظام التداول هذا القرارات العاطفية من خلال الاستفادة من الخوارزميات المستقلة. مُصمم للدقة والاستقرار - فهو يحلل ويتفاعل وينفذ باستمرار تحت أي ظروف سوق، ويحمي أصولك مع تعظيم الفرص.",
+      "features": {
+        "trading247": {
+          "title": "تداول 24/7",
+          "description": "مراقبة مستمرة للسوق"
+        },
+        "riskControl": {
+          "title": "التحكم في المخاطر",
+          "description": "حماية آلية لرأس المال"
+        },
+        "fastExecution": {
+          "title": "تنفيذ سريع",
+          "description": "زمن انتقال أقل من 100 مللي ثانية"
+        },
+        "adaptiveAI": {
+          "title": "ذكاء اصطناعي متكيف",
+          "description": "منطق تداول ذكي"
+        }
+      }
+    },
+    "activity": {
+      "title": "نشاط الروبوت",
+      "description": "روبوت {{botType}} الخاص بك نشط ويتداول",
+      "active": "نشط",
+      "stopped": "متوقف",
+      "sessionProfit": "ربح الجلسة",
+      "winRate": "معدل الفوز",
+      "totalTrades": "إجمالي الصفقات",
+      "losingTrades": "الصفقات الخاسرة",
+      "today": "اليوم"
+    },
+    "controls": {
+      "title": "التحكم",
+      "tradingPair": "زوج التداول",
+      "pause": "إيقاف مؤقت",
+      "start": "بدء",
+      "stop": "إيقاف"
+    },
+    "stats": {
+      "today": "اليوم",
+      "profit": "الربح:",
+      "closedTrades": "الصفقات المغلقة:",
+      "openPositions": "المراكز المفتوحة:"
+    },
+    "chart": {
+      "title": "الرسم البياني لـ {{pair}}",
+      "loading": "جاري تحميل بيانات الرسم البياني..."
+    },
+    "positions": {
+      "title": "المراكز المفتوحة",
+      "entry": "الدخول:",
+      "noPositions": "لا توجد مراكز مفتوحة"
+    },
+    "history": {
+      "title": "سجل التداول",
+      "headers": {
+        "symbol": "الرمز",
+        "type": "النوع",
+        "profitLoss": "الربح/الخسارة",
+        "closeDate": "تاريخ الإغلاق"
+      },
+      "noTrades": "لا توجد صفقات بعد"
+    }
+  },
   "common": {
-    "loading": "جار التحميل...",
+    "loading": "جاري التحميل...",
+    "loadingUserData": "جاري تحميل بيانات المستخدم...",
+    "processing": "جاري المعالجة...",
     "error": "خطأ",
     "success": "نجاح",
     "cancel": "إلغاء",

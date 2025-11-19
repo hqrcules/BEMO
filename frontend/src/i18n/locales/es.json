@@ -2,38 +2,74 @@
   "nav": {
     "home": "Inicio",
     "market": "Mercado",
-    "balance": "Balance",
+    "balance": "Saldo",
     "support": "Soporte",
     "profile": "Perfil"
   },
   "auth": {
     "login": "Iniciar sesión",
     "logout": "Cerrar sesión",
-    "email": "Email",
+    "email": "Correo electrónico",
     "password": "Contraseña",
     "welcome": "Bienvenido de nuevo",
-    "loginSubtitle": "Introduce tus credenciales para acceder a tu cuenta",
-    "loginButton": "Iniciar Sesión",
+    "loginSubtitle": "Ingrese sus credenciales para acceder a su cuenta",
+    "loginButton": "Iniciar sesión",
     "noAccount": "¿No tienes una cuenta?",
     "signUp": "Regístrate",
+    "hasAccount": "¿Ya tienes una cuenta?",
+    "loginHere": "Inicia sesión aquí",
     "platformSlogan": "Plataforma de Trading Profesional",
+    "register": {
+      "title": "Crear cuenta",
+      "subtitle": "Únete a nosotros y comienza a invertir hoy",
+      "firstName": "Nombre",
+      "firstNamePlaceholder": "John",
+      "lastName": "Apellido",
+      "lastNamePlaceholder": "Doe",
+      "phone": "Teléfono",
+      "phonePlaceholder": "+1 234 567 8900",
+      "emailPlaceholder": "tu@email.com",
+      "dateOfBirth": "Fecha de nacimiento",
+      "confirmPassword": "Confirmar contraseña",
+      "rememberMe": "Recordarme durante 7 días",
+      "creating": "Creando cuenta...",
+      "createButton": "Crear cuenta",
+      "errorTitle": "Error"
+    },
+    "validation": {
+      "firstNameRequired": "El nombre es obligatorio",
+      "lastNameRequired": "El apellido es obligatorio",
+      "phoneRequired": "El teléfono es obligatorio",
+      "emailRequired": "El correo electrónico es obligatorio",
+      "emailInvalid": "Por favor, ingrese una dirección de correo electrónico válida",
+      "phoneInvalid": "El teléfono solo puede contener dígitos, +, - y espacios",
+      "dateOfBirthRequired": "La fecha de nacimiento es obligatoria",
+      "dateInvalidFormat": "La fecha debe estar en formato AAAA-MM-DD",
+      "dateInvalid": "Fecha inválida",
+      "passwordRequired": "La contraseña es obligatoria",
+      "confirmPasswordRequired": "Por favor, confirme la contraseña",
+      "passwordMinLength": "La contraseña debe tener al menos 6 caracteres",
+      "passwordsNotMatch": "Las contraseñas no coinciden",
+      "registrationFailed": "Registro fallido. Por favor, inténtelo de nuevo.",
+      "accountCreated": "¡Cuenta creada con éxito! Por favor, inicia sesión."
+    },
     "hero": {
-      "title1": "Opera con criptomonedas",
+      "title1": "Opera criptomonedas",
       "title2": "con confianza"
     },
     "heroSubtitle": "Únete a miles de traders que confían en nuestra plataforma",
     "features": {
       "security": {
         "title": "Seguridad",
-        "description": "Protección de fondos con encriptación de nivel bancario"
+        "description": "Protección de fondos mediante encriptación a nivel bancario"
       },
       "instantDeals": {
-        "title": "Operaciones Instantáneas",
+        "title": "Operaciones instantáneas",
         "description": "El bot de trading funciona 24/7 para obtener el máximo beneficio"
       },
       "provenPlatform": {
-        "title": "Plataforma Probada",
-        "description": "Más de 1000 usuarios activos y 2,5M € de volumen de trading"
+        "title": "Plataforma probada",
+        "description": "Más de 1000+ usuarios activos y 2,5M € en volumen de trading"
       }
     },
     "stats": {
@@ -55,9 +91,9 @@
   "dashboard": {
     "greeting": "Bienvenido",
     "greetingName": "¡Bienvenido, {{name}}!",
-    "portfolioGrowth": "Tu cartera ha subido",
+    "portfolioGrowth": "Tu portafolio ha subido un",
     "last24h": "en las últimas 24 horas",
-    "totalBalance": "Balance total",
+    "totalBalance": "Saldo total",
     "pnl24h": "G/P 24h",
     "assets": "Activos",
     "cryptocurrencies": "criptomonedas",
@@ -69,9 +105,9 @@
     "volume24h": "Volumen 24h",
     "avgChange": "Cambio prom.",
     "activeTraders": "Traders activos",
-    "fearGreedIndex": "Índice de Miedo y Avaricia",
-    "greed": "Avaricia",
-    "topGainers": "Mayores Ganancias",
+    "fearGreedIndex": "Índice de Miedo y Codicia",
+    "greed": "Codicia",
+    "topGainers": "Mayores ganancias",
     "viewAll": "Ver todo",
     "quickActions": "Acciones rápidas",
     "withdraw": "Retirar",
@@ -81,10 +117,10 @@
     "assetsLast24h": "activos en 24h",
     "live": "En vivo",
     "offline": "Desconectado",
-    "topLosers": "Mayores Pérdidas",
-    "recentActivity": "Actividad Reciente",
+    "topLosers": "Mayores pérdidas",
+    "recentActivity": "Actividad reciente",
     "promoTitle": "¡Obtén un Bono!",
-    "promoSubtitle": "Invita a un amigo y obtén 50$ en tu cuenta",
+    "promoSubtitle": "Invita a un amigo y obtén $50 en tu cuenta",
     "promoButton": "Invitar a un amigo",
     "mockTime1": "hace 2 min",
     "mockTime2": "hace 15 min",
@@ -93,7 +129,7 @@
   "market": {
     "title": "Mercado",
     "status": {
-      "realtime": "En tiempo real",
+      "realtime": "Tiempo real",
       "disconnected": "Desconectado"
     },
     "availableBalance": "Saldo disponible",
@@ -115,10 +151,37 @@
       "asset": "Activo",
       "price": "Precio",
       "change24h": "Cambio 24h",
+      "volume": "Volumen",
       "chart": "Gráfico",
       "action": "Acción"
     },
-    "buy": "Comprar"
+    "buy": "Comprar",
+    "error": {
+      "title": "Falló la conexión",
+      "websocketUrl": "URL de WebSocket:",
+      "backendInfo": "Asegúrate de que tu servidor backend esté funcionando y accesible.",
+      "retry": "Reintentar conexión"
+    },
+    "loading": {
+      "connecting": "Conectando a los datos del mercado..."
+    },
+    "chart": {
+      "error": {
+        "noData": "No hay datos disponibles para el intervalo {{interval}}. Prueba con otro intervalo.",
+        "insufficientData": "Datos insuficientes para {{interval}} (solo {{count}} velas). Prueba un intervalo más corto.",
+        "loadFailed": "No se pudieron cargar los datos del gráfico. Prueba con otro intervalo o activo.",
+        "network": "Error de red: {{message}}",
+        "title": "Error del gráfico"
+      },
+      "24h": "24h",
+      "interval": "Intervalo del gráfico",
+      "high24h": "Máx. 24h",
+      "low24h": "Mín. 24h",
+      "bullish": "Alcista",
+      "bearish": "Bajista",
+      "candleCount_one": "{{count}} vela",
+      "candleCount_other": "{{count}} velas"
+    }
   },
   "trading": {
     "title": "Trading",
@@ -137,15 +200,15 @@
     "market": "Mercado",
     "limit": "Límite",
     "stop": "Stop",
-    "placeOrder": "Realizar orden",
+    "placeOrder": "Colocar orden",
     "openOrders": "Órdenes abiertas",
     "orderHistory": "Historial de órdenes",
     "noOrders": "Aún no hay órdenes"
   },
   "balance": {
-    "loading": "Cargando datos del balance...",
-    "title": "Balance y Transacciones",
-    "subtitle": "Gestiona tus depósitos y retiros",
+    "loading": "Cargando datos de saldo...",
+    "title": "Saldo y Transacciones",
+    "subtitle": "Administra tus depósitos y retiros",
     "availableBalance": "Saldo disponible",
     "deposit": "Depositar",
     "withdraw": "Retirar",
@@ -156,9 +219,23 @@
     "viewReceipt": "Ver",
     "refreshing": "Actualizando...",
     "refresh": "Actualizar",
+    "wallet": {
+      "title": "Detalles de retiro",
+      "description": "Agrega tu dirección de billetera de criptomonedas para recibir retiros.",
+      "currentAddress": "Dirección de billetera actual",
+      "addressLabel": "Dirección de billetera de criptomonedas",
+      "hint": "Ingresa una dirección de billetera válida para retiros",
+      "save": "Guardar dirección",
+      "saving": "Guardando...",
+      "cancel": "Cancelar",
+      "edit": "Editar dirección",
+      "copy": "Copiar dirección",
+      "successSaved": "¡Dirección de billetera guardada con éxito!",
+      "errorSaving": "Error al guardar la dirección de la billetera"
+    },
     "table": {
       "type": "Tipo",
-      "amount": "Cantidad",
+      "amount": "Monto",
       "method": "Método",
       "status": "Estado",
       "date": "Fecha",
@@ -167,7 +244,7 @@
     "types": {
       "deposit": "Depósito",
       "withdrawal": "Retiro",
-      "bot_profit": "Ganancia del bot",
+      "bot_profit": "Ganancia del Bot",
       "commission": "Comisión"
     },
     "status": {
@@ -177,45 +254,53 @@
     },
     "noTransactions": {
       "title": "Aún no hay transacciones",
-      "subtitle": "Deposita fondos para empezar",
-      "button": "Depositar Saldo"
+      "subtitle": "Deposita fondos para comenzar",
+      "button": "Depositar saldo"
     },
     "modals": {
-      "selectPackage": "Seleccione un paquete de depósito",
+      "selectPackage": "Selecciona un paquete de depósito",
       "fromAmount": "desde 250 €",
-      "depositTitle": "Depositar Saldo",
-      "errorMinAmount": "El monto mínimo de depósito es de {{amount}} €",
-      "withdrawTitle": "Retirar Fondos",
-      "amountLabel": "Cantidad del Depósito",
+      "depositTitle": "Depositar saldo",
+      "errorMinAmount": "El monto mínimo de depósito es {{amount}} €",
+      "withdrawTitle": "Retirar fondos",
+      "amountLabel": "Monto de depósito",
       "minAmount": "Monto mínimo",
       "transferAmount": "Monto a transferir",
-      "withdrawAmountLabel": "Cantidad de Retiro",
-      "methodLabel": "Método de Pago",
-      "withdrawMethodLabel": "Método de Retiro",
-      "receiptLabel": "Recibo de Pago",
+      "withdrawAmountLabel": "Monto de retiro",
+      "methodLabel": "Método de pago",
+      "withdrawMethodLabel": "Método de retiro",
+      "receiptLabel": "Recibo de pago",
       "uploadClick": "Haz clic para subir",
-      "uploadHint": "PNG, JPG o PDF hasta 5MB",
+      "uploadHint": "PNG, JPG o PDF de hasta 5MB",
       "sending": "Enviando...",
       "processing": "Procesando...",
       "confirmDeposit": "Confirmar depósito",
-      "back": "Atrás",
-      "depositSuccess": "La solicitud de depósito se ha creado correctamente y se ha enviado para su revisión por parte del administrador.",
+      "back": "Volver",
+      "depositSuccess": "La solicitud de depósito ha sido creada y enviada para revisión administrativa.",
       "sendButton": "Enviar para revisión",
       "errorReceipt": "Por favor, sube un recibo de pago",
       "errorDeposit": "Error al crear el depósito",
       "availableToWithdraw": "Disponible para retirar",
-      "walletAddressLabel": "Dirección de la Billetera",
+      "walletAddressLabel": "Dirección de billetera",
       "requesting": "Enviando solicitud...",
-      "requestButton": "Solicitar Retiro",
-      "errorInsufficientFunds": "Fondos insuficientes en el balance",
+      "requestButton": "Solicitar retiro",
+      "errorInsufficientFunds": "Fondos insuficientes en el saldo",
       "errorWithdraw": "Error al crear la solicitud de retiro",
       "withdrawMinimum": "Mínimo",
-      "commission": "comisión"
+      "commission": "comisión",
+      "calc": {
+        "amount": "Monto solicitado",
+        "commission": "Comisión (25%)",
+        "youReceive": "Recibirás"
+      },
+      "yourRequisites": "Tus datos (IBAN / Tarjeta)",
+      "errorRequisites": "Por favor, especifica tus datos de retiro",
+      "errorMinAmountWithdraw": "Monto mínimo de retiro: 50 €"
     },
     "methods": {
-      "card": "Tarjeta Bancaria",
+      "card": "Tarjeta bancaria",
       "crypto": "Criptomoneda",
-      "transfer": "Transferencia Bancaria"
+      "transfer": "Transferencia bancaria"
     },
     "depositOptions": {
       "basic": {
@@ -227,17 +312,19 @@
         "description": "Capacidades de trading mejoradas"
       },
       "trader": {
-        "title": "Operar con un Trader",
+        "title": "Opera con un Trader",
         "description": "Acceso completo a todas las herramientas"
       },
       "custom": {
-        "title": "Monto Personalizado",
+        "title": "Monto personalizado",
         "description": "Mínimo 250 €"
       }
     },
     "payment": {
       "cardNumberLabel": "Número de tarjeta para el pago",
-      "noCardNumber": "El número de tarjeta para el pago no está especificado. Por favor, contacte con el soporte.",
+      "noCardNumber": "El número de tarjeta para el pago no está especificado. Por favor, contacta a soporte.",
+      "methodsTitle": "Número de tarjeta para el pago",
+      "noMethods": "No hay métodos de pago disponibles",
       "attached": "Adjunto: ",
       "replyPlaceholder": "Responder al usuario...",
       "downloadAttachment": "Descargar archivo adjunto"
@@ -247,14 +334,14 @@
     "loading": "Cargando chat...",
     "header": {
       "title": "Soporte de Bemo Investment",
-      "subtitle": "En línea • Generalmente responde en una hora"
+      "subtitle": "En línea • Suele responder en menos de una hora"
     },
     "emptyChat": {
       "title": "Inicia una conversación con soporte",
       "subtitle": "Nuestro equipo está listo para ayudarte con cualquier pregunta sobre trading, depósitos o retiros"
     },
     "chat": {
-      "supportTeam": "Equipo de Soporte",
+      "supportTeam": "Equipo de soporte",
       "attachment": "Archivo adjunto"
     },
     "input": {
@@ -264,7 +351,7 @@
     },
     "cards": {
       "faq": {
-        "title": "Preguntas Frecuentes",
+        "title": "Preguntas frecuentes",
         "subtitle": "Respuestas a preguntas populares sobre la plataforma"
       },
       "docs": {
@@ -277,8 +364,8 @@
       }
     },
     "time": {
-      "minutesAgo_one": "hace {{count}} minuto",
-      "minutesAgo_other": "hace {{count}} minutos"
+      "minutesAgo_one": "hace {{count}} min",
+      "minutesAgo_other": "hace {{count}} mins"
     }
   },
   "profile": {
@@ -294,7 +381,7 @@
       "emailLabel": "Dirección de correo electrónico",
       "emailHint": "El correo electrónico no se puede cambiar",
       "fullNameLabel": "Nombre completo",
-      "fullNamePlaceholder": "Juan Pérez",
+      "fullNamePlaceholder": "John Doe",
       "userIdLabel": "ID de usuario"
     },
     "buttons": {
@@ -308,13 +395,13 @@
       "verification": "Verificación",
       "yes": "Sí",
       "no": "No",
-      "botType": "Tipo de bot",
+      "botType": "Tipo de Bot",
       "balance": "Saldo"
     },
     "dates": {
       "title": "Fechas",
       "registration": "Fecha de registro",
-      "lastLogin": "Último acceso"
+      "lastLogin": "Último inicio de sesión"
     },
     "security": {
       "title": "Cambiar contraseña",
@@ -325,27 +412,103 @@
     "tips": {
       "title": "Consejos de seguridad",
       "tip1": "Usa una contraseña segura",
-      "tip2": "No compartas tu contraseña con otros",
+      "tip2": "No compartas tu contraseña con nadie",
       "tip3": "Cambia tu contraseña regularmente",
       "tip4": "Usa una contraseña única"
     },
     "activity": {
       "title": "Actividad de la cuenta",
-      "level": "Nivel de la cuenta",
+      "level": "Nivel de cuenta",
       "withUs": "Con nosotros",
       "days": "días",
       "verification": "Verificación"
     },
     "messages": {
-      "profileUpdateSuccess": "¡Perfil actualizado correctamente!",
+      "profileUpdateSuccess": "¡Perfil actualizado con éxito!",
       "profileUpdateError": "Error al actualizar el perfil",
       "passwordMismatch": "Las nuevas contraseñas no coinciden",
-      "passwordUpdateSuccess": "¡Contraseña cambiada correctamente!",
+      "passwordUpdateSuccess": "¡Contraseña cambiada con éxito!",
       "passwordUpdateError": "Error al cambiar la contraseña"
+    }
+  },
+  "bot": {
+    "title": "Trading con Bot",
+    "subtitle": "Trading automatizado con el bot que seleccionaste",
+    "lastPrice": "Último precio",
+    "loadingPositions": "Cargando posiciones...",
+    "loadingTradeHistory": "Cargando historial de operaciones...",
+    "info": {
+      "title": "Bot de Trading Automatizado",
+      "subtitle": "Ejecuta estrategias con precisión. Opera 24/7. Seguro. Adaptable. Eficiente.",
+      "openBalance": "Abrir saldo",
+      "description": "Este sistema de trading elimina las decisiones emocionales aprovechando algoritmos autónomos. Construido para la precisión y la estabilidad: analiza, reacciona y ejecuta continuamente bajo cualquier condición de mercado, protegiendo tus activos mientras maximiza las oportunidades.",
+      "features": {
+        "trading247": {
+          "title": "Trading 24/7",
+          "description": "Monitoreo constante del mercado"
+        },
+        "riskControl": {
+          "title": "Control de riesgos",
+          "description": "Protección automatizada del capital"
+        },
+        "fastExecution": {
+          "title": "Ejecución rápida",
+          "description": "Latencia inferior a 100 ms"
+        },
+        "adaptiveAI": {
+          "title": "IA Adaptable",
+          "description": "Lógica de trading inteligente"
+        }
+      }
+    },
+    "activity": {
+      "title": "Actividad del Bot",
+      "description": "Tu bot {{botType}} está activo y operando",
+      "active": "Activo",
+      "stopped": "Detenido",
+      "sessionProfit": "Ganancia de la sesión",
+      "winRate": "Tasa de ganancia",
+      "totalTrades": "Operaciones totales",
+      "losingTrades": "Operaciones perdedoras",
+      "today": "hoy"
+    },
+    "controls": {
+      "title": "Controles",
+      "tradingPair": "Par de trading",
+      "pause": "Pausar",
+      "start": "Iniciar",
+      "stop": "Detener"
+    },
+    "stats": {
+      "today": "Hoy",
+      "profit": "Ganancia:",
+      "closedTrades": "Operaciones cerradas:",
+      "openPositions": "Posiciones abiertas:"
+    },
+    "chart": {
+      "title": "Gráfico de {{pair}}",
+      "loading": "Cargando datos del gráfico..."
+    },
+    "positions": {
+      "title": "Posiciones abiertas",
+      "entry": "Entrada:",
+      "noPositions": "No hay posiciones abiertas"
+    },
+    "history": {
+      "title": "Historial de operaciones",
+      "headers": {
+        "symbol": "Símbolo",
+        "type": "Tipo",
+        "profitLoss": "Ganancia/Pérdida",
+        "closeDate": "Fecha de cierre"
+      },
+      "noTrades": "Aún no hay operaciones"
     }
   },
   "common": {
     "loading": "Cargando...",
+    "loadingUserData": "Cargando datos del usuario...",
+    "processing": "Procesando...",
     "error": "Error",
     "success": "Éxito",
     "cancel": "Cancelar",

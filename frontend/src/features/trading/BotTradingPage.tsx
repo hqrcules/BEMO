@@ -54,11 +54,10 @@ export default function BotTradingPage() {
   const currencyState = useAppSelector((state: RootState) => state.currency);
   const { prices } = useAppSelector((state: RootState) => state.websocket);
   const { latestTrade } = useAppSelector((state: RootState) => state.trading);
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const tc = useThemeClasses();
   const dispatch = useAppDispatch();
 
-  // Debug logging
   useEffect(() => {
     console.log('BotTradingPage render - user:', user);
     console.log('User bot_type:', user?.bot_type);
@@ -67,18 +66,17 @@ export default function BotTradingPage() {
 
   const initialPair = 'BTC/USDT';
   const initialSymbol = getBaseSymbol(initialPair);
-  const initialPrice = prices?.[initialSymbol]?.price || 45230.50; // FIXED: Added optional chaining
+  const initialPrice = prices?.[initialSymbol]?.price || 45230.50;
 
   const [botState, setBotState] = useState<BotState>({
     isActive: user?.is_bot_enabled || false,
     currentPair: initialPair,
     lastPrice: initialPrice,
-    profitToday: 0 // Will be calculated from actual session/stats data
+    profitToday: 0
   });
 
   const [chartData, setChartData] = useState<SimpleChartData[]>([]);
 
-  // Sync botState.isActive with user.is_bot_enabled
   useEffect(() => {
     if (user) {
       setBotState(prev => ({
@@ -89,14 +87,11 @@ export default function BotTradingPage() {
   }, [user?.is_bot_enabled]);
 
   useEffect(() => {
-    // Load data independently for faster initial render
     if (user?.bot_type !== 'none') {
-      // Load stats first (lightweight)
       setLoadingStats(true);
       tradingService.getTradingStats()
         .then(statsData => {
           setStats(statsData);
-          // Initialize profitToday from stats
           setBotState(prev => ({
             ...prev,
             profitToday: parseFloat(statsData.total_profit) || 0
@@ -105,7 +100,6 @@ export default function BotTradingPage() {
         .catch(error => console.error('Error fetching stats:', error))
         .finally(() => setLoadingStats(false));
 
-      // Load open positions (important)
       setLoadingPositions(true);
       tradingService.getOpenPositions()
         .then(openPositionsData => {
@@ -115,7 +109,6 @@ export default function BotTradingPage() {
         .catch(error => console.error('Error fetching positions:', error))
         .finally(() => setLoadingPositions(false));
 
-      // Load trades last (can be deferred)
       setLoadingTrades(true);
       tradingService.getTrades()
         .then(tradesData => {
@@ -127,24 +120,19 @@ export default function BotTradingPage() {
     }
   }, [user?.id, user?.bot_type]);
 
-  // Listen for new trades from WebSocket
   useEffect(() => {
     if (latestTrade) {
-      // If trade is OPEN, add to open positions
       if (latestTrade.is_open) {
         setOpenPositions(prevPositions => {
-          // Check if position already exists
           if (prevPositions.some(p => p.id === latestTrade.id)) {
             return prevPositions;
           }
           return [latestTrade as any, ...prevPositions];
         });
       } else {
-        // If trade is CLOSED, remove from open positions and add to trades history
         setOpenPositions(prevPositions => prevPositions.filter(p => p.id !== latestTrade.id));
 
         setTrades(prevTrades => {
-          // Check if trade already exists to avoid duplicates
           if (prevTrades.some(t => t.id === latestTrade.id)) {
             return prevTrades;
           }
@@ -152,7 +140,6 @@ export default function BotTradingPage() {
         });
       }
 
-      // Only update stats and profitToday for CLOSED trades
       if (!latestTrade.is_open) {
         setStats(prevStats => {
           if (!prevStats) return prevStats;
@@ -165,20 +152,17 @@ export default function BotTradingPage() {
           };
         });
 
-        // Update profitToday in botState
         setBotState(prev => ({
           ...prev,
           profitToday: prev.profitToday + parseFloat(latestTrade.profit_loss)
         }));
       }
 
-      // Update chart data only for CLOSED trades
       if (!latestTrade.is_open && latestTrade.symbol === botState.currentPair && latestTrade.exit_price) {
         const exitPrice = parseFloat(latestTrade.exit_price);
         const tradeTime = new Date(latestTrade.closed_at!).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
         setChartData(prevData => {
-          // Remove oldest point and add new trade point
           const newData = [...prevData.slice(1)];
           newData.push({
             time: tradeTime,
@@ -187,7 +171,6 @@ export default function BotTradingPage() {
           return newData;
         });
 
-        // Update botState with the new price
         setBotState(prev => ({
           ...prev,
           lastPrice: exitPrice
@@ -198,11 +181,11 @@ export default function BotTradingPage() {
 
   useEffect(() => {
     const pollPositions = async () => {
-      if (user?.bot_type !== 'none' && prices) { // FIXED: Added prices check
+      if (user?.bot_type !== 'none' && prices) {
         try {
           setOpenPositions(prevPositions => prevPositions.map(pos => {
             const currentSymbol = getBaseSymbol(pos.symbol);
-            const livePriceData = prices?.[currentSymbol]; // FIXED: Optional chaining
+            const livePriceData = prices?.[currentSymbol];
             let currentProfit = parseFloat(pos.profit_loss) || 0;
 
             if (livePriceData) {
@@ -239,7 +222,7 @@ export default function BotTradingPage() {
 
   useEffect(() => {
     const currentSymbol = getBaseSymbol(botState.currentPair);
-    const livePriceData = prices?.[currentSymbol]; // FIXED: Optional chaining
+    const livePriceData = prices?.[currentSymbol];
     const currentBasePrice = livePriceData?.price || botState.lastPrice || 0;
 
     const generateInitialChartData = (basePrice: number) => {
@@ -259,10 +242,10 @@ export default function BotTradingPage() {
     }
 
     const interval = setInterval(() => {
-      if (!prices) return; // FIXED: Early return if prices not loaded
+      if (!prices) return;
 
       const symbol = getBaseSymbol(botState.currentPair);
-      const latestPriceData = prices?.[symbol]; // FIXED: Optional chaining
+      const latestPriceData = prices?.[symbol];
       let newPrice: number;
       const lastKnownPrice = chartData[chartData.length - 1]?.price || currentBasePrice || 0;
 
@@ -295,7 +278,6 @@ export default function BotTradingPage() {
         setBotState(prev => ({
           ...prev,
           lastPrice: newPrice > 0 ? newPrice : prev.lastPrice
-          // REMOVED: Random simulation that was corrupting profitToday
         }));
       }
     }, 5000);
@@ -310,19 +292,16 @@ export default function BotTradingPage() {
       setToggling(true);
       const response = await botService.toggleBot();
       if (response.success) {
-        // Update user state directly without refetching
         const updatedUser = {
           ...user,
           is_bot_enabled: response.is_bot_enabled
         };
         console.log('Updating user with is_bot_enabled:', response.is_bot_enabled);
         dispatch(setUser(updatedUser));
-        // Don't manually set botState here - let the useEffect handle it
       }
     } catch (error: any) {
       console.error('Failed to toggle bot:', error);
       alert(error.response?.data?.message || 'Failed to toggle bot');
-      // Revert local state on error
       setBotState(prev => ({ ...prev, isActive: user.is_bot_enabled }));
     } finally {
       setToggling(false);
@@ -331,7 +310,7 @@ export default function BotTradingPage() {
 
   const changePair = (pair: string) => {
     const newSymbol = getBaseSymbol(pair);
-    const newPrice = prices?.[newSymbol]?.price || 0; // FIXED: Optional chaining
+    const newPrice = prices?.[newSymbol]?.price || 0;
     setChartData([]);
     setBotState(prev => ({
       ...prev,
@@ -344,7 +323,6 @@ export default function BotTradingPage() {
     setOpenPositions(prev => prev.filter(p => p.id !== id));
   };
 
-  // Error boundary
   if (renderError) {
     return (
       <div className={`min-h-screen flex items-center justify-center ${tc.bg}`}>
@@ -369,7 +347,7 @@ export default function BotTradingPage() {
       <div className={`min-h-screen flex items-center justify-center ${tc.bg}`}>
         <div className="text-center">
           <Loader2 className="w-12 h-12 text-primary-500 animate-spin mx-auto mb-4" />
-          <p className={tc.textSecondary}>Loading user data...</p>
+          <p className={tc.textSecondary}>{t('common.loadingUserData')}</p>
         </div>
       </div>
     );
@@ -395,10 +373,10 @@ export default function BotTradingPage() {
           <div className="w-full px-6 py-6">
             <h1 className={`text-3xl sm:text-4xl font-extralight ${tc.textPrimary} tracking-tight flex items-center gap-3`}>
               <Zap className="w-8 h-8 text-primary-500" />
-              Bot Trading
+              {t('bot.title')}
             </h1>
             <p className={`${tc.textTertiary} font-light mt-1`}>
-              {botState.currentPair} • Last Price: {formatPrice(botState.lastPrice, 5)}
+              {botState.currentPair} • {t('bot.lastPrice')}: {formatPrice(botState.lastPrice, 5)}
             </p>
           </div>
         </div>
@@ -453,7 +431,7 @@ export default function BotTradingPage() {
                     )}
                     <span>
                       {toggling
-                        ? 'Processing...'
+                        ? t('common.processing')
                         : botState.isActive
                           ? t('bot.controls.pause')
                           : t('bot.controls.start')}
@@ -544,7 +522,7 @@ export default function BotTradingPage() {
                   {loadingPositions ? (
                     <div className={`p-6 text-center ${tc.textTertiary}`}>
                       <Loader2 className="w-8 h-8 mx-auto mb-2 animate-spin text-primary-500" />
-                      <p className="text-sm">Loading positions...</p>
+                      <p className="text-sm">{t('bot.loadingPositions')}</p>
                     </div>
                   ) : openPositions.length > 0 ? (
                     openPositions.map((position) => (
@@ -605,7 +583,7 @@ export default function BotTradingPage() {
                     <tr>
                       <td colSpan={4} className={`p-8 text-center ${tc.textTertiary}`}>
                         <Loader2 className="w-8 h-8 mx-auto mb-2 animate-spin text-primary-500" />
-                        <p className="text-sm">Loading trade history...</p>
+                        <p className="text-sm">{t('bot.loadingTradeHistory')}</p>
                       </td>
                     </tr>
                   ) : trades.length > 0 ? (
@@ -625,14 +603,14 @@ export default function BotTradingPage() {
                           </span>
                         </td>
                         <td className={`py-4 px-6 text-sm ${tc.textTertiary}`}>
-                          {trade.closed_at ? new Date(trade.closed_at).toLocaleString('en-US') : '-'}
+                          {trade.closed_at ? new Date(trade.closed_at).toLocaleString(i18n.language) : '-'}
                         </td>
                       </tr>
                     ))
                   ) : (
                     <tr>
                       <td colSpan={4} className={`p-8 text-center ${tc.textTertiary}`}>
-                        <p>Trade history is empty.</p>
+                        <p>{t('bot.history.noTrades')}</p>
                       </td>
                     </tr>
                   )}

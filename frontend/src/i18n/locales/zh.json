@@ -9,17 +9,53 @@
   "auth": {
     "login": "登录",
     "logout": "登出",
-    "email": "电子邮件",
+    "email": "电子邮箱",
     "password": "密码",
     "welcome": "欢迎回来",
     "loginSubtitle": "输入您的凭据以访问您的帐户",
     "loginButton": "登录",
     "noAccount": "没有帐户？",
     "signUp": "注册",
+    "hasAccount": "已经有帐户了？",
+    "loginHere": "在此登录",
     "platformSlogan": "专业交易平台",
+    "register": {
+      "title": "创建帐户",
+      "subtitle": "加入我们，立即开始投资",
+      "firstName": "名",
+      "firstNamePlaceholder": "John",
+      "lastName": "姓",
+      "lastNamePlaceholder": "Doe",
+      "phone": "电话",
+      "phonePlaceholder": "+1 234 567 8900",
+      "emailPlaceholder": "your@email.com",
+      "dateOfBirth": "出生日期",
+      "confirmPassword": "确认密码",
+      "rememberMe": "记住我 7 天",
+      "creating": "正在创建帐户...",
+      "createButton": "创建帐户",
+      "errorTitle": "错误"
+    },
+    "validation": {
+      "firstNameRequired": "名字是必需的",
+      "lastNameRequired": "姓氏是必需的",
+      "phoneRequired": "电话是必需的",
+      "emailRequired": "电子邮箱是必需的",
+      "emailInvalid": "请输入有效的电子邮箱地址",
+      "phoneInvalid": "电话只能包含数字、+、- 和空格",
+      "dateOfBirthRequired": "出生日期是必需的",
+      "dateInvalidFormat": "日期格式必须为 YYYY-MM-DD",
+      "dateInvalid": "无效日期",
+      "passwordRequired": "密码是必需的",
+      "confirmPasswordRequired": "请确认密码",
+      "passwordMinLength": "密码必须至少为 6 个字符",
+      "passwordsNotMatch": "密码不匹配",
+      "registrationFailed": "注册失败。请重试。",
+      "accountCreated": "帐户创建成功！请登录。"
+    },
     "hero": {
-      "title1": "交易加密货币",
-      "title2": "充满信心"
+      "title1": "满怀信心地",
+      "title2": "交易加密货币"
     },
     "heroSubtitle": "加入成千上万信任我们平台的交易者",
     "features": {
@@ -29,7 +65,7 @@
       },
       "instantDeals": {
         "title": "即时交易",
-        "description": "交易机器人 24/7 全天候工作，实现最大利润"
+        "description": "交易机器人 24/7 工作以实现最大利润"
       },
       "provenPlatform": {
         "title": "久经考验的平台",
@@ -44,23 +80,23 @@
     "welcomeTitle": "欢迎",
     "welcomeSubtitle": "登录您的帐户以继续",
     "errorTitle": "登录错误",
-    "emailLabel": "电子邮件地址",
+    "emailLabel": "电子邮箱地址",
     "passwordLabel": "密码",
-    "loggingIn": "正在登录...",
+    "loggingIn": "登录中...",
     "demo": {
-      "title": "使用模拟账户快速登录"
+      "title": "使用模拟帐户快速登录"
     },
-    "footer": "© 2025 Bemo Investment. 版权所有。"
+    "footer": "© 2025 Bemo Investment。版权所有。"
   },
   "dashboard": {
     "greeting": "欢迎",
     "greetingName": "欢迎，{{name}}！",
-    "portfolioGrowth": "您的投资组合有所增长",
-    "last24h": "在过去24小时内",
+    "portfolioGrowth": "您的投资组合增长了",
+    "last24h": "在过去 24 小时内",
     "totalBalance": "总余额",
     "pnl24h": "24小时盈亏",
     "assets": "资产",
-    "cryptocurrencies": "加密货币",
+    "cryptocurrencies": "种加密货币",
     "income": "收入",
     "monthly": "每月",
     "deposit": "存款",
@@ -71,24 +107,24 @@
     "activeTraders": "活跃交易者",
     "fearGreedIndex": "恐惧与贪婪指数",
     "greed": "贪婪",
-    "topGainers": "涨幅榜",
+    "topGainers": "涨幅冠军",
     "viewAll": "查看全部",
     "quickActions": "快捷操作",
     "withdraw": "提款",
     "trading": "交易",
-    "gainers": "上涨者",
-    "losers": "下跌者",
+    "gainers": "上涨",
+    "losers": "下跌",
     "assetsLast24h": "24小时内资产",
     "live": "在线",
     "offline": "离线",
-    "topLosers": "跌幅榜",
+    "topLosers": "跌幅冠军",
     "recentActivity": "最近活动",
-    "promoTitle": "获取奖励！",
-    "promoSubtitle": "邀请朋友，您的帐户即可获得50美元",
+    "promoTitle": "获取奖金！",
+    "promoSubtitle": "邀请朋友，您的帐户将获得 50 美元",
     "promoButton": "邀请朋友",
-    "mockTime1": "2分钟前",
-    "mockTime2": "15分钟前",
-    "mockTime3": "1小时前"
+    "mockTime1": "2 分钟前",
+    "mockTime2": "15 分钟前",
+    "mockTime3": "1 小时前"
   },
   "market": {
     "title": "市场",
@@ -109,16 +145,43 @@
       "table": "表格",
       "grid": "网格"
     },
-    "assetsCount": "{{count}} 资产",
+    "assetsCount": "{{count}} 种资产",
     "noAssetsFound": "未找到资产",
     "table": {
       "asset": "资产",
       "price": "价格",
       "change24h": "24小时变化",
+      "volume": "交易量",
       "chart": "图表",
       "action": "操作"
     },
-    "buy": "购买"
+    "buy": "购买",
+    "error": {
+      "title": "连接失败",
+      "websocketUrl": "WebSocket 网址：",
+      "backendInfo": "请确保您的后端服务器正在运行并且可以访问。",
+      "retry": "重试连接"
+    },
+    "loading": {
+      "connecting": "正在连接市场数据..."
+    },
+    "chart": {
+      "error": {
+        "noData": "没有 {{interval}} 间隔的数据。请尝试其他间隔。",
+        "insufficientData": "{{interval}} 数据不足（只有 {{count}} 根 K 线）。请尝试更短的间隔。",
+        "loadFailed": "加载图表数据失败。请尝试其他间隔或资产。",
+        "network": "网络错误：{{message}}",
+        "title": "图表错误"
+      },
+      "24h": "24小时",
+      "interval": "图表间隔",
+      "high24h": "24小时最高",
+      "low24h": "24小时最低",
+      "bullish": "看涨",
+      "bearish": "看跌",
+      "candleCount_one": "{{count}} 根 K 线",
+      "candleCount_other": "{{count}} 根 K 线"
+    }
   },
   "trading": {
     "title": "交易",
@@ -138,14 +201,14 @@
     "limit": "限价",
     "stop": "止损",
     "placeOrder": "下单",
-    "openOrders": "当前委托",
-    "orderHistory": "历史委托",
+    "openOrders": "当前订单",
+    "orderHistory": "订单历史",
     "noOrders": "暂无订单"
   },
   "balance": {
     "loading": "正在加载余额数据...",
     "title": "余额与交易",
-    "subtitle": "管理您的存款和取款",
+    "subtitle": "管理您的存款和提款",
     "availableBalance": "可用余额",
     "deposit": "存款",
     "withdraw": "提款",
@@ -154,8 +217,22 @@
     "operations": "操作",
     "transactionHistory": "交易历史",
     "viewReceipt": "查看",
-    "refreshing": "正在刷新...",
+    "refreshing": "刷新中...",
     "refresh": "刷新",
+    "wallet": {
+      "title": "提款详情",
+      "description": "添加您的加密货币钱包地址以接收提款。",
+      "currentAddress": "当前钱包地址",
+      "addressLabel": "加密货币钱包地址",
+      "hint": "输入有效的加密货币钱包地址以进行提款",
+      "save": "保存地址",
+      "saving": "保存中...",
+      "cancel": "取消",
+      "edit": "编辑地址",
+      "copy": "复制地址",
+      "successSaved": "钱包地址保存成功！",
+      "errorSaving": "保存钱包地址时出错"
+    },
     "table": {
       "type": "类型",
       "amount": "金额",
@@ -167,7 +244,7 @@
     "types": {
       "deposit": "存款",
       "withdrawal": "提款",
-      "bot_profit": "机器人利润",
+      "bot_profit": "机器人盈利",
       "commission": "手续费"
     },
     "status": {
@@ -182,35 +259,43 @@
     },
     "modals": {
       "selectPackage": "选择存款套餐",
-      "fromAmount": "250欧元起",
+      "fromAmount": "250 欧元起",
       "depositTitle": "存入余额",
-      "errorMinAmount": "最低存款金额为{{amount}}欧元",
+      "errorMinAmount": "最低存款金额为 {{amount}} 欧元",
       "withdrawTitle": "提取资金",
       "amountLabel": "存款金额",
       "minAmount": "最低金额",
       "transferAmount": "转账金额",
       "withdrawAmountLabel": "提款金额",
-      "methodLabel": "支付方式",
+      "methodLabel": "付款方式",
       "withdrawMethodLabel": "提款方式",
       "receiptLabel": "付款收据",
       "uploadClick": "点击上传",
-      "uploadHint": "PNG、JPG 或 PDF，最大 5MB",
+      "uploadHint": "PNG, JPG 或 PDF，最大 5MB",
       "sending": "发送中...",
       "processing": "处理中...",
       "confirmDeposit": "确认存款",
       "back": "返回",
       "depositSuccess": "存款请求已成功创建并发送给管理员审核。",
-      "sendButton": "发送以供审核",
+      "sendButton": "发送审核",
       "errorReceipt": "请上传付款收据",
       "errorDeposit": "创建存款时出错",
-      "availableToWithdraw": "可提款",
+      "availableToWithdraw": "可供提款",
       "walletAddressLabel": "钱包地址",
-      "requesting": "正在发送请求...",
+      "requesting": "发送请求中...",
       "requestButton": "请求提款",
-      "errorInsufficientFunds": "余额不足",
+      "errorInsufficientFunds": "余额中资金不足",
       "errorWithdraw": "创建提款请求时出错",
       "withdrawMinimum": "最低",
-      "commission": "手续费"
+      "commission": "手续费",
+      "calc": {
+        "amount": "请求金额",
+        "commission": "手续费 (25%)",
+        "youReceive": "您将收到"
+      },
+      "yourRequisites": "您的详细信息 (IBAN / 银行卡)",
+      "errorRequisites": "请指定您的提款详细信息",
+      "errorMinAmountWithdraw": "最低提款金额：50 欧元"
     },
     "methods": {
       "card": "银行卡",
@@ -219,7 +304,7 @@
     },
     "depositOptions": {
       "basic": {
-        "title": "基本套餐",
+        "title": "基础套餐",
         "description": "适合初学者"
       },
       "premium": {
@@ -237,7 +322,9 @@
     },
     "payment": {
       "cardNumberLabel": "用于付款的卡号",
-      "noCardNumber": "未指定用于付款的卡号。请联系支持人员。",
+      "noCardNumber": "未指定用于付款的卡号。请联系支持。",
+      "methodsTitle": "用于付款的卡号",
+      "noMethods": "无可用付款方式",
       "attached": "附件：",
       "replyPlaceholder": "回复用户...",
       "downloadAttachment": "下载附件"
@@ -251,7 +338,7 @@
     },
     "emptyChat": {
       "title": "开始与支持团队对话",
-      "subtitle": "我们的团队随时准备帮助您解决有关交易、存款或取款的任何问题"
+      "subtitle": "我们的团队随时准备帮助您解决有关交易、存款或提款的任何问题"
     },
     "chat": {
       "supportTeam": "支持团队",
@@ -260,20 +347,20 @@
     "input": {
       "attachTitle": "附加文件",
       "placeholder": "输入消息...",
-      "footer": "平均响应时间：1小时 • 我们 24/7 工作"
+      "footer": "平均响应时间：1 小时 • 我们 24/7 工作"
     },
     "cards": {
       "faq": {
         "title": "常见问题",
-        "subtitle": "关于平台热门问题的解答"
+        "subtitle": "有关平台的热门问题解答"
       },
       "docs": {
         "title": "文档",
-        "subtitle": "使用所有功能的指南"
+        "subtitle": "有关使用所有功能的指南"
       },
       "security": {
         "title": "安全",
-        "subtitle": "关于保护您资金的信息"
+        "subtitle": "有关保护您资金的信息"
       }
     },
     "time": {
@@ -290,21 +377,21 @@
       "activity": "活动"
     },
     "accountInfo": {
-      "title": "账户信息",
-      "emailLabel": "电子邮件地址",
-      "emailHint": "电子邮件无法更改",
+      "title": "帐户信息",
+      "emailLabel": "电子邮箱地址",
+      "emailHint": "电子邮箱无法更改",
       "fullNameLabel": "全名",
-      "fullNamePlaceholder": "张三",
-      "userIdLabel": "用户ID"
+      "fullNamePlaceholder": "John Doe",
+      "userIdLabel": "用户 ID"
     },
     "buttons": {
-      "saving": "正在保存...",
+      "saving": "保存中...",
       "save": "保存更改",
-      "changing": "正在更改...",
+      "changing": "更改中...",
       "changePassword": "更改密码"
     },
     "status": {
-      "title": "账户状态",
+      "title": "帐户状态",
       "verification": "验证",
       "yes": "是",
       "no": "否",
@@ -314,7 +401,7 @@
     "dates": {
       "title": "日期",
       "registration": "注册日期",
-      "lastLogin": "最后登录"
+      "lastLogin": "上次登录"
     },
     "security": {
       "title": "更改密码",
@@ -330,9 +417,9 @@
       "tip4": "使用唯一的密码"
     },
     "activity": {
-      "title": "账户活动",
-      "level": "账户等级",
-      "withUs": "与我们一起",
+      "title": "帐户活动",
+      "level": "帐户级别",
+      "withUs": "与我们",
       "days": "天",
       "verification": "验证"
     },
@@ -344,8 +431,84 @@
       "passwordUpdateError": "更改密码时出错"
     }
   },
+  "bot": {
+    "title": "机器人交易",
+    "subtitle": "使用您选择的机器人进行自动交易",
+    "lastPrice": "最新价格",
+    "loadingPositions": "正在加载仓位...",
+    "loadingTradeHistory": "正在加载交易历史...",
+    "info": {
+      "title": "自动交易机器人",
+      "subtitle": "精确执行策略。24/7 交易。安全。自适应。高效。",
+      "openBalance": "打开余额",
+      "description": "该交易系统利用自主算法消除情绪化决策。为准确性和稳定性而构建——它在任何市场条件下持续分析、反应和执行，保护您的资产，同时最大化机会。",
+      "features": {
+        "trading247": {
+          "title": "24/7 交易",
+          "description": "持续市场监控"
+        },
+        "riskControl": {
+          "title": "风险控制",
+          "description": "自动资本保护"
+        },
+        "fastExecution": {
+          "title": "快速执行",
+          "description": "延迟低于 100 毫秒"
+        },
+        "adaptiveAI": {
+          "title": "自适应 AI",
+          "description": "智能交易逻辑"
+        }
+      }
+    },
+    "activity": {
+      "title": "机器人活动",
+      "description": "您的 {{botType}} 机器人正处于活动状态并正在交易",
+      "active": "活动",
+      "stopped": "已停止",
+      "sessionProfit": "会话利润",
+      "winRate": "胜率",
+      "totalTrades": "总交易",
+      "losingTrades": "亏损交易",
+      "today": "今天"
+    },
+    "controls": {
+      "title": "控制",
+      "tradingPair": "交易对",
+      "pause": "暂停",
+      "start": "开始",
+      "stop": "停止"
+    },
+    "stats": {
+      "today": "今天",
+      "profit": "利润：",
+      "closedTrades": "已平仓交易：",
+      "openPositions": "当前仓位："
+    },
+    "chart": {
+      "title": "{{pair}} 图表",
+      "loading": "正在加载图表数据..."
+    },
+    "positions": {
+      "title": "当前仓位",
+      "entry": "入场：",
+      "noPositions": "无当前仓位"
+    },
+    "history": {
+      "title": "交易历史",
+      "headers": {
+        "symbol": "交易对",
+        "type": "类型",
+        "profitLoss": "盈/亏",
+        "closeDate": "平仓日期"
+      },
+      "noTrades": "暂无交易"
+    }
+  },
   "common": {
     "loading": "加载中...",
+    "loadingUserData": "正在加载用户数据...",
+    "processing": "处理中...",
     "error": "错误",
     "success": "成功",
     "cancel": "取消",

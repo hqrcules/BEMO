@@ -1,278 +1,315 @@
-import { useState, FormEvent, useRef, useEffect } from 'react';
-import { useNavigate, Link, useLocation } from 'react-router-dom';
+import { useState, FormEvent, useEffect, FC, useRef } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { loginUser, clearError } from '@/store/slices/authSlice';
+import { Loader2, ArrowRight, Globe, ChevronDown } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { Lock, Mail, AlertCircle, Loader2, TrendingUp, Shield, Award, Zap, Globe, ChevronDown, Moon, Sun } from 'lucide-react';
-import { useThemeClasses } from '@/shared/hooks/useThemeClasses';
-import { useTheme } from '@/contexts/ThemeContext';
 
 const languages = [
   { code: 'en', name: 'English' },
+  { code: 'de', name: 'Deutsch' },
+  { code: 'ar', name: 'العربية' },
+  { code: 'cs', name: 'Čeština' },
   { code: 'ru', name: 'Русский' },
   { code: 'es', name: 'Español' },
-  { code: 'de', name: 'Deutsch' },
   { code: 'fr', name: 'Français' },
   { code: 'ja', name: '日本語' },
   { code: 'zh', name: '中文' },
-  { code: 'ar', name: 'العربية' },
   { code: 'kk', name: 'Қазақша' },
   { code: 'nl', name: 'Nederlands' },
-  { code: 'cs', name: 'Čeština' },
 ];
 
-export default function LoginPage() {
-  const { t, i18n } = useTranslation();
-  const dispatch = useAppDispatch();
-  const navigate = useNavigate();
-  const location = useLocation();
-  const { isLoading, error } = useAppSelector((state) => state.auth);
-  const tc = useThemeClasses();
-  const { theme, toggleTheme } = useTheme();
+const NeuralBackground: FC<{ isActive: boolean }> = ({ isActive }) => {
+    useEffect(() => {
+        if (!isActive) return;
+        const canvas = document.getElementById('neural-canvas') as HTMLCanvasElement;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return;
 
-  const [formData, setFormData] = useState({
-    email: '',
-    password: '',
-    remember_me: false,
-  });
+        let animationFrameId: number;
+        const settings = {
+            maxStructures: 5, structureGrowthInterval: 800, maxStructureSize: 12,
+            fadeDuration: 2, baseSpeed: 0.1, connectionDistance: 120
+        };
+        let particles: any[] = []; let activeStructures: any[] = [];
 
-  const [isLangDropdownOpen, setIsLangDropdownOpen] = useState(false);
-  const langDropdownRef = useRef<HTMLDivElement>(null);
-  const [successMessage, setSuccessMessage] = useState<string>('');
+        const particleColor = '150, 150, 150';
+        const lineColor = '255, 255, 255';
 
-  // Check for success message from registration
-  useEffect(() => {
-    if (location.state?.message) {
-      setSuccessMessage(location.state.message);
-      // Clear the message from location state
-      window.history.replaceState({}, document.title);
-    }
-  }, [location]);
+        class Particle {
+            id: number; x: number; y: number; vx: number; vy: number; size: number;
+            constructor(id: number, w: number, h: number) {
+                this.id = id; this.x = Math.random() * w; this.y = Math.random() * h;
+                this.vx = (Math.random() - 0.5) * settings.baseSpeed; this.vy = (Math.random() - 0.5) * settings.baseSpeed;
+                this.size = Math.random() * 1.2 + 0.8;
+            }
+            update(w: number, h: number) {
+                this.x += this.vx; this.y += this.vy;
+                if (this.x > w || this.x < 0) this.vx *= -1; if (this.y > h || this.y < 0) this.vy *= -1;
+            }
+        }
 
-  // Handle clicks outside the dropdown to close it
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (langDropdownRef.current && !langDropdownRef.current.contains(event.target as Node)) {
-        setIsLangDropdownOpen(false);
-      }
-    };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, []);
+        const createNewStructure = () => {
+            if (particles.length < 2 || activeStructures.length >= settings.maxStructures) return;
+            const p1_idx = Math.floor(Math.random() * particles.length);
+            const p2_idx = Math.floor(Math.random() * particles.length);
+            if (p1_idx !== p2_idx) { activeStructures.push({ points: new Set([p1_idx, p2_idx]), alpha: 0, state: 'growing', lastGrowthTime: Date.now() }); }
+        };
 
-  const handleSubmit = async (e: FormEvent) => {
-    e.preventDefault();
-    const result = await dispatch(loginUser(formData));
-    if (loginUser.fulfilled.match(result)) {
-      navigate('/dashboard');
-    }
-  };
+        const growStructure = (structure: any) => {
+            if (structure.points.size >= settings.maxStructureSize) { structure.state = 'fadingOut'; return; }
+            const allPointsArray = Array.from(structure.points);
+            const pointToGrowFromIdx = allPointsArray[Math.floor(Math.random() * allPointsArray.length)];
+            const pointToGrowFrom = particles[pointToGrowFromIdx];
+            let closestPoint = null; let minDistance = Infinity;
+            for (let i = 0; i < particles.length; i++) {
+                if (!structure.points.has(i)) {
+                    const dist = Math.hypot(pointToGrowFrom.x - particles[i].x, pointToGrowFrom.y - particles[i].y);
+                    if (dist < minDistance && dist < settings.connectionDistance) { minDistance = dist; closestPoint = i; }
+                }
+            }
+            if (closestPoint !== null) structure.points.add(closestPoint); else structure.state = 'fadingOut';
+        };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value, type, checked } = e.target;
-    setFormData({
-      ...formData,
-      [name]: type === 'checkbox' ? checked : value,
-    });
-    if (error) {
-      dispatch(clearError());
-    }
-  };
+        const setup = () => {
+            canvas.width = window.innerWidth; canvas.height = window.innerHeight; particles = []; activeStructures = [];
+            const count = Math.floor((canvas.width * canvas.height) / 20000);
+            for (let i = 0; i < count; i++) particles.push(new Particle(i, canvas.width, canvas.height));
+            for(let i=0; i < settings.maxStructures / 2; i++) createNewStructure();
+        };
 
-  const handleLangSelect = (code: string) => {
-    i18n.changeLanguage(code);
-    setIsLangDropdownOpen(false);
-  };
+        const draw = () => {
+            if (!isActive || !ctx) return;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach(p => p.update(canvas.width, canvas.height));
+            ctx.fillStyle = `rgba(${particleColor}, 0.3)`;
+            particles.forEach(p => { ctx.beginPath(); ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2); ctx.fill(); });
+            const fadeAmount = 1 / (settings.fadeDuration * 60);
+            for (let i = activeStructures.length - 1; i >= 0; i--) {
+                const struct = activeStructures[i];
+                if(struct.state === 'growing'){
+                    struct.alpha = Math.min(1, struct.alpha + fadeAmount);
+                    if (Date.now() - struct.lastGrowthTime > settings.structureGrowthInterval) { growStructure(struct); struct.lastGrowthTime = Date.now(); }
+                } else {
+                    struct.alpha = Math.max(0, struct.alpha - fadeAmount);
+                    if(struct.alpha === 0) { activeStructures.splice(i, 1); createNewStructure(); continue; }
+                }
+                ctx.strokeStyle = `rgba(${lineColor}, ${struct.alpha * 0.6})`;
+                ctx.lineWidth = 0.8;
+                const pointsArray = Array.from(struct.points);
+                for (let j = 0; j < pointsArray.length; j++) {
+                    for (let k = j + 1; k < pointsArray.length; k++) {
+                        const p1 = particles[pointsArray[j] as number]; const p2 = particles[pointsArray[k] as number];
+                         if(p1 && p2 && Math.hypot(p1.x - p2.x, p1.y - p2.y) < settings.connectionDistance * 1.5){
+                            ctx.beginPath(); ctx.moveTo(p1.x, p1.y); ctx.lineTo(p2.x, p2.y); ctx.stroke();
+                        }
+                    }
+                }
+            }
+            animationFrameId = requestAnimationFrame(draw);
+        };
+        setup(); draw();
+        window.addEventListener('resize', setup);
+        return () => { window.removeEventListener('resize', setup); cancelAnimationFrame(animationFrameId); };
+    }, [isActive]);
 
-  return (
-    <div className={`min-h-screen ${tc.bg} relative overflow-hidden`}>
-      {/* Animated Background */}
-      <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute top-0 -left-40 w-80 h-80 bg-primary-500/10 rounded-full blur-3xl animate-pulse-slow"></div>
-        <div className="absolute bottom-0 -right-40 w-80 h-80 bg-success-500/10 rounded-full blur-3xl animate-pulse-slow" style={{ animationDelay: '1s' }}></div>
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-primary-600/05 rounded-full blur-3xl animate-pulse-slow" style={{ animationDelay: '2s' }}></div>
-        <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:50px_50px]"></div>
-      </div>
+    return <canvas id="neural-canvas" className={`absolute top-0 left-0 w-full h-full transition-opacity duration-[2000ms] ${isActive ? 'opacity-100' : 'opacity-0'} pointer-events-none`} />;
+};
 
-      <div className="relative z-10 min-h-screen flex items-center justify-center px-4 py-12">
-        <div className="w-full max-w-6xl mx-auto grid lg:grid-cols-2 gap-12 items-center">
-          {/* Left Side - Branding & Features */}
-          <div className="hidden lg:block space-y-8 animate-fade-in">
-            <div className="space-y-4">
-              <div className="flex items-center gap-3 mb-6">
-                <div className="w-14 h-14 bg-gradient-to-br from-primary-500 to-primary-600 rounded-2xl flex items-center justify-center shadow-lg shadow-primary-500/50">
-                  <TrendingUp className="w-8 h-8 text-white" />
-                </div>
-                <div>
-                  <h1 className="text-4xl font-black text-primary-500">Bemo Investment</h1>
-                  <p className={`${tc.textSecondary} text-sm`}>{t('auth.platformSlogan')}</p>
-                </div>
-              </div>
-              <h2 className={`text-5xl font-bold ${tc.textPrimary} leading-tight`}>
-                {t('auth.hero.title1')}
-                <br />
-                <span className="text-primary-500">{t('auth.hero.title2')}</span>
-              </h2>
-              <p className={`text-lg ${tc.textSecondary}`}>{t('auth.hero.subtitle')}</p>
-            </div>
-            <div className="space-y-4">
-              <div className="flex items-start gap-4 glass-card p-4 hover:border-primary-500/50 transition-all duration-300">
-                <div className="w-12 h-12 bg-primary-500/10 rounded-xl flex items-center justify-center flex-shrink-0"><Shield className="w-6 h-6 text-primary-500" /></div>
-                <div>
-                  <h3 className={`font-semibold ${tc.textPrimary} mb-1`}>{t('auth.features.security.title')}</h3>
-                  <p className={`text-sm ${tc.textSecondary}`}>{t('auth.features.security.description')}</p>
-                </div>
-              </div>
-              <div className="flex items-start gap-4 glass-card p-4 hover:border-success-500/50 transition-all duration-300">
-                <div className="w-12 h-12 bg-success-500/10 rounded-xl flex items-center justify-center flex-shrink-0"><Zap className="w-6 h-6 text-success-500" /></div>
-                <div>
-                  <h3 className={`font-semibold ${tc.textPrimary} mb-1`}>{t('auth.features.instantDeals.title')}</h3>
-                  <p className={`text-sm ${tc.textSecondary}`}>{t('auth.features.instantDeals.description')}</p>
-                </div>
-              </div>
-              <div className="flex items-start gap-4 glass-card p-4 hover:border-warning-500/50 transition-all duration-300">
-                <div className="w-12 h-12 bg-warning-500/10 rounded-xl flex items-center justify-center flex-shrink-0"><Award className="w-6 h-6 text-warning-500" /></div>
-                <div>
-                  <h3 className={`font-semibold ${tc.textPrimary} mb-1`}>{t('auth.features.provenPlatform.title')}</h3>
-                  <p className={`text-sm ${tc.textSecondary}`}>{t('auth.features.provenPlatform.description')}</p>
-                </div>
-              </div>
-            </div>
-            <div className="grid grid-cols-3 gap-4 pt-6">
-              <div className="text-center"><div className="text-3xl font-bold text-success-500 mb-1">1000+</div><div className={`text-xs ${tc.textSecondary}`}>{t('auth.stats.users')}</div></div>
-              <div className="text-center"><div className="text-3xl font-bold text-primary-500 mb-1">€2.5M</div><div className={`text-xs ${tc.textSecondary}`}>{t('auth.stats.volume')}</div></div>
-              <div className="text-center"><div className="text-3xl font-bold text-success-500 mb-1">24/7</div><div className={`text-xs ${tc.textSecondary}`}>{t('auth.stats.support')}</div></div>
-            </div>
-          </div>
+const useTypingEffect = (text: string, speed = 30, start = true) => {
+    const [displayedText, setDisplayedText] = useState('');
+    useEffect(() => {
+        if (!start) return;
+        setDisplayedText('');
+        let i = 0;
+        const interval = setInterval(() => {
+            if (i < text.length) { setDisplayedText((prev) => prev + text.charAt(i)); i++; }
+            else { clearInterval(interval); }
+        }, speed);
+        return () => clearInterval(interval);
+    }, [text, speed, start]);
+    return displayedText;
+};
 
-          {/* Right Side - Login Form */}
-          <div className="animate-slide-in">
-            <div className="glass-card p-8 lg:p-10 max-w-md mx-auto relative">
+const SystemResponse: FC<{ text: string; startCondition: boolean }> = ({ text, startCondition }) => {
+    const displayText = useTypingEffect(text, 20, startCondition);
+    return (
+        <p className="text-sm text-[#888] whitespace-nowrap font-mono">
+            {displayText}
+            <span className="animate-blink text-white">_</span>
+        </p>
+    );
+};
 
-              {/* Theme Toggle & Language Selector */}
-              <div className="absolute top-4 right-4 z-20 flex items-center gap-2">
-                {/* Theme Toggle Button */}
-                <button
-                  type="button"
-                  onClick={toggleTheme}
-                  className={`p-2 ${tc.cardBg} border ${tc.border}/50 rounded-lg ${tc.textSecondary} hover:${tc.textPrimary} transition-colors`}
-                  aria-label="Toggle theme"
-                >
-                  {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
-                </button>
+const LanguageControls: FC = () => {
+    const { i18n } = useTranslation();
+    const [isOpen, setIsOpen] = useState(false);
+    const dropdownRef = useRef<HTMLDivElement>(null);
 
-                {/* Language Selector */}
-                <div className="relative" ref={langDropdownRef}>
-                  <button
-                    type="button"
-                    onClick={() => setIsLangDropdownOpen(!isLangDropdownOpen)}
-                    className={`pl-9 pr-4 py-2 ${tc.cardBg} border ${tc.border}/50 rounded-lg text-sm ${tc.textSecondary} focus:outline-none focus:border-primary-500/50 transition-colors cursor-pointer hover:border-${tc.border} w-full flex items-center justify-between gap-2`}
-                  >
-                    <Globe className={`absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 ${tc.textTertiary} pointer-events-none`} />
-                    <span className="truncate">
-                      {languages.find(l => l.code === i18n.language)?.name}
-                    </span>
-                    <ChevronDown className={`w-4 h-4 ${tc.textTertiary} flex-shrink-0 transition-transform duration-200 ${isLangDropdownOpen ? 'rotate-180' : 'rotate-0'}`} />
-                  </button>
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) setIsOpen(false);
+        };
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, []);
 
-                  {isLangDropdownOpen && (
-                    <div className={`absolute top-full right-0 mt-2 w-48 ${tc.cardBg} border ${tc.border} rounded-lg shadow-lg overflow-y-auto max-h-60 z-30 animate-fade-in`}>
-                      <ul className="py-1">
-                        {languages.map(lang => (
-                          <li
-                            key={lang.code}
-                            onClick={() => handleLangSelect(lang.code)}
-                            className={`px-4 py-2 text-sm ${tc.textSecondary} ${tc.hoverBg} ${tc.hoverText} cursor-pointer transition-colors`}
-                          >
+    const currentLang = languages.find(l => l.code === i18n.language) || languages[0];
+
+    return (
+        <div className="relative" ref={dropdownRef}>
+            <button onClick={() => setIsOpen(!isOpen)} className="p-2 text-[#888] hover:text-white transition-colors border border-[#333] hover:border-white flex items-center gap-2 bg-transparent rounded">
+                <Globe className="w-4 h-4" />
+                <span className="text-xs uppercase">{currentLang.code}</span>
+                <ChevronDown className={`w-3 h-3 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+            </button>
+            {isOpen && (
+                <div className="absolute top-full right-0 mt-2 w-48 bg-[#101214] border border-[#27272A] backdrop-blur-md shadow-xl z-50 animate-stage-in max-h-60 overflow-y-auto rounded">
+                    {languages.map((lang) => (
+                        <button key={lang.code} onClick={() => { i18n.changeLanguage(lang.code); setIsOpen(false); }}
+                            className={`w-full px-4 py-2 text-left text-sm transition-colors ${i18n.language === lang.code ? 'bg-[#1A1D1F] text-white' : 'text-[#888] hover:text-white hover:bg-[#1A1D1F]'}`}>
                             {lang.name}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
+                        </button>
+                    ))}
                 </div>
-              </div>
+            )}
+        </div>
+    );
+};
 
-              <div className="lg:hidden flex items-center justify-center gap-3 mb-8">
-                <div className="w-12 h-12 bg-gradient-to-br from-primary-500 to-primary-600 rounded-xl flex items-center justify-center shadow-lg shadow-primary-500/50"><TrendingUp className="w-7 h-7 text-white" /></div>
-                <h1 className="text-3xl font-bold text-primary-500">Bemo Investment</h1>
-              </div>
+export default function LoginPage() {
+    const dispatch = useAppDispatch();
+    const navigate = useNavigate();
+    const { isLoading, error } = useAppSelector((state) => state.auth);
+    const { t } = useTranslation();
 
-              <div className="mb-8">
-                <h2 className={`text-2xl font-bold ${tc.textPrimary} mb-2`}>{t('auth.welcomeTitle')}</h2>
-                <p className={tc.textSecondary}>{t('auth.welcomeSubtitle')}</p>
-              </div>
+    const bootHasPlayed = sessionStorage.getItem('login_boot_played') === '1';
+    const [bootStage, setBootStage] = useState(bootHasPlayed ? 4 : 0);
+    const [hasBootPlayed, setHasBootPlayed] = useState(bootHasPlayed);
+    const [formData, setFormData] = useState({ email: '', password: '' });
 
-              {successMessage && (
-                <div className="mb-6 p-4 bg-success-500/10 border border-success-500/20 rounded-xl flex items-start gap-3 animate-fade-in">
-                  <AlertCircle className="w-5 h-5 text-success-500 flex-shrink-0 mt-0.5" />
-                  <div>
-                    <p className="text-sm text-success-500 font-medium">Success</p>
-                    <p className="text-sm text-success-500/80 mt-1">{successMessage}</p>
-                  </div>
-                </div>
-              )}
+    useEffect(() => {
+        dispatch(clearError());
+        const alreadyPlayed = sessionStorage.getItem('login_boot_played');
+        if (alreadyPlayed) { setHasBootPlayed(true); setBootStage(4); return; }
+        sessionStorage.setItem('login_boot_played', '1');
+        setHasBootPlayed(false);
+        const seq = [
+            setTimeout(() => setBootStage(1), 500),
+            setTimeout(() => setBootStage(2), 1000),
+            setTimeout(() => setBootStage(3), 2800),
+            setTimeout(() => setBootStage(4), 4500),
+        ];
+        return () => seq.forEach(clearTimeout);
+    }, [dispatch]);
 
-              {error && (
-                <div className="mb-6 p-4 bg-danger-500/10 border border-danger-500/20 rounded-xl flex items-start gap-3 animate-fade-in">
-                  <AlertCircle className="w-5 h-5 text-danger-500 flex-shrink-0 mt-0.5" />
-                  <div>
-                    <p className="text-sm text-danger-500 font-medium">{t('auth.errorTitle')}</p>
-                    <p className="text-sm text-danger-500/80 mt-1">{error}</p>
-                  </div>
-                </div>
-              )}
+    const handleSubmit = async (e: FormEvent) => {
+        e.preventDefault();
+        dispatch(clearError());
+        const result = await dispatch(loginUser({ ...formData, remember_me: true }));
+        if (loginUser.fulfilled.match(result)) navigate('/dashboard');
+    };
 
-              <form onSubmit={handleSubmit} className="space-y-5">
-                <div>
-                  <label htmlFor="email" className={`block text-sm font-medium ${tc.textPrimary} mb-2`}>{t('auth.emailLabel')}</label>
-                  <div className="relative group">
-                    <Mail className={`absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 ${tc.textTertiary} group-focus-within:text-primary-500 transition-colors`} />
-                    <input id="email" name="email" type="email" required value={formData.email} onChange={handleChange} className="input-field pl-12" placeholder="your@email.com" disabled={isLoading} />
-                  </div>
-                </div>
-                <div>
-                  <label htmlFor="password" className={`block text-sm font-medium ${tc.textPrimary} mb-2`}>{t('auth.passwordLabel')}</label>
-                  <div className="relative group">
-                    <Lock className={`absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 ${tc.textTertiary} group-focus-within:text-primary-500 transition-colors`} />
-                    <input id="password" name="password" type="password" required value={formData.password} onChange={handleChange} className="input-field pl-12" placeholder="••••••••" disabled={isLoading} />
-                  </div>
-                </div>
-                <div className="flex items-center">
-                  <input
-                    id="remember_me"
-                    name="remember_me"
-                    type="checkbox"
-                    checked={formData.remember_me}
-                    onChange={handleChange}
-                    className="w-4 h-4 text-primary-500 bg-transparent border-gray-300 rounded focus:ring-primary-500 focus:ring-2"
-                    disabled={isLoading}
-                  />
-                  <label htmlFor="remember_me" className={`ml-2 text-sm ${tc.textSecondary}`}>
-                    {t('auth.rememberMe', 'Remember me for 7 days')}
-                  </label>
-                </div>
-                <button type="submit" disabled={isLoading} className="w-full btn-primary py-4 text-base font-semibold">
-                  {isLoading ? (<><Loader2 className="w-5 h-5 animate-spin" />{t('auth.loggingIn')}</>) : (<>{t('auth.loginButton')}<TrendingUp className="w-5 h-5" /></>)}
-                </button>
-              </form>
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setFormData({ ...formData, [e.target.name]: e.target.value });
+        if (error) dispatch(clearError());
+    };
 
-              <div className="mt-6 text-center">
-                <p className={`text-sm ${tc.textSecondary}`}>
-                  Don't have an account?{' '}
-                  <Link to="/register" className="text-primary-500 hover:text-primary-400 font-semibold transition-colors">
-                    Create Account
-                  </Link>
-                </p>
-              </div>
+    return (
+        <div className="bg-[#050505] text-[#E0E0E0] font-mono min-h-screen flex items-center justify-center p-4 relative overflow-hidden">
+            <style>
+                {`
+                    :root { --border-color: #27272A; }
+                    .input-group:focus-within { --border-color: #FFF; color: #FFF; }
+
+                    @keyframes fade-in-grow { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+                    @keyframes delayed-fade-in { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+                    @keyframes stage-in { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+                    .animate-fade-in { animation: fade-in-grow 1s cubic-bezier(0.25, 1, 0.5, 1) forwards; }
+                    .animate-delayed-fade-in { animation: delayed-fade-in 1s cubic-bezier(0.25, 1, 0.5, 1) forwards; opacity: 0; animation-delay: 800ms; }
+                    .animate-stage-in { animation: stage-in 0.4s cubic-bezier(0.25, 1, 0.5, 1) forwards; }
+                    @keyframes blink { 50% { opacity: 0; } }
+                    .animate-blink { animation: blink 1.2s step-end infinite; }
+
+                    /* PULSING BORDER ANIMATION - WHITE GLOW */
+                    @keyframes pulse-border {
+                        0%, 100% { box-shadow: 0 0 0 0 rgba(255,255,255,0); }
+                        50% { box-shadow: 0 0 20px 0 rgba(255,255,255,0.08); }
+                    }
+                    .animate-pulse-border { animation: pulse-border 5s infinite; }
+
+                    .button-glimmer::after { content: ''; position: absolute; top: 0; left: -100%; width: 50%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent); transition: left 0.6s; }
+                    .button-glimmer:hover::after { left: 150%; }
+                `}
+            </style>
+
+            <NeuralBackground isActive={bootStage >= 4} />
+
+            <div className="absolute top-6 right-6 z-20">
+                <LanguageControls />
             </div>
 
-            <p className={`text-center text-sm ${tc.textTertiary} mt-6`}>{t('auth.footer')}</p>
-          </div>
+            <div className={`w-full max-w-lg transition-opacity duration-0 ${bootStage >= 1 ? 'opacity-100' : 'opacity-0'}`}>
+                <div className="bg-[rgba(16,18,20,0.7)] border border-[#27272A] backdrop-blur-md p-8 sm:p-10 shadow-2xl relative animate-pulse-border h-[450px] flex flex-col justify-center">
+
+                    {!hasBootPlayed && (
+                        <div className={`absolute top-0 left-0 w-full h-full p-8 sm:p-10 flex flex-col justify-center transition-opacity duration-700 ${bootStage >= 4 ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
+                            <div className="space-y-2">
+                                <SystemResponse text="[0.0000] Initializing BEMO System Core..." startCondition={bootStage >= 2 && !hasBootPlayed} />
+                                <SystemResponse text="[2.8134] Establishing quantum-link handshake..." startCondition={bootStage >= 3 && !hasBootPlayed} />
+                            </div>
+                        </div>
+                    )}
+
+                    <div className={`absolute top-0 left-0 w-full h-full flex flex-col justify-center transition-opacity duration-1000 ${bootStage >= 4 ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
+                         <div className={`p-8 sm:p-10 ${!bootHasPlayed ? 'animate-fade-in' : ''}`} style={{ animationDelay: '200ms' }}>
+                            <h1 className="text-xl text-center mb-10 text-white tracking-[0.3em] font-bold">
+                                B E M O <span className="text-[#666] font-normal"> // INVESTMENT</span>
+                            </h1>
+
+                            <form onSubmit={handleSubmit} className="space-y-8">
+                                <div className="input-group flex flex-col gap-1">
+                                    <label htmlFor="email" className="text-[#666] text-xs uppercase tracking-widest mb-1 text-left font-semibold">
+                                        {t('auth.emailLabel')}
+                                    </label>
+                                    <input id="email" name="email" type="email" required autoFocus value={formData.email} onChange={handleChange} disabled={isLoading}
+                                        className="w-full bg-transparent focus:outline-none border-b border-[#333] focus:border-white py-2 transition-colors duration-300 caret-white text-white" />
+                                </div>
+                                <div className="input-group flex flex-col gap-1">
+                                    <label htmlFor="password" className="text-[#666] text-xs uppercase tracking-widest mb-1 text-left font-semibold">
+                                        {t('auth.passwordLabel')}
+                                    </label>
+                                    <input id="password" name="password" type="password" required value={formData.password} onChange={handleChange} disabled={isLoading}
+                                        className="w-full bg-transparent focus:outline-none border-b border-[#333] focus:border-white py-2 transition-colors duration-300 caret-white text-white" />
+                                </div>
+
+                                {error && <p className="!mt-3 text-sm text-red-500 text-left">[ERROR]: {t('auth.errorTitle')}</p>}
+
+                                <div className="pt-4">
+                                    <button type="submit" disabled={isLoading}
+                                        className="button-glimmer group relative overflow-hidden flex items-center justify-center w-full gap-3 text-lg border border-[#333] px-4 py-3 hover:border-white focus:outline-none transition-colors duration-300">
+                                        {isLoading ? <Loader2 className="animate-spin h-5 w-5 text-white" /> : (
+                                            <>
+                                                <span className="text-white font-medium">{t('auth.loginButton')}</span>
+                                                <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-2 text-[#666] group-hover:text-white" />
+                                            </>
+                                        )}
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+
+                        <div className={`absolute bottom-6 text-center w-full left-0 ${!bootHasPlayed ? 'animate-delayed-fade-in' : ''}`}>
+                            <p className="text-[#666] text-xs">
+                                {t('auth.noAccount')}{' '}
+                                <Link to="/register" className="text-white hover:underline focus:underline focus:outline-none transition-all font-medium">
+                                    &gt; {t('auth.signUp')}
+                                </Link>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-      </div>
-    </div>
-  );
+    );
 }

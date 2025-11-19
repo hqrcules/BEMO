@@ -1,7 +1,7 @@
 {
   "nav": {
     "home": "ホーム",
-    "market": "マーケット",
+    "market": "市場",
     "balance": "残高",
     "support": "サポート",
     "profile": "プロフィール"
@@ -9,36 +9,72 @@
   "auth": {
     "login": "ログイン",
     "logout": "ログアウト",
-    "email": "メール",
+    "email": "メールアドレス",
     "password": "パスワード",
-    "welcome": "ようこそ",
-    "loginSubtitle": "アカウントにアクセスするために資格情報を入力してください",
+    "welcome": "おかえりなさい",
+    "loginSubtitle": "アカウントにアクセスするために認証情報を入力してください",
     "loginButton": "サインイン",
     "noAccount": "アカウントをお持ちではありませんか？",
     "signUp": "サインアップ",
+    "hasAccount": "すでにアカウントをお持ちですか？",
+    "loginHere": "こちらからログイン",
     "platformSlogan": "プロフェッショナル取引プラットフォーム",
-    "hero": {
-      "title1": "暗号通貨を取引する",
-      "title2": "自信を持って"
+    "register": {
+      "title": "アカウント作成",
+      "subtitle": "参加して今日から投資を始めましょう",
+      "firstName": "名",
+      "firstNamePlaceholder": "John",
+      "lastName": "姓",
+      "lastNamePlaceholder": "Doe",
+      "phone": "電話番号",
+      "phonePlaceholder": "+1 234 567 8900",
+      "emailPlaceholder": "your@email.com",
+      "dateOfBirth": "生年月日",
+      "confirmPassword": "パスワードを確認",
+      "rememberMe": "7日間ログイン状態を保持",
+      "creating": "アカウント作成中...",
+      "createButton": "アカウント作成",
+      "errorTitle": "エラー"
     },
-    "heroSubtitle": "私たちのプラットフォームを信頼する何千ものトレーダーに参加しましょう",
+    "validation": {
+      "firstNameRequired": "名は必須です",
+      "lastNameRequired": "姓は必須です",
+      "phoneRequired": "電話番号は必須です",
+      "emailRequired": "メールアドレスは必須です",
+      "emailInvalid": "有効なメールアドレスを入力してください",
+      "phoneInvalid": "電話番号には数字、+、-、スペースのみ使用できます",
+      "dateOfBirthRequired": "生年月日は必須です",
+      "dateInvalidFormat": "日付は YYYY-MM-DD 形式である必要があります",
+      "dateInvalid": "無効な日付",
+      "passwordRequired": "パスワードは必須です",
+      "confirmPasswordRequired": "パスワード確認は必須です",
+      "passwordMinLength": "パスワードは6文字以上である必要があります",
+      "passwordsNotMatch": "パスワードが一致しません",
+      "registrationFailed": "登録に失敗しました。もう一度お試しください。",
+      "accountCreated": "アカウントが正常に作成されました！ログインしてください。"
+    },
+    "hero": {
+      "title1": "自信を持って",
+      "title2": "暗号通貨を取引"
+    },
+    "heroSubtitle": "当社のプラットフォームを信頼する何千人ものトレーダーに参加しましょう",
     "features": {
       "security": {
         "title": "セキュリティ",
-        "description": "銀行レベルの暗号化を使用した資金保護"
+        "description": "銀行レベルの暗号化による資金保護"
       },
       "instantDeals": {
         "title": "即時取引",
-        "description": "取引ボットは最大の利益のために24時間年中無休で動作します"
+        "description": "取引ボットが24時間年中無休で最大の利益を目指します"
       },
       "provenPlatform": {
-        "title": "実績のあるプラットフォーム",
-        "description": "1000人以上のアクティブユーザーと250万ユーロの取引量"
+        "title": "実績あるプラットフォーム",
+        "description": "1000人以上のアクティブユーザーと250万ユーロの取引高"
       }
     },
     "stats": {
       "users": "ユーザー",
-      "volume": "取引量",
+      "volume": "取引高",
       "support": "サポート"
     },
     "welcomeTitle": "ようこそ",
@@ -46,52 +82,52 @@
     "errorTitle": "ログインエラー",
     "emailLabel": "メールアドレス",
     "passwordLabel": "パスワード",
-    "loggingIn": "ログインしています...",
+    "loggingIn": "ログイン中...",
     "demo": {
       "title": "デモアカウントでクイックログイン"
     },
-    "footer": "© Bemo Investment. 全著作権所有。"
+    "footer": "© 2025 Bemo Investment. 全著作権所有。"
   },
   "dashboard": {
     "greeting": "ようこそ",
     "greetingName": "ようこそ、{{name}}さん！",
-    "portfolioGrowth": "ポートフォリオが増加しました",
+    "portfolioGrowth": "あなたのポートフォリオは増加しています",
     "last24h": "過去24時間で",
     "totalBalance": "総残高",
     "pnl24h": "24時間損益",
     "assets": "資産",
     "cryptocurrencies": "暗号通貨",
     "income": "収入",
-    "monthly": "月間",
+    "monthly": "月あたり",
     "deposit": "入金",
     "trade": "取引",
     "marketStats": "市場統計",
-    "volume24h": "24時間取引高",
+    "volume24h": "24時間出来高",
     "avgChange": "平均変動",
     "activeTraders": "アクティブトレーダー",
-    "fearGreedIndex": "恐怖と欲指数",
-    "greed": "欲",
-    "topGainers": "上昇率ランキング",
+    "fearGreedIndex": "恐怖＆強欲指数",
+    "greed": "強欲",
+    "topGainers": "トップゲイナー",
     "viewAll": "すべて表示",
     "quickActions": "クイックアクション",
     "withdraw": "出金",
     "trading": "取引",
-    "gainers": "上昇銘柄",
-    "losers": "下落銘柄",
+    "gainers": "上昇",
+    "losers": "下落",
     "assetsLast24h": "24時間の資産",
     "live": "ライブ",
     "offline": "オフライン",
-    "topLosers": "下落率ランキング",
+    "topLosers": "トップルーザー",
     "recentActivity": "最近のアクティビティ",
     "promoTitle": "ボーナスをゲット！",
-    "promoSubtitle": "友達を招待して、アカウントに50ドルをもらいましょう",
+    "promoSubtitle": "友達を招待してアカウントに$50をゲット",
     "promoButton": "友達を招待",
     "mockTime1": "2分前",
     "mockTime2": "15分前",
     "mockTime3": "1時間前"
   },
   "market": {
-    "title": "マーケット",
+    "title": "市場",
     "status": {
       "realtime": "リアルタイム",
       "disconnected": "切断されました"
@@ -103,7 +139,7 @@
       "forex": "外国為替",
       "commodities": "商品"
     },
-    "searchPlaceholder": "名前または記号で検索...",
+    "searchPlaceholder": "名前またはシンボルで検索...",
     "favorites": "お気に入り",
     "view": {
       "table": "テーブル",
@@ -115,10 +151,37 @@
       "asset": "資産",
       "price": "価格",
       "change24h": "24時間変動",
+      "volume": "出来高",
       "chart": "チャート",
       "action": "アクション"
     },
-    "buy": "購入"
+    "buy": "購入",
+    "error": {
+      "title": "接続に失敗しました",
+      "websocketUrl": "WebSocket URL:",
+      "backendInfo": "バックエンドサーバーが実行中でアクセス可能であることを確認してください。",
+      "retry": "接続を再試行"
+    },
+    "loading": {
+      "connecting": "市場データに接続中..."
+    },
+    "chart": {
+      "error": {
+        "noData": "{{interval}} 間隔のデータがありません。別​​の間隔を試してください。",
+        "insufficientData": "{{interval}} のデータが不足しています (ローソク足 {{count}} 本のみ)。より短い間隔を試してください。",
+        "loadFailed": "チャートデータの読み込みに失敗しました。別​​の間隔または資産を試してください。",
+        "network": "ネットワークエラー: {{message}}",
+        "title": "チャートエラー"
+      },
+      "24h": "24時間",
+      "interval": "チャート間隔",
+      "high24h": "24時間高値",
+      "low24h": "24時間安値",
+      "bullish": "強気",
+      "bearish": "弱気",
+      "candleCount_one": "{{count}} 本のローソク足",
+      "candleCount_other": "{{count}} 本のローソク足"
+    }
   },
   "trading": {
     "title": "取引",
@@ -126,10 +189,10 @@
     "name": "名前",
     "price": "価格",
     "change24h": "24時間変動",
-    "volume": "取引高",
+    "volume": "出来高",
     "chart": "チャート",
-    "buy": "購入",
-    "sell": "売却",
+    "buy": "買い",
+    "sell": "売り",
     "amount": "数量",
     "total": "合計",
     "available": "利用可能",
@@ -145,7 +208,7 @@
   "balance": {
     "loading": "残高データを読み込み中...",
     "title": "残高と取引",
-    "subtitle": "入出金を管理する",
+    "subtitle": "入出金を管理します",
     "availableBalance": "利用可能残高",
     "deposit": "入金",
     "withdraw": "出金",
@@ -156,6 +219,20 @@
     "viewReceipt": "表示",
     "refreshing": "更新中...",
     "refresh": "更新",
+    "wallet": {
+      "title": "出金詳細",
+      "description": "出金を受け取るために暗号通貨ウォレットアドレスを追加してください。",
+      "currentAddress": "現在のウォレットアドレス",
+      "addressLabel": "暗号通貨ウォレットアドレス",
+      "hint": "出金用の有効なウォレットアドレスを入力してください",
+      "save": "アドレスを保存",
+      "saving": "保存中...",
+      "cancel": "キャンセル",
+      "edit": "アドレスを編集",
+      "copy": "アドレスをコピー",
+      "successSaved": "ウォレットアドレスが正常に保存されました！",
+      "errorSaving": "ウォレットアドレスの保存中にエラーが発生しました"
+    },
     "table": {
       "type": "タイプ",
       "amount": "金額",
@@ -173,18 +250,18 @@
     "status": {
       "completed": "完了",
       "pending": "保留中",
-      "rejected": "拒否"
+      "rejected": "拒否されました"
     },
     "noTransactions": {
-      "title": "まだ取引がありません",
-      "subtitle": "資金を入金して始めましょう",
+      "title": "まだ取引はありません",
+      "subtitle": "資金を入金して開始してください",
       "button": "残高に入金"
     },
     "modals": {
       "selectPackage": "入金パッケージを選択",
-      "fromAmount": "250ユーロから",
+      "fromAmount": "€250 から",
       "depositTitle": "残高に入金",
-      "errorMinAmount": "最低入金額は{{amount}}ユーロです",
+      "errorMinAmount": "最低入金額は €{{amount}} です",
       "withdrawTitle": "資金を出金",
       "amountLabel": "入金額",
       "minAmount": "最低額",
@@ -194,23 +271,31 @@
       "withdrawMethodLabel": "出金方法",
       "receiptLabel": "支払領収書",
       "uploadClick": "クリックしてアップロード",
-      "uploadHint": "PNG、JPG、またはPDF（最大5MB）",
+      "uploadHint": "PNG, JPG または PDF、5MB まで",
       "sending": "送信中...",
       "processing": "処理中...",
       "confirmDeposit": "入金を確認",
       "back": "戻る",
-      "depositSuccess": "入金リクエストが正常に作成され、管理者の確認のために送信されました。",
-      "sendButton": "確認のために送信",
+      "depositSuccess": "入金リクエストは正常に作成され、管理者レビューのために送信されました。",
+      "sendButton": "レビューのために送信",
       "errorReceipt": "支払領収書をアップロードしてください",
-      "errorDeposit": "入金の作成中にエラーが発生しました",
-      "availableToWithdraw": "出金可能額",
+      "errorDeposit": "入金作成エラー",
+      "availableToWithdraw": "出金可能",
       "walletAddressLabel": "ウォレットアドレス",
-      "requesting": "リクエストを送信中...",
+      "requesting": "リクエスト送信中...",
       "requestButton": "出金をリクエスト",
       "errorInsufficientFunds": "残高が不足しています",
-      "errorWithdraw": "出金リクエストの作成中にエラーが発生しました",
-      "withdrawMinimum": "最低",
-      "commission": "手数料"
+      "errorWithdraw": "出金リクエスト作成エラー",
+      "withdrawMinimum": "最小",
+      "commission": "手数料",
+      "calc": {
+        "amount": "リクエスト額",
+        "commission": "手数料 (25%)",
+        "youReceive": "受取額"
+      },
+      "yourRequisites": "あなたの詳細 (IBAN / カード)",
+      "errorRequisites": "出金の詳細を指定してください",
+      "errorMinAmountWithdraw": "最低出金額: €50"
     },
     "methods": {
       "card": "銀行カード",
@@ -220,7 +305,7 @@
     "depositOptions": {
       "basic": {
         "title": "ベーシックパッケージ",
-        "description": "初心者向け"
+        "description": "初心者に最適"
       },
       "premium": {
         "title": "プレミアムパッケージ",
@@ -232,13 +317,15 @@
       },
       "custom": {
         "title": "カスタム金額",
-        "description": "最低250ユーロ"
+        "description": "最低 €250"
       }
     },
     "payment": {
       "cardNumberLabel": "支払い用のカード番号",
       "noCardNumber": "支払い用のカード番号が指定されていません。サポートにお問い合わせください。",
-      "attached": "添付：",
+      "methodsTitle": "支払い用のカード番号",
+      "noMethods": "利用可能な支払い方法がありません",
+      "attached": "添付ファイル: ",
       "replyPlaceholder": "ユーザーに返信...",
       "downloadAttachment": "添付ファイルをダウンロード"
     }
@@ -251,7 +338,7 @@
     },
     "emptyChat": {
       "title": "サポートとの会話を開始",
-      "subtitle": "取引、入金、出金に関するご質問は、当社のチームがお手伝いします"
+      "subtitle": "当社のチームが取引、入出金に関するご質問にお答えします"
     },
     "chat": {
       "supportTeam": "サポートチーム",
@@ -260,7 +347,7 @@
     "input": {
       "attachTitle": "ファイルを添付",
       "placeholder": "メッセージを入力...",
-      "footer": "平均応答時間：1時間 • 24時間年中無休"
+      "footer": "平均返信時間: 1時間 • 24時間年中無休"
     },
     "cards": {
       "faq": {
@@ -269,7 +356,7 @@
       },
       "docs": {
         "title": "ドキュメンテーション",
-        "subtitle": "全機能の利用ガイド"
+        "subtitle": "すべての機能の使用ガイド"
       },
       "security": {
         "title": "セキュリティ",
@@ -277,8 +364,8 @@
       }
     },
     "time": {
-      "minutesAgo_one": "{{count}}分前",
-      "minutesAgo_other": "{{count}}分前"
+      "minutesAgo_one": "{{count}} 分前",
+      "minutesAgo_other": "{{count}} 分前"
     }
   },
   "profile": {
@@ -293,8 +380,8 @@
       "title": "アカウント情報",
       "emailLabel": "メールアドレス",
       "emailHint": "メールアドレスは変更できません",
-      "fullNameLabel": "氏名",
-      "fullNamePlaceholder": "山田 太郎",
+      "fullNameLabel": "フルネーム",
+      "fullNamePlaceholder": "John Doe",
       "userIdLabel": "ユーザーID"
     },
     "buttons": {
@@ -327,12 +414,12 @@
       "tip1": "強力なパスワードを使用してください",
       "tip2": "パスワードを他人と共有しないでください",
       "tip3": "定期的にパスワードを変更してください",
-      "tip4": "ユニークなパスワードを使用してください"
+      "tip4": "固有のパスワードを使用してください"
     },
     "activity": {
       "title": "アカウントアクティビティ",
       "level": "アカウントレベル",
-      "withUs": "登録日数",
+      "withUs": "登録してから",
       "days": "日",
       "verification": "認証"
     },
@@ -344,8 +431,84 @@
       "passwordUpdateError": "パスワードの変更中にエラーが発生しました"
     }
   },
+  "bot": {
+    "title": "ボット取引",
+    "subtitle": "選択したボットによる自動取引",
+    "lastPrice": "最終価格",
+    "loadingPositions": "ポジションを読み込み中...",
+    "loadingTradeHistory": "取引履歴を読み込み中...",
+    "info": {
+      "title": "自動取引ボット",
+      "subtitle": "戦略を正確に実行。24時間年中無休で取引。安全。適応性。効率的。",
+      "openBalance": "残高を開く",
+      "description": "この取引システムは、自律アルゴリズムを活用して感情的な決定を排除します。正確性と安定性のために構築されており、あらゆる市場状況下で継続的に分析、反応、実行し、資産を保護しながら機会を最大化します。",
+      "features": {
+        "trading247": {
+          "title": "24/7取引",
+          "description": "常時市場監視"
+        },
+        "riskControl": {
+          "title": "リスク管理",
+          "description": "自動資本保護"
+        },
+        "fastExecution": {
+          "title": "迅速な実行",
+          "description": "100ミリ秒未満の遅延"
+        },
+        "adaptiveAI": {
+          "title": "適応型AI",
+          "description": "スマートな取引ロジック"
+        }
+      }
+    },
+    "activity": {
+      "title": "ボットアクティビティ",
+      "description": "あなたの {{botType}} ボットはアクティブで取引中です",
+      "active": "アクティブ",
+      "stopped": "停止",
+      "sessionProfit": "セッション利益",
+      "winRate": "勝率",
+      "totalTrades": "総取引数",
+      "losingTrades": "損失取引数",
+      "today": "今日"
+    },
+    "controls": {
+      "title": "コントロール",
+      "tradingPair": "取引ペア",
+      "pause": "一時停止",
+      "start": "開始",
+      "stop": "停止"
+    },
+    "stats": {
+      "today": "今日",
+      "profit": "利益:",
+      "closedTrades": "決済済み取引:",
+      "openPositions": "保有ポジション:"
+    },
+    "chart": {
+      "title": "{{pair}} チャート",
+      "loading": "チャートデータを読み込み中..."
+    },
+    "positions": {
+      "title": "保有ポジション",
+      "entry": "エントリー:",
+      "noPositions": "保有ポジションはありません"
+    },
+    "history": {
+      "title": "取引履歴",
+      "headers": {
+        "symbol": "シンボル",
+        "type": "タイプ",
+        "profitLoss": "損益",
+        "closeDate": "決済日"
+      },
+      "noTrades": "まだ取引はありません"
+    }
+  },
   "common": {
     "loading": "読み込み中...",
+    "loadingUserData": "ユーザーデータを読み込み中...",
+    "processing": "処理中...",
     "error": "エラー",
     "success": "成功",
     "cancel": "キャンセル",
@@ -355,8 +518,8 @@
     "edit": "編集",
     "delete": "削除",
     "search": "検索",
-    "filter": "フィルタ",
-    "sort": "並べ替え",
+    "filter": "フィルター",
+    "sort": "ソート",
     "language": "言語"
   }
 }

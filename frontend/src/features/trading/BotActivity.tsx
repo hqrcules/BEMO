@@ -7,6 +7,7 @@ import { useThemeClasses } from '@/shared/hooks/useThemeClasses';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useTranslation } from 'react-i18next';
 import { RootState } from '@/store/store';
+import { formatCurrency } from '@/shared/utils/formatCurrency';
 
 interface BotActivityProps {
   stats: TradingStats | null;
@@ -15,6 +16,7 @@ interface BotActivityProps {
 export default function BotActivity({ stats }: BotActivityProps) {
   const { user } = useAppSelector((state) => state.auth);
   const { latestTrade, flashBalance } = useAppSelector((state: RootState) => state.trading);
+  const currencyState = useAppSelector((state: RootState) => state.currency);
   const [activeSession, setActiveSession] = useState<TradingSession | null>(null);
   const [flashProfit, setFlashProfit] = useState(false);
   const tc = useThemeClasses();
@@ -36,12 +38,10 @@ export default function BotActivity({ stats }: BotActivityProps) {
     }
   }, [user]);
 
-  // Trigger flash animation when new trade arrives
   useEffect(() => {
     if (latestTrade) {
       setFlashProfit(true);
 
-      // Update active session profit with the new trade
       setActiveSession(prevSession => {
         if (prevSession) {
           const newProfit = parseFloat(prevSession.total_profit) + parseFloat(latestTrade.profit_loss);
@@ -53,7 +53,6 @@ export default function BotActivity({ stats }: BotActivityProps) {
         return prevSession;
       });
 
-      // Clear flash after animation duration
       const timer = setTimeout(() => {
         setFlashProfit(false);
       }, 1000);
@@ -72,6 +71,14 @@ export default function BotActivity({ stats }: BotActivityProps) {
       : user.bot_type === 'specialist'
       ? (theme === 'dark' ? 'text-yellow-400' : 'text-yellow-600')
       : (theme === 'dark' ? 'text-blue-400' : 'text-blue-600');
+
+  const formatValue = (value: number | string | undefined | null) => formatCurrency(value, currencyState);
+  const formatValueWithSign = (value: number | string | undefined | null) => {
+    const num = Number(value);
+    if (isNaN(num)) return formatValue(value);
+    const prefix = num >= 0 ? '+' : '';
+    return prefix + formatValue(num);
+  }
 
   return (
     <div className="glass-card p-6 bg-gradient-to-br from-blue-500/10 via-transparent to-green-500/10">
@@ -97,7 +104,7 @@ export default function BotActivity({ stats }: BotActivityProps) {
             <TrendingUp className={`w-8 h-8 mb-3 transition-all duration-300 ${flashProfit ? (theme === 'dark' ? 'text-green-400' : 'text-green-600') + ' scale-110' : 'text-green-500'}`} />
             <p className={`text-sm ${tc.textSecondary} mb-1`}>{t('bot.activity.sessionProfit')}</p>
             <p className={`text-2xl font-bold transition-all duration-300 ${flashProfit ? (theme === 'dark' ? 'text-green-400' : 'text-green-600') + ' scale-110' : parseFloat(activeSession.total_profit) >= 0 ? 'text-green-500' : 'text-red-500'}`}>
-              {parseFloat(activeSession.total_profit) >= 0 ? '+' : ''}€{parseFloat(activeSession.total_profit).toFixed(2)}
+              {formatValueWithSign(activeSession.total_profit)}
             </p>
             <p className={`text-xs ${tc.textTertiary} mt-1`}>{t('bot.activity.today')}</p>
           </div>

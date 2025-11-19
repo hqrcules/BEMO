@@ -69,11 +69,11 @@ function PriceTicker({ cryptoList, currencyState }: { cryptoList: AssetItem[], c
     return (
         <div className="w-full bg-theme-bg-secondary border-b border-theme-border overflow-hidden whitespace-nowrap relative group">
             <div className="flex w-max animate-marquee group-hover:[animation-play-state:paused]">
-                {tickerList.map((crypto) => (
-                    <TickerItem key={`${crypto.id}-a`} crypto={crypto} currencyState={currencyState} />
+                {tickerList.map((crypto, index) => (
+                    <TickerItem key={`${crypto.id || index}-a`} crypto={crypto} currencyState={currencyState} />
                 ))}
-                {tickerList.map((crypto) => (
-                    <TickerItem key={`${crypto.id}-b`} crypto={crypto} currencyState={currencyState} />
+                {tickerList.map((crypto, index) => (
+                    <TickerItem key={`${crypto.id || index}-b`} crypto={crypto} currencyState={currencyState} />
                 ))}
             </div>
         </div>
@@ -461,7 +461,7 @@ export default function DashboardHome() {
 
                                             return (
                                                 <div
-                                                    key={crypto.id}
+                                                    key={crypto.id || `gainer-${index}`}
                                                     className={`flex items-center justify-between p-3 rounded-xl transition-all duration-300 cursor-pointer group ${flashClass} hover:bg-theme-bg-hover`}
                                                     onClick={() => navigate('/trading')}
                                                 >
@@ -532,7 +532,7 @@ export default function DashboardHome() {
 
                                             return (
                                                 <div
-                                                    key={crypto.id}
+                                                    key={crypto.id || `loser-${index}`}
                                                     className={`flex items-center justify-between p-3 rounded-xl transition-all duration-300 cursor-pointer group ${flashClass} hover:bg-theme-bg-hover`}
                                                     onClick={() => navigate('/trading')}
                                                 >
