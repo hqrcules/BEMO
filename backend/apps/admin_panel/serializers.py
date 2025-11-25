@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from drf_spectacular.utils import extend_schema_field
-from .models import PaymentDetails
+from .models import PaymentDetails, SiteSettings
 from apps.accounts.models import User
 from apps.transactions.models import Transaction
 
@@ -126,3 +126,26 @@ class AdminTransactionSerializer(serializers.ModelSerializer):
                 file_url = urlparse(file_url).path
             return file_url
         return None
+
+
+class SiteSettingsSerializer(serializers.ModelSerializer):
+    """Serializer for SiteSettings model"""
+
+    updated_by_email = serializers.EmailField(
+        source='updated_by.email',
+        read_only=True
+    )
+
+    class Meta:
+        model = SiteSettings
+        fields = [
+            'id',
+            'key',
+            'value',
+            'description',
+            'created_at',
+            'updated_at',
+            'updated_by',
+            'updated_by_email',
+        ]
+        read_only_fields = ['id', 'created_at', 'updated_at', 'updated_by']

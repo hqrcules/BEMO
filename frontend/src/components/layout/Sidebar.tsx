@@ -1,15 +1,16 @@
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useAppSelector, useAppDispatch } from '@/store/hooks';
 import { logoutUser } from '@/store/slices/authSlice';
 import { useThemeClasses } from '@/shared/hooks/useThemeClasses';
 import {
   User,
   MessageSquare,
-  Calendar,
   TrendingUp,
-  Globe,
   LogOut,
   X,
+  Home,
+  Bot,
+  Wallet
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -21,6 +22,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
   const { user } = useAppSelector((state) => state.auth);
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
+  const location = useLocation();
   const tc = useThemeClasses();
 
   const handleLogout = async () => {
@@ -32,6 +34,20 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
       console.error('Logout failed:', error);
     }
   };
+
+  const handleNavigation = (path: string) => {
+    navigate(path);
+    onClose();
+  };
+
+  // Helper to check active state
+  const isActive = (path: string) => location.pathname === path;
+  const getButtonClass = (path: string) =>
+    `w-full flex items-center gap-3 px-4 py-3 rounded-lg transition ${
+      isActive(path)
+        ? 'bg-primary-500/10 text-primary-500 font-medium'
+        : `${tc.textSecondary} ${tc.hoverBg}`
+    }`;
 
   if (!user) return null;
 
@@ -47,7 +63,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
 
       {/* Sidebar */}
       <div
-        className={`fixed top-0 left-0 h-full w-80 ${tc.cardBg} transform transition-transform duration-300 ease-in-out z-50 ${
+        className={`fixed top-0 left-0 h-full w-80 backdrop-blur-xl transform transition-transform duration-300 ease-in-out z-50 ${tc.cardBg} ${
           isOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
@@ -84,31 +100,59 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
           </p>
         </div>
 
-        {/* Menu Items */}
-        <div className="p-4 space-y-2 flex-1">
-          <button className={`w-full flex items-center gap-3 px-4 py-3 ${tc.textSecondary} ${tc.hoverBg} rounded-lg transition`}>
-            <User className="w-5 h-5" />
-            <span>Profile</span>
+        {/* Menu Items: Home, Market, Bot Trading, Balance, Support, Profile */}
+        <div className="p-4 space-y-2 flex-1 overflow-y-auto">
+
+          <button
+            onClick={() => handleNavigation('/')}
+            className={getButtonClass('/')}
+          >
+            <Home className="w-5 h-5" />
+            <span>Home</span>
           </button>
-          <button className={`w-full flex items-center gap-3 px-4 py-3 ${tc.textSecondary} ${tc.hoverBg} rounded-lg transition`}>
+
+          <button
+            onClick={() => handleNavigation('/trading')}
+            className={getButtonClass('/trading')}
+          >
+            <TrendingUp className="w-5 h-5" />
+            <span>Market</span>
+          </button>
+
+          <button
+            onClick={() => handleNavigation('/bot-trading')}
+            className={getButtonClass('/bot-trading')}
+          >
+            <Bot className="w-5 h-5" />
+            <span>Bot Trading</span>
+          </button>
+
+          <button
+            onClick={() => handleNavigation('/balance')}
+            className={getButtonClass('/balance')}
+          >
+            <Wallet className="w-5 h-5" />
+            <span>Balance</span>
+          </button>
+
+          <button
+            onClick={() => handleNavigation('/support')}
+            className={getButtonClass('/support')}
+          >
             <MessageSquare className="w-5 h-5" />
             <span>Support</span>
           </button>
-          <button className={`w-full flex items-center gap-3 px-4 py-3 ${tc.textSecondary} ${tc.hoverBg} rounded-lg transition`}>
-            <Calendar className="w-5 h-5" />
-            <span>History</span>
-          </button>
-          <button className={`w-full flex items-center gap-3 px-4 py-3 ${tc.textSecondary} ${tc.hoverBg} rounded-lg transition`}>
-            <TrendingUp className="w-5 h-5" />
-            <span>Trading</span>
-          </button>
-          <button className={`w-full flex items-center gap-3 px-4 py-3 ${tc.textSecondary} ${tc.hoverBg} rounded-lg transition`}>
-            <Globe className="w-5 h-5" />
-            <span>Language</span>
+
+          <button
+            onClick={() => handleNavigation('/profile')}
+            className={getButtonClass('/profile')}
+          >
+            <User className="w-5 h-5" />
+            <span>Profile</span>
           </button>
         </div>
 
-        {/* Logout Button - FIXED: moved to bottom */}
+        {/* Logout Button */}
         <div className={`p-4 border-t ${tc.cardBorder}`}>
           <button
             onClick={handleLogout}

@@ -5,11 +5,12 @@ from rest_framework.permissions import IsAdminUser
 from django.utils import timezone
 from django.db import transaction, models
 from decimal import Decimal
-from .models import PaymentDetails
+from .models import PaymentDetails, SiteSettings
 from .serializers import (
     PaymentDetailsSerializer,
     AdminUserSerializer,
-    AdminTransactionSerializer
+    AdminTransactionSerializer,
+    SiteSettingsSerializer
 )
 from apps.accounts.models import User
 from apps.transactions.models import Transaction
@@ -387,3 +388,25 @@ class AdminTransactionViewSet(viewsets.ModelViewSet):
                 'transaction': self.get_serializer(transaction_obj).data,
                 'user_balance': str(user.balance)
             })
+
+
+class SiteSettingsViewSet(viewsets.ModelViewSet):
+    """ViewSet for managing site settings"""
+    queryset = SiteSettings.objects.all()
+    serializer_class = SiteSettingsSerializer
+    permission_classes = [IsAdminUser]
+
+    def perform_create(self, serializer):
+        serializer.save(updated_by=self.request.user)
+
+    def perform_update(self, serializer):
+        serializer.save(updated_by=self.request.user)
+
+    @action(detail=False, methods=['get'], permission_classes=[])
+    def public(self, request):
+        """Public endpoint to get all settings (no auth required)"""
+        settings_dict = {
+            setting.key: setting.value
+            for setting in self.queryset.all()
+        }
+        return Response(settings_dict)

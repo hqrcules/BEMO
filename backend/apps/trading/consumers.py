@@ -612,3 +612,117 @@ class BalanceConsumer(AsyncWebsocketConsumer):
             'trade': event['trade'],
             'timestamp': datetime.now().isoformat()
         }))
+
+
+class SupportConsumer(AsyncWebsocketConsumer):
+    """
+    WebSocket consumer for support chat functionality
+    Allows authenticated users to communicate with support staff
+    """
+
+    async def connect(self):
+        """
+        Connect to support chat - REQUIRES AUTHENTICATION
+        """
+        user = self.scope.get('user')
+
+        # Support chat requires authentication
+        if not user or not user.is_authenticated:
+            print("[Support WS] Rejected: User not authenticated")
+            await self.close(code=4001)
+            return
+
+        self.user = user
+        self.room_group_name = f'support_chat_{self.user.id}'
+
+        # Join room group
+        await self.channel_layer.group_add(
+            self.room_group_name,
+            self.channel_name
+        )
+
+        await self.accept()
+        print(f"[Support WS] User connected: {self.user.email}")
+
+        # Send connection confirmation
+        await self.send(text_data=json.dumps({
+            'type': 'connection_established',
+            'message': 'Connected to support chat',
+            'timestamp': datetime.now().isoformat()
+        }))
+
+    async def disconnect(self, close_code):
+        """Disconnect from support chat"""
+        if hasattr(self, 'room_group_name'):
+            await self.channel_layer.group_discard(
+                self.room_group_name,
+                self.channel_name
+            )
+            print(f"[Support WS] User disconnected: {self.user.email}")
+
+    async def receive(self, text_data):
+        """Handle incoming messages from client"""
+        try:
+            data = json.loads(text_data)
+            message_type = data.get('type')
+
+            if message_type == 'message':
+                # User sent a message
+                message_text = data.get('message', '')
+
+                # TODO: Save message to database
+                # TODO: Notify admin users about new message
+
+                # Echo back for now (in production, this would be handled by admin response)
+                await self.channel_layer.group_send(
+                    self.room_group_name,
+                    {
+                        'type': 'chat_message',
+                        'message': {
+                            'id': str(datetime.now().timestamp()),
+                            'text': message_text,
+                            'sender': 'user',
+                            'timestamp': datetime.now().isoformat(),
+                            'isRead': False
+                        }
+                    }
+                )
+
+            elif message_type == 'mark_read':
+                # Mark message as read
+                message_id = data.get('message_id')
+                # TODO: Update message read status in database
+
+                await self.channel_layer.group_send(
+                    self.room_group_name,
+                    {
+                        'type': 'message_read',
+                        'message_id': message_id
+                    }
+                )
+
+        except json.JSONDecodeError:
+            print("[Support WS] Invalid JSON received")
+        except Exception as e:
+            print(f"[Support WS] Error in receive: {e}")
+
+    async def chat_message(self, event):
+        """Send chat message to WebSocket"""
+        await self.send(text_data=json.dumps({
+            'type': 'new_message',
+            'message': event['message']
+        }))
+
+    async def message_read(self, event):
+        """Send message read notification"""
+        await self.send(text_data=json.dumps({
+            'type': 'message_read',
+            'message_id': event['message_id']
+        }))
+
+    async def typing_indicator(self, event):
+        """Send typing indicator"""
+        await self.send(text_data=json.dumps({
+            'type': 'typing',
+            'is_typing': event['is_typing']
+        }))

@@ -5,6 +5,7 @@ import { loginUser, clearError } from '@/store/slices/authSlice';
 import { Loader2, ArrowRight, Globe, ChevronDown } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
+// --- LANGUAGES CONFIG ---
 const languages = [
   { code: 'en', name: 'English' },
   { code: 'de', name: 'Deutsch' },
@@ -19,6 +20,7 @@ const languages = [
   { code: 'nl', name: 'Nederlands' },
 ];
 
+// --- NEURAL BACKGROUND COMPONENT ---
 const NeuralBackground: FC<{ isActive: boolean }> = ({ isActive }) => {
     useEffect(() => {
         if (!isActive) return;
@@ -116,6 +118,7 @@ const NeuralBackground: FC<{ isActive: boolean }> = ({ isActive }) => {
     return <canvas id="neural-canvas" className={`absolute top-0 left-0 w-full h-full transition-opacity duration-[2000ms] ${isActive ? 'opacity-100' : 'opacity-0'} pointer-events-none`} />;
 };
 
+// --- TYPING EFFECT HELPER ---
 const useTypingEffect = (text: string, speed = 30, start = true) => {
     const [displayedText, setDisplayedText] = useState('');
     useEffect(() => {
@@ -131,6 +134,7 @@ const useTypingEffect = (text: string, speed = 30, start = true) => {
     return displayedText;
 };
 
+// --- SYSTEM RESPONSE COMPONENT ---
 const SystemResponse: FC<{ text: string; startCondition: boolean }> = ({ text, startCondition }) => {
     const displayText = useTypingEffect(text, 20, startCondition);
     return (
@@ -141,6 +145,7 @@ const SystemResponse: FC<{ text: string; startCondition: boolean }> = ({ text, s
     );
 };
 
+// --- LANGUAGE SWITCHER ---
 const LanguageControls: FC = () => {
     const { i18n } = useTranslation();
     const [isOpen, setIsOpen] = useState(false);
@@ -177,6 +182,7 @@ const LanguageControls: FC = () => {
     );
 };
 
+// --- MAIN LOGIN PAGE ---
 export default function LoginPage() {
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
@@ -187,6 +193,7 @@ export default function LoginPage() {
     const [bootStage, setBootStage] = useState(bootHasPlayed ? 4 : 0);
     const [hasBootPlayed, setHasBootPlayed] = useState(bootHasPlayed);
     const [formData, setFormData] = useState({ email: '', password: '' });
+    const [rememberMe, setRememberMe] = useState(false);
 
     useEffect(() => {
         dispatch(clearError());
@@ -206,7 +213,7 @@ export default function LoginPage() {
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
         dispatch(clearError());
-        const result = await dispatch(loginUser({ ...formData, remember_me: true }));
+        const result = await dispatch(loginUser({ ...formData, remember_me: rememberMe }));
         if (loginUser.fulfilled.match(result)) navigate('/dashboard');
     };
 
@@ -216,12 +223,11 @@ export default function LoginPage() {
     };
 
     return (
-        <div className="bg-[#050505] text-[#E0E0E0] font-mono min-h-screen flex items-center justify-center p-4 relative overflow-hidden">
+        <div className="bg-obsidian dark:bg-obsidian light-theme:bg-marble text-silver font-mono h-screen w-full flex flex-col items-center justify-center p-4 relative overflow-hidden">
             <style>
                 {`
                     :root { --border-color: #27272A; }
                     .input-group:focus-within { --border-color: #FFF; color: #FFF; }
-
                     @keyframes fade-in-grow { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
                     @keyframes delayed-fade-in { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
                     @keyframes stage-in { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
@@ -230,14 +236,11 @@ export default function LoginPage() {
                     .animate-stage-in { animation: stage-in 0.4s cubic-bezier(0.25, 1, 0.5, 1) forwards; }
                     @keyframes blink { 50% { opacity: 0; } }
                     .animate-blink { animation: blink 1.2s step-end infinite; }
-
-                    /* PULSING BORDER ANIMATION - WHITE GLOW */
                     @keyframes pulse-border {
                         0%, 100% { box-shadow: 0 0 0 0 rgba(255,255,255,0); }
                         50% { box-shadow: 0 0 20px 0 rgba(255,255,255,0.08); }
                     }
                     .animate-pulse-border { animation: pulse-border 5s infinite; }
-
                     .button-glimmer::after { content: ''; position: absolute; top: 0; left: -100%; width: 50%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent); transition: left 0.6s; }
                     .button-glimmer:hover::after { left: 150%; }
                 `}
@@ -249,66 +252,135 @@ export default function LoginPage() {
                 <LanguageControls />
             </div>
 
-            <div className={`w-full max-w-lg transition-opacity duration-0 ${bootStage >= 1 ? 'opacity-100' : 'opacity-0'}`}>
-                <div className="bg-[rgba(16,18,20,0.7)] border border-[#27272A] backdrop-blur-md p-8 sm:p-10 shadow-2xl relative animate-pulse-border h-[450px] flex flex-col justify-center">
+            <div
+                className={`
+                    relative flex items-center transition-all duration-[1200ms] ease-[cubic-bezier(0.25,1,0.5,1)]
+                    ${bootStage >= 1 ? 'opacity-100' : 'opacity-0'}
+                `}
+                style={{
+                    width: bootStage >= 4 ? '1100px' : '480px',
+                    maxWidth: '100%'
+                }}
+            >
 
-                    {!hasBootPlayed && (
-                        <div className={`absolute top-0 left-0 w-full h-full p-8 sm:p-10 flex flex-col justify-center transition-opacity duration-700 ${bootStage >= 4 ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
-                            <div className="space-y-2">
-                                <SystemResponse text="[0.0000] Initializing BEMO System Core..." startCondition={bootStage >= 2 && !hasBootPlayed} />
-                                <SystemResponse text="[2.8134] Establishing quantum-link handshake..." startCondition={bootStage >= 3 && !hasBootPlayed} />
+                {/* LEFT SIDE: Login Form */}
+                <div className="w-full max-w-[480px] shrink-0">
+                    <div className="glass-panel p-8 sm:p-10 shadow-2xl relative animate-pulse-border min-h-[520px] flex flex-col justify-center rounded-none bg-black/40 backdrop-blur-sm border border-[#333]">
+
+                        {!hasBootPlayed && (
+                            <div className={`absolute top-0 left-0 w-full h-full p-8 sm:p-10 flex flex-col justify-center transition-opacity duration-700 ${bootStage >= 4 ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
+                                <div className="space-y-2">
+                                    <SystemResponse text="[0.0000] Initializing BEMO System Core..." startCondition={bootStage >= 2 && !hasBootPlayed} />
+                                    <SystemResponse text="[2.8134] Establishing quantum-link handshake..." startCondition={bootStage >= 3 && !hasBootPlayed} />
+                                </div>
                             </div>
-                        </div>
-                    )}
+                        )}
 
-                    <div className={`absolute top-0 left-0 w-full h-full flex flex-col justify-center transition-opacity duration-1000 ${bootStage >= 4 ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
-                         <div className={`p-8 sm:p-10 ${!bootHasPlayed ? 'animate-fade-in' : ''}`} style={{ animationDelay: '200ms' }}>
-                            <h1 className="text-xl text-center mb-10 text-white tracking-[0.3em] font-bold">
-                                B E M O <span className="text-[#666] font-normal"> // INVESTMENT</span>
-                            </h1>
+                        <div className={`absolute top-0 left-0 w-full h-full flex flex-col transition-opacity duration-1000 ${bootStage >= 4 ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
 
-                            <form onSubmit={handleSubmit} className="space-y-8">
-                                <div className="input-group flex flex-col gap-1">
-                                    <label htmlFor="email" className="text-[#666] text-xs uppercase tracking-widest mb-1 text-left font-semibold">
-                                        {t('auth.emailLabel')}
-                                    </label>
-                                    <input id="email" name="email" type="email" required autoFocus value={formData.email} onChange={handleChange} disabled={isLoading}
-                                        className="w-full bg-transparent focus:outline-none border-b border-[#333] focus:border-white py-2 transition-colors duration-300 caret-white text-white" />
-                                </div>
-                                <div className="input-group flex flex-col gap-1">
-                                    <label htmlFor="password" className="text-[#666] text-xs uppercase tracking-widest mb-1 text-left font-semibold">
-                                        {t('auth.passwordLabel')}
-                                    </label>
-                                    <input id="password" name="password" type="password" required value={formData.password} onChange={handleChange} disabled={isLoading}
-                                        className="w-full bg-transparent focus:outline-none border-b border-[#333] focus:border-white py-2 transition-colors duration-300 caret-white text-white" />
-                                </div>
+                            <div className={`p-8 sm:p-10 flex-1 flex flex-col justify-center ${!bootHasPlayed ? 'animate-fade-in' : ''}`} style={{ animationDelay: '200ms' }}>
+                                <h1 className="text-xl text-center mb-8 text-white tracking-[0.3em] font-bold">
+                                    B E M O <span className="text-[#666] font-normal"> // INVESTMENT</span>
+                                </h1>
 
-                                {error && <p className="!mt-3 text-sm text-red-500 text-left">[ERROR]: {t('auth.errorTitle')}</p>}
+                                <form onSubmit={handleSubmit} className="space-y-6">
+                                    <div className="input-group flex flex-col gap-1">
+                                        <label htmlFor="email" className="text-[#666] text-xs uppercase tracking-widest mb-1 text-left font-semibold">
+                                            {t('auth.emailLabel')}
+                                        </label>
+                                        <input id="email" name="email" type="email" required autoFocus value={formData.email} onChange={handleChange} disabled={isLoading}
+                                            className="w-full bg-transparent focus:outline-none border-b border-[#333] focus:border-white py-2 transition-colors duration-300 caret-white text-white" />
+                                    </div>
+                                    <div className="input-group flex flex-col gap-1">
+                                        <label htmlFor="password" className="text-[#666] text-xs uppercase tracking-widest mb-1 text-left font-semibold">
+                                            {t('auth.passwordLabel')}
+                                        </label>
+                                        <input id="password" name="password" type="password" required value={formData.password} onChange={handleChange} disabled={isLoading}
+                                            className="w-full bg-transparent focus:outline-none border-b border-[#333] focus:border-white py-2 transition-colors duration-300 caret-white text-white" />
+                                    </div>
 
-                                <div className="pt-4">
-                                    <button type="submit" disabled={isLoading}
-                                        className="button-glimmer group relative overflow-hidden flex items-center justify-center w-full gap-3 text-lg border border-[#333] px-4 py-3 hover:border-white focus:outline-none transition-colors duration-300">
-                                        {isLoading ? <Loader2 className="animate-spin h-5 w-5 text-white" /> : (
-                                            <>
-                                                <span className="text-white font-medium">{t('auth.loginButton')}</span>
-                                                <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-2 text-[#666] group-hover:text-white" />
-                                            </>
-                                        )}
-                                    </button>
-                                </div>
-                            </form>
-                        </div>
+                                    <div className="flex items-center gap-2.5 pt-1">
+                                        <input
+                                            id="remember-me"
+                                            type="checkbox"
+                                            checked={rememberMe}
+                                            onChange={(e) => setRememberMe(e.target.checked)}
+                                            disabled={isLoading}
+                                            className="w-4 h-4 bg-transparent border border-[#333] rounded-sm checked:bg-white checked:border-white focus:outline-none focus:ring-1 focus:ring-white/50 cursor-pointer transition-all duration-200 accent-white"
+                                        />
+                                        <label htmlFor="remember-me" className="text-[#888] text-xs cursor-pointer select-none hover:text-white transition-colors">
+                                            {t('auth.rememberMe')}
+                                        </label>
+                                    </div>
 
-                        <div className={`absolute bottom-6 text-center w-full left-0 ${!bootHasPlayed ? 'animate-delayed-fade-in' : ''}`}>
-                            <p className="text-[#666] text-xs">
-                                {t('auth.noAccount')}{' '}
-                                <Link to="/register" className="text-white hover:underline focus:underline focus:outline-none transition-all font-medium">
-                                    &gt; {t('auth.signUp')}
-                                </Link>
-                            </p>
+                                    {error && <p className="!mt-2 text-sm text-red-500 text-left">[ERROR]: {t('auth.errorTitle')}</p>}
+
+                                    <div className="pt-4">
+                                        <button type="submit" disabled={isLoading}
+                                            className="button-glimmer group relative overflow-hidden flex items-center justify-center w-full gap-3 text-lg border border-[#333] px-4 py-3 hover:border-white focus:outline-none transition-colors duration-300">
+                                            {isLoading ? <Loader2 className="animate-spin h-5 w-5 text-white" /> : (
+                                                <>
+                                                    <span className="text-white font-medium">{t('auth.loginButton')}</span>
+                                                    <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-2 text-[#666] group-hover:text-white" />
+                                                </>
+                                            )}
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+
+                            <div className={`text-center w-full pb-8 ${!bootHasPlayed ? 'animate-delayed-fade-in' : ''}`}>
+                                <p className="text-[#666] text-xs">
+                                    {t('auth.noAccount')}{' '}
+                                    <Link to="/register" className="text-white hover:underline focus:underline focus:outline-none transition-all font-medium">
+                                        &gt; {t('auth.signUp')}
+                                    </Link>
+                                </p>
+                            </div>
                         </div>
                     </div>
                 </div>
+
+                {/* RIGHT SIDE: Information */}
+                <div
+                    className={`
+                        overflow-hidden transition-all duration-[1200ms] ease-[cubic-bezier(0.25,1,0.5,1)]
+                        ${bootStage >= 4 ? 'w-[580px] opacity-100 pl-16' : 'w-0 opacity-0 pl-0'}
+                    `}
+                >
+                    <div className="w-[500px] border-l border-[#333] pl-6 py-6 space-y-10 text-silver flex flex-col justify-center">
+                        <div>
+                            <h2 className="text-xl font-bold text-white mb-4 tracking-[0.1em] uppercase">B E M O <span className="text-[#666] font-normal">// INVESTMENT</span></h2>
+                            <p className="text-sm leading-relaxed text-[#888]">
+                                Инновационная торговая платформа, где ваши инвестиции работают на основе точных алгоритмов. Мы исключаем человеческий фактор, обеспечивая анализ рынков в режиме реального времени.
+                            </p>
+                        </div>
+
+                        <div className="space-y-8">
+                            <div>
+                                <h3 className="text-white font-bold text-sm uppercase tracking-wider mb-2">АЛГОРИТМИЧЕСКАЯ ТОЧНОСТЬ</h3>
+                                <p className="text-xs text-[#666] leading-relaxed">
+                                    Обработка тысяч сигналов в секунду. Мгновенная реакция на волатильность без задержек. Система подбирает оптимальные точки входа и выхода.
+                                </p>
+                            </div>
+
+                            <div>
+                                <h3 className="text-white font-bold text-sm uppercase tracking-wider mb-2">ОТСУТСТВИЕ ЭМОЦИЙ</h3>
+                                <p className="text-xs text-[#666] leading-relaxed">
+                                    Страх и сомнения исключены. Торговля ведется строго по заданному протоколу. Статистически выверенные стратегии, работающие 24/7.
+                                </p>
+                            </div>
+
+                            <div>
+                                <h3 className="text-white font-bold text-sm uppercase tracking-wider mb-2">ПРОЗРАЧНОСТЬ</h3>
+                                <p className="text-xs text-[#666] leading-relaxed">
+                                    Полная отчетность по каждой сделке. Понятный интерфейс для контроля ваших активов без необходимости погружения в сложную терминологию.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
             </div>
         </div>
     );

@@ -1,7 +1,3 @@
-// @CREATOR: Gemini (uncaged)
-// @ITERATION: 8.0 // UI_INTEGRITY_ENFORCEMENT
-// @PHILOSOPHY: Default browser elements are a breach of protocol. A custom date picker is required to maintain aesthetic cohesion.
-
 import { useState, FormEvent, useEffect, FC, useRef } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -112,7 +108,7 @@ const NeuralBackground: FC<{ isActive: boolean }> = ({ isActive }) => {
         window.addEventListener('resize', setup);
         return () => { window.removeEventListener('resize', setup); cancelAnimationFrame(animationFrameId); };
     }, [isActive]);
-    return (<canvas id="neural-canvas" className={`absolute top-0 left-0 w-full h-full transition-opacity duration-[2000ms] bg-[#0A0A0A] ${isActive ? 'opacity-100' : 'opacity-0'}`} />);
+    return (<canvas id="neural-canvas" className={`absolute top-0 left-0 w-full h-full transition-opacity duration-[2000ms] bg-obsidian ${isActive ? 'opacity-100' : 'opacity-0'}`} />);
 };
 
 const CustomDatePicker: FC<{ value: string, onChange: (value: string) => void, error?: string[], disabled?: boolean }> =
@@ -185,7 +181,7 @@ const CustomDatePicker: FC<{ value: string, onChange: (value: string) => void, e
              {error && <p className="text-xs text-red-500 pt-1 text-left">{error[0]}</p>}
 
             {isOpen && (
-                 <div className="absolute top-full mt-2 w-full max-w-xs z-20 bg-[rgba(16,18,20,0.95)] border border-[#27272A] backdrop-blur-md shadow-lg p-4 animate-stage-in">
+                 <div className="absolute top-full mt-2 w-full max-w-xs z-20 bg-[#101214] border border-[#27272A] backdrop-blur-md shadow-lg p-4 animate-stage-in">
                      <div className="flex justify-between items-center mb-4">
                         <button type="button" onClick={() => setViewDate(new Date(viewDate.setMonth(viewDate.getMonth() - 1)))} className="p-1 text-white hover:bg-[#27272A] rounded"><ChevronLeft /></button>
                          <div className="font-bold text-sm tracking-widest text-white">{monthNames[viewDate.getMonth()]} {viewDate.getFullYear()}</div>
@@ -340,7 +336,7 @@ export default function RegisterPage() {
     }
 
     return (
-        <div className={`bg-[#050505] text-[#E0E0E0] font-mono min-h-screen flex items-center justify-center p-4 relative overflow-hidden transition-opacity duration-500 ${isVisible ? 'opacity-100' : 'opacity-0'}`}>
+        <div className={`bg-obsidian text-[#E0E0E0] font-mono min-h-screen flex items-center justify-center p-4 relative overflow-hidden transition-opacity duration-500 ${isVisible ? 'opacity-100' : 'opacity-0'}`}>
              <style>
                 {`:root { --border-color: #27272A; }
                 @keyframes stage-in { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
@@ -376,7 +372,7 @@ export default function RegisterPage() {
                          )
                     })}
                 </div>
-                <div className="bg-[rgba(16,18,20,0.7)] border border-[var(--border-color)] backdrop-blur-md p-8 sm:p-10 shadow-lg relative min-h-[380px] flex flex-col justify-between animate-pulse-border">
+                <div className="glass-panel p-8 sm:p-10 shadow-lg relative min-h-[380px] flex flex-col justify-between animate-pulse-border">
                     <form onSubmit={handleSubmit} className="flex flex-col justify-between h-full">
                         <div>{renderStage()}</div>
                         <div className="pt-8 flex justify-between items-center">

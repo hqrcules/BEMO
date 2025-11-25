@@ -11,7 +11,7 @@ export default function Footer() {
     const tc = useThemeClasses();
 
     return (
-        <footer className={`${tc.cardBg} border-t ${tc.cardBorder}`}>
+        <footer className={`${tc.cardBg} border-t ${tc.cardBorder} relative z-20`}>
             <div className="max-w-8xl mx-auto px-6 py-12">
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
 

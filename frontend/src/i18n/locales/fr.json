@@ -295,7 +295,11 @@
       },
       "yourRequisites": "Vos coordonnées (IBAN / Carte)",
       "errorRequisites": "Veuillez spécifier vos coordonnées de retrait",
-      "errorMinAmountWithdraw": "Montant minimum de retrait : 50 €"
+      "errorMinAmountWithdraw": "Montant minimum de retrait : 50 €",
+      "userReceivingDetails": "Vos coordonnées pour recevoir les fonds",
+      "platformPaymentDetails": "Coordonnées pour le paiement",
+      "platformWalletAddress": "Adresse cryptographique pour le paiement",
+      "withdrawalInfo": "Bonjour, {{name}}.\nMerci de votre confiance et de votre coopération. Nous sommes arrivés à l'étape de retrait des fonds gagnés. Selon les accords convenus, il est nécessaire de payer 25 % pour les services du robot de trading.\nAprès avoir versé le paiement selon les coordonnées spécifiées, veuillez envoyer un reçu."
     },
     "methods": {
       "card": "Carte Bancaire",
@@ -467,7 +471,7 @@
       "active": "Actif",
       "stopped": "Arrêté",
       "sessionProfit": "Profit de la Session",
-      "winRate": "Taux de Réussite",
+      "winRate": "Pourcentage de transactions réussies",
       "totalTrades": "Trades Totaux",
       "losingTrades": "Trades Perdants",
       "today": "aujourd'hui"

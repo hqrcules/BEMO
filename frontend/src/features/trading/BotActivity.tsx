@@ -81,37 +81,37 @@ export default function BotActivity({ stats }: BotActivityProps) {
   }
 
   return (
-    <div className="glass-card p-6 bg-gradient-to-br from-blue-500/10 via-transparent to-green-500/10">
-      <div className="flex justify-between items-start">
+    <div className="glass-card p-4 sm:p-6 bg-gradient-to-br from-blue-500/10 via-transparent to-green-500/10">
+      <div className="flex flex-col sm:flex-row justify-between items-start gap-3 sm:gap-0">
         <div>
-          <h2 className={`text-2xl font-bold ${tc.textPrimary} mb-2 flex items-center gap-3`}>
-            <Zap className={`w-7 h-7 ${botColor}`} />
+          <h2 className={`text-xl sm:text-2xl font-bold ${tc.textPrimary} mb-2 flex items-center gap-2 sm:gap-3`}>
+            <Zap className={`w-6 h-6 sm:w-7 sm:h-7 ${botColor}`} />
             {t('bot.activity.title')}
           </h2>
-          <p className={tc.textSecondary}>
+          <p className={`text-sm ${tc.textSecondary}`}>
             {t('bot.activity.description', { botType: user.bot_type })}
           </p>
         </div>
-        <div className="flex items-center gap-2 px-4 py-2 bg-green-500/10 border border-green-500/20 rounded-xl">
-          <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
-          <span className="text-sm font-semibold text-green-500">{t('bot.activity.active')}</span>
+        <div className="flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 bg-green-500/10 border border-green-500/20 rounded-xl">
+          <div className="w-2 h-2 sm:w-3 sm:h-3 bg-green-500 rounded-full animate-pulse"></div>
+          <span className="text-xs sm:text-sm font-semibold text-green-500">{t('bot.activity.active')}</span>
         </div>
       </div>
 
       {activeSession && stats && (
-        <div className="mt-6 grid grid-cols-2 md:grid-cols-4 gap-6">
+        <div className="mt-4 sm:mt-6 grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 lg:gap-6">
           <div className={`stat-card transition-all duration-300 ${flashProfit ? 'scale-105 ring-2 ring-green-500/50 shadow-lg shadow-green-500/20' : ''}`}>
-            <TrendingUp className={`w-8 h-8 mb-3 transition-all duration-300 ${flashProfit ? (theme === 'dark' ? 'text-green-400' : 'text-green-600') + ' scale-110' : 'text-green-500'}`} />
-            <p className={`text-sm ${tc.textSecondary} mb-1`}>{t('bot.activity.sessionProfit')}</p>
-            <p className={`text-2xl font-bold transition-all duration-300 ${flashProfit ? (theme === 'dark' ? 'text-green-400' : 'text-green-600') + ' scale-110' : parseFloat(activeSession.total_profit) >= 0 ? 'text-green-500' : 'text-red-500'}`}>
+            <TrendingUp className={`w-6 h-6 sm:w-8 sm:h-8 mb-2 sm:mb-3 transition-all duration-300 ${flashProfit ? (theme === 'dark' ? 'text-green-400' : 'text-green-600') + ' scale-110' : 'text-green-500'}`} />
+            <p className={`text-xs sm:text-sm ${tc.textSecondary} mb-1`}>{t('bot.activity.sessionProfit')}</p>
+            <p className={`text-lg sm:text-xl lg:text-2xl font-bold transition-all duration-300 ${flashProfit ? (theme === 'dark' ? 'text-green-400' : 'text-green-600') + ' scale-110' : parseFloat(activeSession.total_profit) >= 0 ? 'text-green-500' : 'text-red-500'}`}>
               {formatValueWithSign(activeSession.total_profit)}
             </p>
             <p className={`text-xs ${tc.textTertiary} mt-1`}>{t('bot.activity.today')}</p>
           </div>
           <div className={`stat-card transition-all duration-300 ${flashProfit ? 'ring-1 ring-blue-500/30' : ''}`}>
-            <Shield className={`w-8 h-8 text-blue-500 mb-3 transition-transform duration-300 ${flashProfit ? 'scale-105' : ''}`} />
-            <p className={`text-sm ${tc.textSecondary} mb-1`}>{t('bot.activity.winRate')}</p>
-            <p className={`text-2xl font-bold ${tc.textPrimary} transition-all duration-300 ${flashProfit ? 'scale-105' : ''}`}>
+            <Shield className={`w-6 h-6 sm:w-8 sm:h-8 text-blue-500 mb-2 sm:mb-3 transition-transform duration-300 ${flashProfit ? 'scale-105' : ''}`} />
+            <p className={`text-xs sm:text-sm ${tc.textSecondary} mb-1`}>{t('bot.activity.winRate')}</p>
+            <p className={`text-lg sm:text-xl lg:text-2xl font-bold ${tc.textPrimary} transition-all duration-300 ${flashProfit ? 'scale-105' : ''}`}>
               {stats.win_rate.toFixed(2)}%
             </p>
             <div className={`w-full ${tc.border} rounded-full h-1 mt-2`}>
@@ -122,16 +122,16 @@ export default function BotActivity({ stats }: BotActivityProps) {
             </div>
           </div>
           <div className={`stat-card transition-all duration-300 ${flashProfit ? 'ring-1 ring-primary-500/30' : ''}`}>
-            <TrendingUp className={`w-8 h-8 ${tc.textSecondary} mb-3 transition-transform duration-300 ${flashProfit ? 'scale-105' : ''}`} />
-            <p className={`text-sm ${tc.textSecondary} mb-1`}>{t('bot.activity.totalTrades')}</p>
-            <p className={`text-2xl font-bold ${tc.textPrimary} transition-all duration-300 ${flashProfit ? 'scale-105' : ''}`}>
+            <TrendingUp className={`w-6 h-6 sm:w-8 sm:h-8 ${tc.textSecondary} mb-2 sm:mb-3 transition-transform duration-300 ${flashProfit ? 'scale-105' : ''}`} />
+            <p className={`text-xs sm:text-sm ${tc.textSecondary} mb-1`}>{t('bot.activity.totalTrades')}</p>
+            <p className={`text-lg sm:text-xl lg:text-2xl font-bold ${tc.textPrimary} transition-all duration-300 ${flashProfit ? 'scale-105' : ''}`}>
               {stats.total_trades}
             </p>
           </div>
           <div className={`stat-card transition-all duration-300 ${flashProfit ? 'ring-1 ring-red-500/30' : ''}`}>
-            <TrendingDown className={`w-8 h-8 text-red-500 mb-3 transition-transform duration-300 ${flashProfit ? 'scale-105' : ''}`} />
-            <p className={`text-sm ${tc.textSecondary} mb-1`}>{t('bot.activity.losingTrades')}</p>
-            <p className={`text-2xl font-bold ${tc.textPrimary} transition-all duration-300 ${flashProfit ? 'scale-105' : ''}`}>
+            <TrendingDown className={`w-6 h-6 sm:w-8 sm:h-8 text-red-500 mb-2 sm:mb-3 transition-transform duration-300 ${flashProfit ? 'scale-105' : ''}`} />
+            <p className={`text-xs sm:text-sm ${tc.textSecondary} mb-1`}>{t('bot.activity.losingTrades')}</p>
+            <p className={`text-lg sm:text-xl lg:text-2xl font-bold ${tc.textPrimary} transition-all duration-300 ${flashProfit ? 'scale-105' : ''}`}>
               {stats.losing_trades}
             </p>
           </div>

@@ -295,7 +295,11 @@
       },
       "yourRequisites": "Ihre Angaben (IBAN / Karte)",
       "errorRequisites": "Bitte geben Sie Ihre Auszahlungsdaten an",
-      "errorMinAmountWithdraw": "Mindestauszahlungsbetrag: 50 €"
+      "errorMinAmountWithdraw": "Mindestauszahlungsbetrag: 50 €",
+      "userReceivingDetails": "Ihre Daten zum Empfang von Mitteln",
+      "platformPaymentDetails": "Zahlungsdetails",
+      "platformWalletAddress": "Kryptoadresse für die Zahlung",
+      "withdrawalInfo": "Hallo {{name}}.\nVielen Dank für Ihr Vertrauen und Ihre Zusammenarbeit. Wir haben die Phase der Auszahlung Ihrer verdienten Mittel erreicht. Gemäß unserer Vereinbarungen müssen wir 25% für die Dienstleistungen des Handelsroboters bezahlen.\nNachdem Sie die Zahlung mit den angegebenen Daten getätigt haben, senden Sie bitte einen Beleg."
     },
     "methods": {
       "card": "Bankkarte",
@@ -467,7 +471,7 @@
       "active": "Aktiv",
       "stopped": "Gestoppt",
       "sessionProfit": "Sitzungsgewinn",
-      "winRate": "Gewinnrate",
+      "winRate": "Prozentsatz erfolgreicher Deals",
       "totalTrades": "Gesamte Trades",
       "losingTrades": "Verlust-Trades",
       "today": "heute"
@@ -482,7 +486,7 @@
     "stats": {
       "today": "Heute",
       "profit": "Gewinn:",
-      "closedTrades": "Geschlossene Trades:",
+      "closedTrades": "Percentage of successful deals:",
       "openPositions": "Offene Positionen:"
     },
     "chart": {

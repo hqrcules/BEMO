@@ -6,11 +6,12 @@ import { useAppSelector, useAppDispatch } from '@/store/hooks';
 import { setUser } from '@/store/slices/authSlice';
 import BotInfo from './BotInfo';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import { Activity, Play, Pause, Square, Zap, Settings, BarChart, X as CloseIcon, Loader2 } from 'lucide-react';
+import { Activity, Play, Pause, TrendingUp, TrendingDown, Bot, Zap, DollarSign, Target, Clock, Loader2 } from 'lucide-react';
 import { formatCurrency } from '@/shared/utils/formatCurrency';
 import { RootState } from '@/store/store';
 import { useTranslation } from 'react-i18next';
 import { useThemeClasses } from '@/shared/hooks/useThemeClasses';
+import { useTheme } from '@/contexts/ThemeContext';
 
 interface SimpleChartData {
   time: string;
@@ -26,13 +27,47 @@ interface BotState {
 
 const getBaseSymbol = (pair: string): string => pair.split('/')[0];
 
-const CustomTooltip = ({ active, payload, label, currencyState, tc }: any) => {
+// Fallback prices for trading pairs when WebSocket data is not available
+const FALLBACK_PRICES: Record<string, number> = {
+  'BTC': 45230.50,
+  'ETH': 2890.75,
+  'BNB': 315.20,
+  'SOL': 98.45,
+  'XRP': 0.62,
+  'ADA': 0.58,
+  'DOGE': 0.082,
+  'AVAX': 38.50,
+  'DOT': 7.85,
+  'MATIC': 0.92,
+  'LINK': 15.30,
+  'UNI': 6.75,
+  'ATOM': 10.25,
+  'LTC': 73.80,
+  'BCH': 245.60,
+  'NEAR': 3.45,
+  'APT': 9.20,
+  'ARB': 1.35,
+  'OP': 2.15,
+  'SUI': 1.80,
+};
+
+const getPairPrice = (pair: string, prices: any): number => {
+  const symbol = getBaseSymbol(pair);
+  const livePrice = prices?.[symbol]?.price;
+  if (livePrice && livePrice > 0) return livePrice;
+  return FALLBACK_PRICES[symbol] || 100; // Default fallback if pair not in list
+};
+
+const CustomTooltip = ({ active, payload, label, currencyState, isLight }: any) => {
   if (active && payload && payload.length) {
-    const timeLabel = label;
     return (
-      <div className={`${tc.cardBg} border ${tc.border} rounded-lg p-3 shadow-lg`}>
-        <p className={`text-xs ${tc.textSecondary} mb-1`}>{timeLabel}</p>
-        <p className={`text-sm font-bold ${tc.textPrimary}`}>
+      <div className={`backdrop-blur-xl p-3 rounded-sm border ${
+        isLight
+          ? 'bg-white/90 border-gray-200 shadow-lg'
+          : 'bg-[#0A0A0A]/90 border-white/10'
+      }`}>
+        <p className={`text-xs mb-1 ${isLight ? 'text-gray-600' : 'text-gray-400'}`}>{label}</p>
+        <p className={`text-sm font-bold ${isLight ? 'text-gray-900' : 'text-white'}`}>
           {formatCurrency(payload[0].value, currencyState, { maximumFractionDigits: 5 })}
         </p>
       </div>
@@ -56,6 +91,8 @@ export default function BotTradingPage() {
   const { latestTrade } = useAppSelector((state: RootState) => state.trading);
   const { t, i18n } = useTranslation();
   const tc = useThemeClasses();
+  const { theme } = useTheme();
+  const isLight = theme === 'light';
   const dispatch = useAppDispatch();
 
   useEffect(() => {
@@ -65,8 +102,7 @@ export default function BotTradingPage() {
   }, [user]);
 
   const initialPair = 'BTC/USDT';
-  const initialSymbol = getBaseSymbol(initialPair);
-  const initialPrice = prices?.[initialSymbol]?.price || 45230.50;
+  const initialPrice = getPairPrice(initialPair, prices);
 
   const [botState, setBotState] = useState<BotState>({
     isActive: user?.is_bot_enabled || false,
@@ -221,65 +257,59 @@ export default function BotTradingPage() {
   }, [user, prices]);
 
   useEffect(() => {
-    const currentSymbol = getBaseSymbol(botState.currentPair);
-    const livePriceData = prices?.[currentSymbol];
-    const currentBasePrice = livePriceData?.price || botState.lastPrice || 0;
+    const currentBasePrice = getPairPrice(botState.currentPair, prices);
 
     const generateInitialChartData = (basePrice: number) => {
       const data: SimpleChartData[] = [];
       let price = basePrice;
-      if (price <= 0) return [];
       for (let i = 0; i < 20; i++) {
         const time = new Date(Date.now() - (20 - i) * 300000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
         price += (Math.random() - 0.5) * (basePrice * 0.005);
-        data.push({ time, price: Math.max(0, price) });
+        data.push({ time, price: Math.max(0.01, price) });
       }
       return data;
     };
 
-    if (currentBasePrice > 0 && chartData.length === 0) {
+    // Always generate chart data when pair changes or chartData is empty
+    if (chartData.length === 0) {
       setChartData(generateInitialChartData(currentBasePrice));
+      setBotState(prev => ({ ...prev, lastPrice: currentBasePrice }));
     }
 
     const interval = setInterval(() => {
-      if (!prices) return;
+      const currentPrice = getPairPrice(botState.currentPair, prices);
+      const lastKnownPrice = chartData[chartData.length - 1]?.price || currentPrice;
 
+      // Use live price if available, otherwise simulate price movement
       const symbol = getBaseSymbol(botState.currentPair);
       const latestPriceData = prices?.[symbol];
       let newPrice: number;
-      const lastKnownPrice = chartData[chartData.length - 1]?.price || currentBasePrice || 0;
 
       if (latestPriceData && latestPriceData.price > 0) {
+        // Use real WebSocket price
         newPrice = latestPriceData.price;
       } else {
-        if (lastKnownPrice > 0) {
-          newPrice = lastKnownPrice + (Math.random() - 0.5) * (lastKnownPrice * 0.001);
-          newPrice = Math.max(0, newPrice);
-        } else {
-          newPrice = 0;
-        }
+        // Simulate realistic price movement based on last known price
+        newPrice = lastKnownPrice + (Math.random() - 0.5) * (lastKnownPrice * 0.001);
+        newPrice = Math.max(0.01, newPrice);
       }
 
-      if (newPrice !== lastKnownPrice || chartData.length < 20 || newPrice === 0) {
-        setChartData(prev => {
-          if (prev.length === 0 && newPrice > 0) {
-            return generateInitialChartData(newPrice);
-          }
-          if (newPrice === 0 && prev.length === 0) {
-            return [];
-          }
-          const newData = [...prev.slice(1)];
-          newData.push({
-            time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-            price: newPrice
-          });
-          return newData;
+      setChartData(prev => {
+        if (prev.length === 0) {
+          return generateInitialChartData(currentPrice);
+        }
+        const newData = [...prev.slice(1)];
+        newData.push({
+          time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          price: newPrice
         });
-        setBotState(prev => ({
-          ...prev,
-          lastPrice: newPrice > 0 ? newPrice : prev.lastPrice
-        }));
-      }
+        return newData;
+      });
+
+      setBotState(prev => ({
+        ...prev,
+        lastPrice: newPrice
+      }));
     }, 5000);
 
     return () => clearInterval(interval);
@@ -309,9 +339,8 @@ export default function BotTradingPage() {
   };
 
   const changePair = (pair: string) => {
-    const newSymbol = getBaseSymbol(pair);
-    const newPrice = prices?.[newSymbol]?.price || 0;
-    setChartData([]);
+    const newPrice = getPairPrice(pair, prices);
+    setChartData([]); // Clear chart data to trigger regeneration
     setBotState(prev => ({
       ...prev,
       currentPair: pair,
@@ -367,255 +396,413 @@ export default function BotTradingPage() {
   const formatPrice = (value: number | string | undefined | null, maximumFractionDigits: number = 2) => formatCurrency(value, currencyState, { maximumFractionDigits });
 
   return (
-    <div className={`min-h-screen ${tc.bg} ${tc.textPrimary}`}>
-      <div className="max-w-8xl mx-auto">
-        <div className={`w-full border-b ${tc.border} ${tc.cardBg} backdrop-blur-sm`}>
-          <div className="w-full px-6 py-6">
-            <h1 className={`text-3xl sm:text-4xl font-extralight ${tc.textPrimary} tracking-tight flex items-center gap-3`}>
-              <Zap className="w-8 h-8 text-primary-500" />
-              {t('bot.title')}
+    <div className={`relative w-full pb-20 font-sans ${isLight ? 'bg-light-bg text-light-text-primary' : 'bg-[#050505] text-[#E0E0E0]'}`}>
+
+      {/* Background decorations - same as dashboard */}
+      <div className="absolute inset-0 pointer-events-none z-0">
+        <div className={`absolute inset-0 ${isLight
+          ? 'bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-blue-200/40 via-light-bg to-light-bg'
+          : 'bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-blue-900/20 via-[#050505] to-[#050505]'}`}
+        />
+        <div className={`absolute top-[-10%] right-[-5%] w-[500px] h-[500px] rounded-full animate-pulse border ${
+          isLight ? 'border-blue-300/60 opacity-40' : 'border-blue-500/20 opacity-20'
+        }`} style={{ animationDuration: '10s' }} />
+        <div className={`absolute top-[20%] left-[-10%] w-[120%] h-[1px] -rotate-12 ${
+          isLight ? 'bg-gradient-to-r from-transparent via-blue-400/30 to-transparent' : 'bg-gradient-to-r from-transparent via-blue-500/10 to-transparent'
+        }`} />
+        <div className={`absolute bottom-[-5%] right-[20%] w-[300px] h-[300px] rounded-full blur-3xl ${
+          isLight ? 'bg-blue-300/20' : 'bg-blue-900/10'
+        }`} />
+        <div className={`absolute top-[40%] left-[-5%] w-[200px] h-[200px] rounded-full blur-2xl ${
+          isLight ? 'bg-blue-200/20' : 'bg-blue-900/10'
+        }`} />
+      </div>
+
+      <div className="relative z-10 w-full max-w-[1920px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 2xl:px-16 pt-16 sm:pt-20 lg:pt-24 flex flex-col gap-8 sm:gap-10 lg:gap-12 xl:gap-16">
+
+        {/* Hero Section */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8 lg:gap-12 items-center">
+          <div className="lg:col-span-2 flex flex-col justify-center">
+            <div className={`inline-flex items-center gap-3 px-3 py-1 mb-6 lg:mb-8 rounded-sm w-fit backdrop-blur-sm border ${
+              isLight ? 'border-blue-200 bg-blue-100/50' : 'border-blue-500/20 bg-blue-500/10'
+            }`}>
+              <span className={`w-1.5 h-1.5 rounded-full ${botState.isActive ? 'bg-emerald-500 animate-pulse' : 'bg-red-500'}`} />
+              <span className={`text-[10px] font-mono font-bold uppercase tracking-[0.2em] ${isLight ? 'text-blue-700' : 'text-blue-400'}`}>
+                {botState.isActive ? t('bot.activity.active') : t('bot.activity.stopped')}
+              </span>
+            </div>
+
+            <h1 className={`font-serif text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl leading-[0.9] mb-3 sm:mb-4 lg:mb-6 tracking-tight ${
+              isLight ? 'text-gray-900' : 'text-white'
+            }`}>
+              {t('bot.title')}<br />
+              <span className={`italic font-serif ${isLight ? 'text-blue-600' : 'text-blue-400'}`}>Trading.</span>
             </h1>
-            <p className={`${tc.textTertiary} font-light mt-1`}>
-              {botState.currentPair} • {t('bot.lastPrice')}: {formatPrice(botState.lastPrice, 5)}
+
+            <p className={`text-sm sm:text-base lg:text-lg font-mono max-w-xl leading-relaxed pl-3 sm:pl-4 lg:pl-6 border-l ${
+              isLight ? 'text-gray-600 border-blue-300' : 'text-gray-400 border-blue-500/20'
+            }`}>
+              {botState.currentPair} • {t('bot.lastPrice')}: {formatPrice(botState.lastPrice, 5)}<br />
+              Automated trading powered by AI algorithms.
             </p>
           </div>
+
+          <div className="hidden lg:block" />
         </div>
 
-        <div className="w-full px-6 py-8 space-y-6">
-          <BotActivity stats={stats} />
+        {/* Main Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-5 gap-4 sm:gap-6">
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <div className="space-y-6">
-              <div className={`${tc.cardBg} border ${tc.cardBorder} rounded-3xl p-6`}>
-                <div className="flex justify-between items-center mb-6">
-                  <h3 className={`text-xl font-bold ${tc.textPrimary} flex items-center gap-2`}>
-                    <Settings className="w-5 h-5 text-primary-500" />
-                    {t('bot.controls.title')}
-                  </h3>
-                  <div className={`flex items-center gap-2 ${botState.isActive ? 'text-green-400' : 'text-red-400'}`}>
-                    <div className={`w-2.5 h-2.5 rounded-full ${botState.isActive ? 'bg-green-500' : 'bg-red-500'} ${botState.isActive ? 'animate-pulse' : ''}`}></div>
-                    <span className="text-sm font-medium">{botState.isActive ? t('bot.activity.active') : t('bot.activity.stopped')}</span>
-                  </div>
-                </div>
+          {/* Left Column - Controls & Stats */}
+          <div className="lg:col-span-2 space-y-3 sm:space-y-4 lg:space-y-6">
 
-                <div className="mb-4">
-                  <label className={`block text-sm font-medium ${tc.textPrimary} mb-2`}>{t('bot.controls.tradingPair')}</label>
+            {/* Bot Controls Card */}
+            <div className={`backdrop-blur-xl p-4 sm:p-6 lg:p-8 rounded-sm relative overflow-hidden group transition-colors border ${
+              isLight
+                ? 'bg-white/80 border-gray-200 hover:border-gray-300 shadow-lg'
+                : 'bg-[#0A0A0A]/60 border-white/10 hover:border-white/20'
+            }`}>
+              <div className={`absolute top-0 right-0 p-8 opacity-5 group-hover:opacity-10 transition-opacity pointer-events-none ${
+                isLight ? 'text-blue-400' : 'text-blue-500'
+              }`}>
+                <Bot size={140} strokeWidth={0.5} />
+              </div>
+
+              <div className="relative z-10">
+                <h3 className={`text-lg font-mono uppercase tracking-widest mb-6 ${isLight ? 'text-gray-600' : 'text-gray-400'}`}>
+                  {t('bot.controls.title')}
+                </h3>
+
+                <div className="mb-6">
+                  <label className={`block text-xs font-mono uppercase mb-2 ${isLight ? 'text-gray-600' : 'text-gray-500'}`}>
+                    {t('bot.controls.tradingPair')}
+                  </label>
                   <select
                     value={botState.currentPair}
                     onChange={(e) => changePair(e.target.value)}
-                    className={`w-full px-4 py-2.5 ${tc.hover} border ${tc.cardBorder} rounded-xl text-sm focus:outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500 transition-colors appearance-none`}
+                    className={`w-full px-4 py-3 rounded-sm font-mono transition-all border ${
+                      isLight
+                        ? 'bg-gray-50 border-gray-200 hover:border-gray-300 text-gray-900 focus:border-blue-500 [&>option]:bg-gray-50 [&>option]:text-gray-900'
+                        : 'bg-[#0A0A0A] border-white/10 hover:border-white/20 text-white focus:border-blue-500 [&>option]:bg-[#0A0A0A] [&>option]:text-white'
+                    } focus:outline-none focus:ring-1 focus:ring-blue-500`}
                   >
                     <option value="BTC/USDT">BTC/USDT</option>
                     <option value="ETH/USDT">ETH/USDT</option>
                     <option value="BNB/USDT">BNB/USDT</option>
                     <option value="SOL/USDT">SOL/USDT</option>
+                    <option value="XRP/USDT">XRP/USDT</option>
+                    <option value="ADA/USDT">ADA/USDT</option>
+                    <option value="DOGE/USDT">DOGE/USDT</option>
+                    <option value="AVAX/USDT">AVAX/USDT</option>
+                    <option value="DOT/USDT">DOT/USDT</option>
+                    <option value="MATIC/USDT">MATIC/USDT</option>
+                    <option value="LINK/USDT">LINK/USDT</option>
+                    <option value="UNI/USDT">UNI/USDT</option>
+                    <option value="ATOM/USDT">ATOM/USDT</option>
+                    <option value="LTC/USDT">LTC/USDT</option>
+                    <option value="BCH/USDT">BCH/USDT</option>
+                    <option value="NEAR/USDT">NEAR/USDT</option>
+                    <option value="APT/USDT">APT/USDT</option>
+                    <option value="ARB/USDT">ARB/USDT</option>
+                    <option value="OP/USDT">OP/USDT</option>
+                    <option value="SUI/USDT">SUI/USDT</option>
                   </select>
                 </div>
 
-                <div className="grid grid-cols-1 gap-3">
-                  <button
-                    onClick={toggleBot}
-                    disabled={toggling || user?.bot_type === 'none'}
-                    className={`btn py-3 text-sm ${
-                      botState.isActive
-                        ? 'btn-danger'
-                        : 'btn-success'
-                    } ${toggling ? 'opacity-50 cursor-not-allowed' : ''}`}
-                  >
-                    {toggling ? (
-                      <Loader2 className="w-4 h-4 animate-spin" />
-                    ) : botState.isActive ? (
-                      <Pause className="w-4 h-4" />
-                    ) : (
-                      <Play className="w-4 h-4" />
-                    )}
-                    <span>
-                      {toggling
-                        ? t('common.processing')
-                        : botState.isActive
-                          ? t('bot.controls.pause')
-                          : t('bot.controls.start')}
-                    </span>
-                  </button>
-                </div>
-              </div>
-
-              <div className={`${tc.cardBg} border ${tc.cardBorder} rounded-3xl p-6`}>
-                <h3 className={`text-lg font-bold ${tc.textPrimary} mb-4`}>{t('bot.stats.today')}</h3>
-                <div className="space-y-3">
-                  <div className="flex justify-between items-center">
-                    <span className={`text-sm ${tc.textSecondary}`}>{t('bot.stats.profit')}</span>
-                    <span className={`font-semibold text-lg ${botState.profitToday >= 0 ? 'text-green-400' : 'text-red-400'}`}>
-                      {formatValueWithSign(botState.profitToday)}
-                    </span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className={`text-sm ${tc.textSecondary}`}>{t('bot.stats.closedTrades')}</span>
-                    <span className={`font-medium ${tc.textPrimary}`}>{stats?.closed_trades || 0}</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className={`text-sm ${tc.textSecondary}`}>{t('bot.stats.openPositions')}</span>
-                    <span className={`font-medium ${tc.textPrimary}`}>{openPositions.length}</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className={`${tc.cardBg} border ${tc.cardBorder} rounded-3xl p-6`}>
-              <div className="flex justify-between items-center mb-4">
-                <h3 className={`text-xl font-bold ${tc.textPrimary} flex items-center gap-2`}>
-                  <BarChart className="w-5 h-5 text-primary-500" />
-                  {t('bot.chart.title', { pair: botState.currentPair })}
-                </h3>
-              </div>
-
-              <div className="h-80">
-                {chartData.length > 0 ? (
-                  <ResponsiveContainer width="100%" height="100%">
-                    <LineChart data={chartData}>
-                      <CartesianGrid strokeDasharray="3 3" stroke="#2A2A2A" />
-                      <XAxis dataKey="time" stroke="#7A7A7A" fontSize={12} tickLine={false} axisLine={false} />
-                      <YAxis
-                        stroke="#7A7A7A"
-                        fontSize={12}
-                        domain={['dataMin * 0.995', 'dataMax * 1.005']}
-                        tickFormatter={(value) => formatPrice(value, 5)}
-                        scale="linear"
-                        allowDataOverflow={true}
-                        tickLine={false}
-                        axisLine={false}
-                        width={80}
-                        orientation="right"
-                      />
-                      <Tooltip
-                        content={<CustomTooltip currencyState={currencyState} tc={tc} />}
-                        cursor={{ stroke: '#3A3A3A', strokeWidth: 1, strokeDasharray: "5 5" }}
-                      />
-                      <Line
-                        type="monotone"
-                        dataKey="price"
-                        stroke="#0ea5e9"
-                        strokeWidth={2}
-                        dot={false}
-                        activeDot={{ r: 5, fill: '#0ea5e9', stroke: '#0A0A0A', strokeWidth: 2 }}
-                        isAnimationActive={true}
-                        animationDuration={500}
-                      />
-                    </LineChart>
-                  </ResponsiveContainer>
-                ) : (
-                  <div className={`flex items-center justify-center h-full ${tc.textTertiary}`}>
-                    {t('bot.chart.loading')}
-                  </div>
-                )}
-              </div>
-            </div>
-
-            <div className="space-y-6">
-              <div className={`${tc.cardBg} border ${tc.cardBorder} rounded-3xl overflow-hidden`}>
-                <div className={`p-4 border-b ${tc.cardBorder}`}>
-                  <h3 className={`text-lg font-semibold ${tc.textPrimary}`}>
-                    {t('bot.positions.title')} ({openPositions.length})
-                  </h3>
-                </div>
-                <div className={`divide-y ${tc.cardBorder} max-h-96 overflow-y-auto custom-scroll`}>
-                  {loadingPositions ? (
-                    <div className={`p-6 text-center ${tc.textTertiary}`}>
-                      <Loader2 className="w-8 h-8 mx-auto mb-2 animate-spin text-primary-500" />
-                      <p className="text-sm">{t('bot.loadingPositions')}</p>
-                    </div>
-                  ) : openPositions.length > 0 ? (
-                    openPositions.map((position) => (
-                      <div key={position.id} className={`p-4 ${tc.hoverBg} transition-colors`}>
-                        <div className="flex justify-between items-center mb-2">
-                          <div>
-                            <div className={`font-semibold ${tc.textPrimary}`}>{position.symbol}</div>
-                            <div className={`text-sm font-medium ${position.side === 'buy' ? 'text-green-400' : 'text-red-400'}`}>
-                              {position.side.toUpperCase()}
-                            </div>
-                          </div>
-                          <button
-                            onClick={() => closePosition(position.id)}
-                            className={`${tc.textTertiary} hover:text-red-400 text-sm p-2 hover:bg-red-950/50 rounded-lg transition-colors`}
-                          >
-                            <CloseIcon size={16} />
-                          </button>
-                        </div>
-                        <div className="flex justify-between items-center">
-                          <span className={`text-sm ${tc.textTertiary}`}>
-                            {t('bot.positions.entry')} {formatPrice(position.entry_price, 5)}
-                          </span>
-                          <span className={`text-sm font-semibold ${parseFloat(position.profit_loss) >= 0 ? 'text-green-400' : 'text-red-400'}`}>
-                            {formatValueWithSign(position.profit_loss)}
-                          </span>
-                        </div>
-                      </div>
-                    ))
+                <button
+                  onClick={toggleBot}
+                  disabled={toggling || user?.bot_type === 'none'}
+                  className={`w-full py-4 px-6 font-mono uppercase tracking-wider text-sm font-bold rounded-sm transition-all flex items-center justify-center gap-3 ${
+                    botState.isActive
+                      ? isLight
+                        ? 'bg-red-500 hover:bg-red-600 text-white'
+                        : 'bg-red-500/10 border-2 border-red-500 text-red-500 hover:bg-red-500/20'
+                      : isLight
+                        ? 'bg-emerald-500 hover:bg-emerald-600 text-white'
+                        : 'bg-emerald-500/10 border-2 border-emerald-500 text-emerald-500 hover:bg-emerald-500/20'
+                  } ${toggling ? 'opacity-50 cursor-not-allowed' : ''}`}
+                >
+                  {toggling ? (
+                    <Loader2 className="w-5 h-5 animate-spin" />
+                  ) : botState.isActive ? (
+                    <Pause className="w-5 h-5" />
                   ) : (
-                    <div className={`p-6 text-center ${tc.textTertiary}`}>
-                      <Activity className="w-10 h-10 mx-auto mb-3 opacity-30" />
-                      <p>{t('bot.positions.noPositions')}</p>
-                    </div>
+                    <Play className="w-5 h-5" />
                   )}
+                  <span>
+                    {toggling
+                      ? t('common.processing')
+                      : botState.isActive
+                        ? t('bot.controls.pause')
+                        : t('bot.controls.start')}
+                  </span>
+                </button>
+              </div>
+            </div>
+
+            {/* Quick Stats Grid */}
+            <div className="grid grid-cols-2 gap-3 sm:gap-4">
+              {/* Profit Card */}
+              <div className={`backdrop-blur-xl p-4 sm:p-6 rounded-sm border ${
+                isLight
+                  ? 'bg-emerald-50 border-emerald-200 shadow-lg'
+                  : 'bg-emerald-950/10 border-emerald-500/10'
+              }`}>
+                <div className="flex items-center gap-2 mb-2">
+                  <DollarSign className="w-4 h-4 text-emerald-500" />
+                  <span className={`text-xs font-mono uppercase ${isLight ? 'text-gray-600' : 'text-gray-400'}`}>
+                    {t('bot.stats.profit')}
+                  </span>
                 </div>
+                <p className={`text-xl sm:text-2xl font-bold font-mono ${botState.profitToday >= 0 ? 'text-emerald-500' : 'text-red-500'}`}>
+                  {formatValueWithSign(botState.profitToday)}
+                </p>
+              </div>
+
+              {/* Win Rate Card */}
+              <div className={`backdrop-blur-xl p-4 sm:p-6 rounded-sm border ${
+                isLight
+                  ? 'bg-blue-50 border-blue-200 shadow-lg'
+                  : 'bg-blue-950/10 border-blue-500/10'
+              }`}>
+                <div className="flex items-center gap-2 mb-2">
+                  <Target className="w-4 h-4 text-blue-500" />
+                  <span className={`text-xs font-mono uppercase ${isLight ? 'text-gray-600' : 'text-gray-400'}`}>
+                    {t('bot.activity.winRate')}
+                  </span>
+                </div>
+                <p className={`text-xl sm:text-2xl font-bold font-mono ${isLight ? 'text-gray-900' : 'text-white'}`}>
+                  {stats?.win_rate.toFixed(1) || '0.0'}%
+                </p>
+              </div>
+
+              {/* Trades Card */}
+              <div className={`backdrop-blur-xl p-4 sm:p-6 rounded-sm border ${
+                isLight
+                  ? 'bg-blue-50 border-blue-200 shadow-lg'
+                  : 'bg-blue-950/10 border-blue-500/10'
+              }`}>
+                <div className="flex items-center gap-2 mb-2">
+                  <Activity className="w-4 h-4 text-blue-500" />
+                  <span className={`text-xs font-mono uppercase ${isLight ? 'text-gray-600' : 'text-gray-400'}`}>
+                    {t('bot.stats.totalTrades')}
+                  </span>
+                </div>
+                <p className={`text-xl sm:text-2xl font-bold font-mono ${isLight ? 'text-gray-900' : 'text-white'}`}>
+                  {stats?.total_trades || 0}
+                </p>
+              </div>
+
+              {/* Positions Card */}
+              <div className={`backdrop-blur-xl p-4 sm:p-6 rounded-sm border ${
+                isLight
+                  ? 'bg-orange-50 border-orange-200 shadow-lg'
+                  : 'bg-orange-950/10 border-orange-500/10'
+              }`}>
+                <div className="flex items-center gap-2 mb-2">
+                  <Clock className="w-4 h-4 text-orange-500" />
+                  <span className={`text-xs font-mono uppercase ${isLight ? 'text-gray-600' : 'text-gray-400'}`}>
+                    {t('bot.stats.openPositions')}
+                  </span>
+                </div>
+                <p className={`text-xl sm:text-2xl font-bold font-mono ${isLight ? 'text-gray-900' : 'text-white'}`}>
+                  {openPositions.length}
+                </p>
               </div>
             </div>
           </div>
 
-          <div className={`${tc.cardBg} border ${tc.cardBorder} rounded-3xl overflow-hidden`}>
-            <div className={`p-6 border-b ${tc.cardBorder}`}>
-              <h3 className={`text-xl font-bold ${tc.textPrimary}`}>
+          {/* Chart Card */}
+          <div className={`lg:col-span-3 backdrop-blur-xl p-4 sm:p-6 lg:p-8 rounded-sm relative overflow-hidden group transition-colors border ${
+            isLight
+              ? 'bg-white/80 border-gray-200 hover:border-gray-300 shadow-lg'
+              : 'bg-[#0A0A0A]/60 border-white/10 hover:border-white/20'
+          }`}>
+            <h3 className={`text-xs font-mono uppercase tracking-widest mb-6 ${isLight ? 'text-gray-600' : 'text-gray-400'}`}>
+              {t('bot.chart.title', { pair: botState.currentPair })}
+            </h3>
+
+            <div className="h-[300px] sm:h-[350px] lg:h-[400px] w-full">
+              {chartData.length > 0 ? (
+                <ResponsiveContainer width="100%" height="100%">
+                  <LineChart data={chartData}>
+                    <CartesianGrid
+                      strokeDasharray="3 3"
+                      stroke={isLight ? '#E5E7EB' : '#2A2A2A'}
+                    />
+                    <XAxis
+                      dataKey="time"
+                      stroke={isLight ? '#6B7280' : '#7A7A7A'}
+                      fontSize={12}
+                      tickLine={false}
+                      axisLine={false}
+                    />
+                    <YAxis
+                      stroke={isLight ? '#6B7280' : '#7A7A7A'}
+                      fontSize={12}
+                      domain={['dataMin * 0.995', 'dataMax * 1.005']}
+                      tickFormatter={(value) => formatPrice(value, 5)}
+                      scale="linear"
+                      allowDataOverflow={true}
+                      tickLine={false}
+                      axisLine={false}
+                      width={80}
+                      orientation="right"
+                    />
+                    <Tooltip
+                      content={<CustomTooltip currencyState={currencyState} isLight={isLight} />}
+                      cursor={{
+                        stroke: isLight ? '#D1D5DB' : '#3A3A3A',
+                        strokeWidth: 1,
+                        strokeDasharray: "5 5"
+                      }}
+                    />
+                    <Line
+                      type="monotone"
+                      dataKey="price"
+                      stroke={isLight ? '#111827' : '#E5E5E5'}
+                      strokeWidth={2.5}
+                      dot={false}
+                      activeDot={{
+                        r: 5,
+                        fill: isLight ? '#111827' : '#E5E5E5',
+                        stroke: isLight ? '#FFFFFF' : '#0A0A0A',
+                        strokeWidth: 2
+                      }}
+                      isAnimationActive={true}
+                      animationDuration={500}
+                    />
+                  </LineChart>
+                </ResponsiveContainer>
+              ) : (
+                <div className={`flex items-center justify-center h-full ${isLight ? 'text-gray-600' : 'text-gray-500'}`}>
+                  {t('bot.chart.loading')}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Open Positions & Trade History */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 mb-12 sm:mb-16 lg:mb-20">
+
+          {/* Open Positions */}
+          <div className={`backdrop-blur-xl rounded-sm overflow-hidden border ${
+            isLight
+              ? 'bg-white/80 border-gray-200 shadow-lg'
+              : 'bg-[#0A0A0A]/60 border-white/10'
+          }`}>
+            <div className={`flex items-center justify-between p-5 border-b ${isLight ? 'border-gray-200' : 'border-white/10'}`}>
+              <h3 className={`font-serif text-xl flex items-center gap-2 ${isLight ? 'text-gray-900' : 'text-white'}`}>
+                <TrendingUp className="w-5 h-5 text-blue-500" />
+                {t('bot.positions.title')} ({openPositions.length})
+              </h3>
+            </div>
+            <div className={`p-4 max-h-[500px] overflow-y-auto scrollbar-thin ${
+              isLight ? 'scrollbar-thumb-gray-300 scrollbar-track-gray-100' : 'scrollbar-thumb-white/10 scrollbar-track-transparent'
+            }`}>
+              {loadingPositions ? (
+                <div className="flex justify-center py-12">
+                  <Loader2 className={`w-6 h-6 animate-spin ${isLight ? 'text-gray-600' : 'text-gray-400'}`} />
+                </div>
+              ) : openPositions.length > 0 ? (
+                <div className="space-y-2">
+                  {openPositions.map((position) => (
+                    <div
+                      key={position.id}
+                      className={`p-4 rounded-sm transition-colors border ${
+                        isLight
+                          ? 'hover:bg-gray-100 border-gray-100'
+                          : 'hover:bg-white/5 border-white/5'
+                      }`}
+                    >
+                      <div className="flex items-center justify-between mb-2">
+                        <div>
+                          <p className={`font-bold ${isLight ? 'text-gray-900' : 'text-white'}`}>{position.symbol}</p>
+                          <span className={`text-xs font-mono uppercase ${
+                            position.side === 'buy' ? 'text-emerald-500' : 'text-red-500'
+                          }`}>
+                            {position.side}
+                          </span>
+                        </div>
+                        <div className="text-right">
+                          <p className={`text-sm font-mono ${isLight ? 'text-gray-600' : 'text-gray-400'}`}>
+                            {formatPrice(position.entry_price, 5)}
+                          </p>
+                          <p className={`font-bold font-mono ${parseFloat(position.profit_loss) >= 0 ? 'text-emerald-500' : 'text-red-500'}`}>
+                            {formatValueWithSign(position.profit_loss)}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className={`text-center py-10 ${isLight ? 'text-gray-600' : 'text-gray-500'}`}>
+                  <Activity className="w-10 h-10 mx-auto mb-3 opacity-30" />
+                  <p className="text-sm">{t('bot.positions.noPositions')}</p>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Trade History */}
+          <div className={`backdrop-blur-xl rounded-sm overflow-hidden border ${
+            isLight
+              ? 'bg-white/80 border-gray-200 shadow-lg'
+              : 'bg-[#0A0A0A]/60 border-white/10'
+          }`}>
+            <div className={`flex items-center justify-between p-5 border-b ${isLight ? 'border-gray-200' : 'border-white/10'}`}>
+              <h3 className={`font-serif text-xl flex items-center gap-2 ${isLight ? 'text-gray-900' : 'text-white'}`}>
+                <TrendingDown className="w-5 h-5 text-blue-500" />
                 {t('bot.history.title')} ({trades.length})
               </h3>
             </div>
-            <div className="max-h-[500px] overflow-y-auto custom-scroll">
-              <table className="w-full">
-                <thead className={`${tc.hover} sticky top-0 z-10`}>
-                  <tr className={`border-b ${tc.cardBorder}`}>
-                    <th className={`text-left py-4 px-6 text-xs font-semibold ${tc.textTertiary} uppercase`}>{t('bot.history.headers.symbol')}</th>
-                    <th className={`text-left py-4 px-6 text-xs font-semibold ${tc.textTertiary} uppercase`}>{t('bot.history.headers.type')}</th>
-                    <th className={`text-right py-4 px-6 text-xs font-semibold ${tc.textTertiary} uppercase`}>{t('bot.history.headers.profitLoss')}</th>
-                    <th className={`text-left py-4 px-6 text-xs font-semibold ${tc.textTertiary} uppercase`}>{t('bot.history.headers.closeDate')}</th>
-                  </tr>
-                </thead>
-                <tbody className={`divide-y ${tc.cardBorder}`}>
-                  {loadingTrades ? (
-                    <tr>
-                      <td colSpan={4} className={`p-8 text-center ${tc.textTertiary}`}>
-                        <Loader2 className="w-8 h-8 mx-auto mb-2 animate-spin text-primary-500" />
-                        <p className="text-sm">{t('bot.loadingTradeHistory')}</p>
-                      </td>
-                    </tr>
-                  ) : trades.length > 0 ? (
-                    trades.map((trade) => (
-                      <tr key={trade.id} className={`${tc.hoverBg} transition-colors`}>
-                        <td className="py-4 px-6">
-                          <div className={`font-medium ${tc.textPrimary}`}>{trade.symbol}</div>
-                        </td>
-                        <td className="py-4 px-6">
-                          <span className={`font-semibold ${trade.side === 'buy' ? 'text-green-400' : 'text-red-400'}`}>
-                            {trade.side.toUpperCase()}
+            <div className={`p-4 max-h-[500px] overflow-y-auto scrollbar-thin ${
+              isLight ? 'scrollbar-thumb-gray-300 scrollbar-track-gray-100' : 'scrollbar-thumb-white/10 scrollbar-track-transparent'
+            }`}>
+              {loadingTrades ? (
+                <div className="flex justify-center py-12">
+                  <Loader2 className={`w-6 h-6 animate-spin ${isLight ? 'text-gray-600' : 'text-gray-400'}`} />
+                </div>
+              ) : trades.length > 0 ? (
+                <div className="space-y-2">
+                  {trades.slice(0, 10).map((trade) => (
+                    <div
+                      key={trade.id}
+                      className={`p-4 rounded-sm transition-colors border ${
+                        isLight
+                          ? 'hover:bg-gray-100 border-gray-100'
+                          : 'hover:bg-white/5 border-white/5'
+                      }`}
+                    >
+                      <div className="flex items-center justify-between mb-2">
+                        <div>
+                          <p className={`font-bold ${isLight ? 'text-gray-900' : 'text-white'}`}>{trade.symbol}</p>
+                          <span className={`text-xs font-mono uppercase ${
+                            trade.side === 'buy' ? 'text-emerald-500' : 'text-red-500'
+                          }`}>
+                            {trade.side}
                           </span>
-                        </td>
-                        <td className="py-4 px-6 text-right">
-                          <span className={`font-semibold ${parseFloat(trade.profit_loss) >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                        </div>
+                        <div className="text-right">
+                          <p className={`text-xs font-mono ${isLight ? 'text-gray-600' : 'text-gray-400'}`}>
+                            {trade.closed_at ? new Date(trade.closed_at).toLocaleDateString(i18n.language, { month: 'short', day: 'numeric' }) : '-'}
+                          </p>
+                          <p className={`font-bold font-mono ${parseFloat(trade.profit_loss) >= 0 ? 'text-emerald-500' : 'text-red-500'}`}>
                             {formatValueWithSign(trade.profit_loss)}
-                          </span>
-                        </td>
-                        <td className={`py-4 px-6 text-sm ${tc.textTertiary}`}>
-                          {trade.closed_at ? new Date(trade.closed_at).toLocaleString(i18n.language) : '-'}
-                        </td>
-                      </tr>
-                    ))
-                  ) : (
-                    <tr>
-                      <td colSpan={4} className={`p-8 text-center ${tc.textTertiary}`}>
-                        <p>{t('bot.history.noTrades')}</p>
-                      </td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className={`text-center py-10 ${isLight ? 'text-gray-600' : 'text-gray-500'}`}>
+                  <Activity className="w-10 h-10 mx-auto mb-3 opacity-30" />
+                  <p className="text-sm">{t('bot.history.noTrades')}</p>
+                </div>
+              )}
             </div>
           </div>
         </div>

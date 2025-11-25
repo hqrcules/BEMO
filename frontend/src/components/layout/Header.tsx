@@ -10,6 +10,7 @@ import { formatCurrency } from '@/shared/utils/formatCurrency';
 import { RootState } from '@/store/store';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useThemeClasses } from '@/shared/hooks/useThemeClasses';
+import Ticker from '@/components/ui/Ticker';
 
 const languages = [
     { code: 'en', name: 'English', flag: '🇬🇧' },
@@ -92,7 +93,7 @@ const Header = memo(() => {
         <>
             <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
-            <header className={`${tc.cardBg} border-b ${tc.cardBorder} sticky top-0 z-30`}>
+            <header className={`backdrop-blur-xl border-b ${tc.cardBorder} sticky top-0 z-30 ${tc.cardBg}`}>
                 <div className="w-full px-6 py-4">
                     <div className="flex items-center justify-between">
 
@@ -166,18 +167,19 @@ const Header = memo(() => {
                                     <Globe className="w-5 h-5" />
                                 </button>
                                 {activeDropdown === 'settings' && (
-                                    <div className={`absolute right-0 mt-2 w-96 ${tc.cardBg} rounded-lg shadow-xl border ${tc.cardBorder} z-50 animate-fade-in`}>
-                                        <div className={`grid grid-cols-2 divide-x ${tc.border}`}>
+                                    <div className={`fixed sm:absolute left-4 right-4 sm:left-auto sm:right-0 mt-2 w-auto sm:w-96 max-w-md ${tc.cardBg} rounded-lg shadow-xl border ${tc.cardBorder} z-50 animate-fade-in`}>
+                                        <div className={`grid grid-cols-1 sm:grid-cols-2 sm:divide-x ${tc.border}`}>
 
-                                            <div className="p-4">
+                                            <div className="p-4 border-b sm:border-b-0 sm:border-r border-theme-border">
                                                 <h4 className={`pb-2 text-xs font-medium ${tc.textTertiary} uppercase tracking-wider`}>{t('nav.currency')}</h4>
-                                                <div
-                                                    className="max-h-60 overflow-y-auto"
-                                                >
+                                                <div className="max-h-48 sm:max-h-60 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-700 scrollbar-track-transparent">
                                                     {availableCurrencies.map((curr) => (
                                                         <button
                                                             key={curr.code}
-                                                            onClick={() => handleCurrencyChange(curr.code)}
+                                                            onClick={() => {
+                                                                handleCurrencyChange(curr.code);
+                                                                setActiveDropdown(null);
+                                                            }}
                                                             className={`w-full px-3 py-2 text-left rounded-md ${tc.hoverBg} transition flex items-center justify-between text-sm ${currencyState.selectedCurrency === curr.code ? `${tc.hover} ${tc.textPrimary}` : tc.textSecondary}`}
                                                         >
                                                             <span>{curr.code}</span>
@@ -189,13 +191,14 @@ const Header = memo(() => {
 
                                             <div className="p-4">
                                                 <h4 className={`pb-2 text-xs font-medium ${tc.textTertiary} uppercase tracking-wider`}>{t('nav.language')}</h4>
-                                                <div
-                                                    className="max-h-60 overflow-y-auto"
-                                                >
+                                                <div className="max-h-48 sm:max-h-60 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-700 scrollbar-track-transparent">
                                                     {languages.map((lang) => (
                                                         <button
                                                             key={lang.code}
-                                                            onClick={() => changeLanguage(lang.code)}
+                                                            onClick={() => {
+                                                                changeLanguage(lang.code);
+                                                                setActiveDropdown(null);
+                                                            }}
                                                             className={`w-full px-3 py-2 text-left rounded-md ${tc.hoverBg} transition flex items-center gap-3 text-sm ${i18n.language === lang.code ? `${tc.hover} ${tc.textPrimary}` : tc.textSecondary}`}
                                                         >
                                                             <span className="text-lg">{lang.flag}</span>
@@ -255,6 +258,8 @@ const Header = memo(() => {
                         onClick={() => setActiveDropdown(null)}
                     />
                 )}
+
+                {location.pathname === '/' && <Ticker />}
             </header>
         </>
     );

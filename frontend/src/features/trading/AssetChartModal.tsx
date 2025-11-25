@@ -33,6 +33,7 @@ export default function AssetChartModal({ asset, onClose }: AssetChartModalProps
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [interval, setInterval] = useState<ChartInterval>('1d');
+  const [chartHeight, setChartHeight] = useState(window.innerWidth < 640 ? 300 : 480);
   const [chartStats, setChartStats] = useState({
     high: 0,
     low: 0,
@@ -72,97 +73,121 @@ export default function AssetChartModal({ asset, onClose }: AssetChartModalProps
   useEffect(() => {
     if (!chartContainerRef.current) return;
 
-    const chart = createChart(chartContainerRef.current, {
-      width: chartContainerRef.current.clientWidth,
-      height: 480,
-      layout: {
-        background: { color: 'transparent' },
-        textColor: '#71717a',
-        attributionLogo: false,
-      },
-      grid: {
-        vertLines: {
-          color: '#27272a',
-          style: 1,
-        },
-        horzLines: {
-          color: '#27272a',
-          style: 1,
-        },
-      },
-      crosshair: {
-        mode: 1,
-        vertLine: {
-          color: '#71717a',
-          width: 1,
-          style: 3,
-          labelBackgroundColor: '#18181b',
-        },
-        horzLine: {
-          color: '#71717a',
-          width: 1,
-          style: 3,
-          labelBackgroundColor: '#18181b',
-        },
-      },
-      timeScale: {
-        borderColor: '#27272a',
-        timeVisible: true,
-        secondsVisible: false,
-        fixLeftEdge: true,
-        fixRightEdge: true,
-      },
-      rightPriceScale: {
-        borderColor: '#27272a',
-        scaleMargins: {
-          top: 0.1,
-          bottom: 0.2,
-        },
-      },
-    });
+    // Small delay to ensure container has proper width
+    const initChart = () => {
+      if (!chartContainerRef.current) return;
 
-    chartRef.current = chart;
-
-    const candlestickSeries = chart.addSeries(CandlestickSeries, {
-      upColor: '#22c55e',
-      downColor: '#ef4444',
-      borderVisible: false,
-      wickUpColor: '#22c55e',
-      wickDownColor: '#ef4444',
-    });
-
-    const volumeSeries = chart.addSeries(HistogramSeries, {
-      priceFormat: {
-        type: 'volume',
-      },
-      priceScaleId: '',
-    });
-
-    volumeSeries.priceScale().applyOptions({
-      scaleMargins: {
-        top: 0.85,
-        bottom: 0,
-      },
-    });
-
-    candlestickSeriesRef.current = candlestickSeries;
-    volumeSeriesRef.current = volumeSeries;
-
-    const handleResize = () => {
-      if (chartContainerRef.current && chartRef.current) {
-        chartRef.current.applyOptions({
-          width: chartContainerRef.current.clientWidth,
-        });
+      const containerWidth = chartContainerRef.current.clientWidth;
+      if (containerWidth === 0) {
+        // Retry after a small delay if width is 0
+        setTimeout(initChart, 50);
+        return;
       }
+
+      const chart = createChart(chartContainerRef.current, {
+        width: containerWidth,
+        height: chartHeight,
+        layout: {
+          background: { color: 'transparent' },
+          textColor: '#71717a',
+          attributionLogo: false,
+        },
+        grid: {
+          vertLines: {
+            color: '#27272a',
+            style: 1,
+          },
+          horzLines: {
+            color: '#27272a',
+            style: 1,
+          },
+        },
+        crosshair: {
+          mode: 1,
+          vertLine: {
+            color: '#71717a',
+            width: 1,
+            style: 3,
+            labelBackgroundColor: '#18181b',
+          },
+          horzLine: {
+            color: '#71717a',
+            width: 1,
+            style: 3,
+            labelBackgroundColor: '#18181b',
+          },
+        },
+        timeScale: {
+          borderColor: '#27272a',
+          timeVisible: true,
+          secondsVisible: false,
+          fixLeftEdge: false,
+          fixRightEdge: false,
+        },
+        rightPriceScale: {
+          borderColor: '#27272a',
+          scaleMargins: {
+            top: 0.1,
+            bottom: 0.2,
+          },
+        },
+      });
+
+      chartRef.current = chart;
+
+      const candlestickSeries = chart.addSeries(CandlestickSeries, {
+        upColor: '#22c55e',
+        downColor: '#ef4444',
+        borderVisible: false,
+        wickUpColor: '#22c55e',
+        wickDownColor: '#ef4444',
+      });
+
+      const volumeSeries = chart.addSeries(HistogramSeries, {
+        priceFormat: {
+          type: 'volume',
+        },
+        priceScaleId: '',
+      });
+
+      volumeSeries.priceScale().applyOptions({
+        scaleMargins: {
+          top: 0.85,
+          bottom: 0,
+        },
+      });
+
+      candlestickSeriesRef.current = candlestickSeries;
+      volumeSeriesRef.current = volumeSeries;
+
+      const handleResize = () => {
+        if (chartContainerRef.current && chartRef.current) {
+          const newHeight = window.innerWidth < 640 ? 300 : 480;
+          const newWidth = chartContainerRef.current.clientWidth;
+          setChartHeight(newHeight);
+          chartRef.current.applyOptions({
+            width: newWidth,
+            height: newHeight,
+          });
+          // Re-fit content after resize
+          setTimeout(() => {
+            if (chartRef.current) {
+              chartRef.current.timeScale().fitContent();
+            }
+          }, 100);
+        }
+      };
+
+      window.addEventListener('resize', handleResize);
+
+      return () => {
+        window.removeEventListener('resize', handleResize);
+        chart.remove();
+      };
     };
 
-    window.addEventListener('resize', handleResize);
-
-    return () => {
-      window.removeEventListener('resize', handleResize);
-      chart.remove();
-    };
-  }, []);
+    initChart();
+  }, [chartHeight]);
 
   useEffect(() => {
     const fetchChartData = async () => {
@@ -194,9 +219,14 @@ export default function AssetChartModal({ asset, onClose }: AssetChartModalProps
           close: candle.close,
         }));
 
+        // Нормалізуємо об'єм, щоб уникнути переповнення
+        // lightweight-charts підтримує значення до 90071992547409.91
+        const maxVolume = Math.max(...response.volume.map(v => v.value));
+        const volumeScale = maxVolume > 90000000000000 ? maxVolume / 90000000000000 : 1;
+
         const volumeData: HistogramData<Time>[] = response.volume.map(vol => ({
           time: (vol.time / 1000) as Time,
-          value: vol.value,
+          value: vol.value / volumeScale,
           color: vol.color === '#22c55e' ? 'rgba(34, 197, 94, 0.5)' : 'rgba(239, 68, 68, 0.5)',
         }));
 
@@ -271,64 +301,64 @@ export default function AssetChartModal({ asset, onClose }: AssetChartModalProps
 
   return (
     <div
-      className={`fixed inset-0 backdrop-blur-md flex items-center justify-center z-50 p-4 animate-fade-in ${theme === 'dark' ? 'bg-black/90' : 'bg-gray-900/20'}`}
+      className={`fixed inset-0 backdrop-blur-md flex items-center justify-center z-50 p-0 sm:p-4 animate-fade-in ${theme === 'dark' ? 'bg-black/90' : 'bg-gray-900/20'}`}
       onClick={onClose}
     >
       <div
-        className={`${tc.cardBg} border ${tc.cardBorder} rounded-2xl max-w-6xl w-full shadow-2xl overflow-hidden`}
+        className={`${tc.cardBg} border ${tc.cardBorder} sm:rounded-lg sm:rounded-2xl max-w-6xl w-full h-full sm:h-auto shadow-2xl overflow-hidden sm:max-h-[95vh] overflow-y-auto`}
         onClick={(e) => e.stopPropagation()}
       >
-        <div className={`p-6 border-b ${tc.cardBorder} ${tc.cardBg}`}>
-          <div className="flex items-start justify-between">
-            <div className="flex items-center gap-5">
+        <div className={`p-3 sm:p-6 border-b ${tc.cardBorder} ${tc.cardBg}`}>
+          <div className="flex items-start justify-between gap-2 sm:gap-3">
+            <div className="flex items-center gap-2 sm:gap-5 flex-1 min-w-0">
               {asset.image.startsWith('http') ? (
-                <div className="relative">
+                <div className="relative flex-shrink-0">
                   <img
                     src={asset.image}
                     alt={asset.name}
-                    className={`w-16 h-16 rounded-full ring-2 ${tc.cardBorder}`}
+                    className={`w-12 h-12 sm:w-16 sm:h-16 rounded-full ring-2 ${tc.cardBorder}`}
                   />
-                  <div className={`absolute -bottom-1 -right-1 w-5 h-5 rounded-full ${
+                  <div className={`absolute -bottom-1 -right-1 w-4 h-4 sm:w-5 sm:h-5 rounded-full ${
                     isPositive ? 'bg-green-500' : 'bg-red-500'
                   } ring-2 ${tc.cardBg} flex items-center justify-center`}>
                     {isPositive ? (
-                      <TrendingUp className="w-3 h-3 text-white" />
+                      <TrendingUp className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-white" />
                     ) : (
-                      <TrendingDown className="w-3 h-3 text-white" />
+                      <TrendingDown className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-white" />
                     )}
                   </div>
                 </div>
               ) : (
-                <span className="text-5xl">{asset.image}</span>
+                <span className="text-3xl sm:text-5xl flex-shrink-0">{asset.image}</span>
               )}
 
-              <div className="space-y-1">
-                <div className="flex items-center gap-3">
-                  <h3 className={`text-2xl font-bold ${tc.textPrimary}`}>{asset.name}</h3>
-                  <span className={`text-xs font-mono font-semibold ${tc.textTertiary} ${tc.hover} px-2.5 py-1 rounded border ${tc.cardBorder}`}>
+              <div className="space-y-1 min-w-0 flex-1">
+                <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
+                  <h3 className={`text-lg sm:text-2xl font-bold ${tc.textPrimary} truncate`}>{asset.name}</h3>
+                  <span className={`text-xs font-mono font-semibold ${tc.textTertiary} ${tc.hover} px-2 sm:px-2.5 py-0.5 sm:py-1 rounded border ${tc.cardBorder} flex-shrink-0`}>
                     {asset.symbol}
                   </span>
                 </div>
 
-                <div className="flex items-baseline gap-4">
-                  <p className={`text-2xl font-mono font-bold ${tc.textPrimary}`}>
+                <div className="flex items-baseline gap-2 sm:gap-4 flex-wrap">
+                  <p className={`text-lg sm:text-2xl font-mono font-bold ${tc.textPrimary}`}>
                     {formatPrice(asset.price)}
                   </p>
 
-                  <div className={`flex items-center gap-1.5 text-sm font-semibold px-3 py-1.5 rounded border ${
+                  <div className={`flex items-center gap-1 sm:gap-1.5 text-xs sm:text-sm font-semibold px-2 sm:px-3 py-1 sm:py-1.5 rounded border ${
                     isPositive
                       ? 'bg-green-500/10 text-green-400 border-green-500/30'
                       : 'bg-red-500/10 text-red-400 border-red-500/30'
                   }`}>
                     {isPositive ? (
-                      <TrendingUp className="w-4 h-4" />
+                      <TrendingUp className="w-3 h-3 sm:w-4 sm:h-4" />
                     ) : (
-                      <TrendingDown className="w-4 h-4" />
+                      <TrendingDown className="w-3 h-3 sm:w-4 sm:h-4" />
                     )}
                     <span>{isPositive ? '+' : ''}{asset.change_percent_24h.toFixed(2)}%</span>
                   </div>
 
-                  <div className={`flex items-center gap-1.5 text-xs ${tc.textTertiary} ${tc.hover} px-2.5 py-1.5 rounded border ${tc.cardBorder}`}>
+                  <div className={`hidden sm:flex items-center gap-1.5 text-xs ${tc.textTertiary} ${tc.hover} px-2.5 py-1.5 rounded border ${tc.cardBorder}`}>
                     <Calendar className="w-3.5 h-3.5" />
                     <span>{t('market.chart.24h')}</span>
                   </div>
@@ -338,26 +368,26 @@ export default function AssetChartModal({ asset, onClose }: AssetChartModalProps
 
             <button
               onClick={onClose}
-              className={`p-2.5 ${tc.hoverBg} rounded-xl transition-all duration-200 group border ${tc.cardBorder}`}
+              className={`flex-shrink-0 p-2 sm:p-2.5 ${tc.hoverBg} rounded-lg sm:rounded-xl transition-all duration-200 group border ${tc.cardBorder}`}
             >
-              <X className={`w-5 h-5 ${tc.textSecondary} ${tc.hoverText} transition-colors`} />
+              <X className={`w-4 h-4 sm:w-5 sm:h-5 ${tc.textSecondary} ${tc.hoverText} transition-colors`} />
             </button>
           </div>
         </div>
 
-        <div className="p-6 space-y-5">
-          <div className="flex items-center justify-between flex-wrap gap-4">
+        <div className="p-3 sm:p-6 space-y-3 sm:space-y-5">
+          <div className="flex items-center justify-between flex-wrap gap-2 sm:gap-4">
             <div className="flex items-center gap-2">
-              <Activity className={`w-4 h-4 ${tc.textTertiary}`} />
-              <span className={`text-sm font-medium ${tc.textSecondary}`}>{t('market.chart.interval')}</span>
+              <Activity className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${tc.textTertiary}`} />
+              <span className={`text-xs sm:text-sm font-medium ${tc.textSecondary}`}>{t('market.chart.interval')}</span>
             </div>
 
-            <div className={`flex items-center gap-1.5 ${tc.hover} border ${tc.cardBorder} rounded-xl p-1.5`}>
+            <div className={`flex items-center gap-1 sm:gap-1.5 ${tc.hover} border ${tc.cardBorder} rounded-lg sm:rounded-xl p-1 sm:p-1.5`}>
               {intervals.map(int => (
                 <button
                   key={int.value}
                   onClick={() => setInterval(int.value)}
-                  className={`px-6 py-2.5 text-sm font-bold rounded-lg transition-all duration-200 ${
+                  className={`px-3 sm:px-6 py-1.5 sm:py-2.5 text-xs sm:text-sm font-bold rounded-md sm:rounded-lg transition-all duration-200 ${
                     interval === int.value
                       ? `${tc.hover} ${tc.textPrimary} border ${tc.cardBorder}`
                       : `${tc.textTertiary} ${tc.hoverText} ${tc.hoverBg}`
@@ -370,34 +400,34 @@ export default function AssetChartModal({ asset, onClose }: AssetChartModalProps
           </div>
 
           {!loading && !error && (
-            <div className="grid grid-cols-4 gap-3">
-              <div className={`flex flex-col gap-1.5 px-4 py-3 ${tc.hover} border ${tc.cardBorder} rounded-lg`}>
-                <span className={`text-xs font-medium ${tc.textTertiary} uppercase tracking-wide`}>{t('market.chart.high24h')}</span>
-                <span className="text-base font-mono font-semibold text-green-400">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3">
+              <div className={`flex flex-col gap-1 sm:gap-1.5 px-3 py-2 sm:px-4 sm:py-3 ${tc.hover} border ${tc.cardBorder} rounded-lg`}>
+                <span className={`text-[10px] sm:text-xs font-medium ${tc.textTertiary} uppercase tracking-wide`}>{t('market.chart.high24h')}</span>
+                <span className="text-sm sm:text-base font-mono font-semibold text-green-400 truncate">
                   {formatPrice(chartStats.high)}
                 </span>
               </div>
 
-              <div className={`flex flex-col gap-1.5 px-4 py-3 ${tc.hover} border ${tc.cardBorder} rounded-lg`}>
-                <span className={`text-xs font-medium ${tc.textTertiary} uppercase tracking-wide`}>{t('market.chart.low24h')}</span>
-                <span className="text-base font-mono font-semibold text-red-400">
+              <div className={`flex flex-col gap-1 sm:gap-1.5 px-3 py-2 sm:px-4 sm:py-3 ${tc.hover} border ${tc.cardBorder} rounded-lg`}>
+                <span className={`text-[10px] sm:text-xs font-medium ${tc.textTertiary} uppercase tracking-wide`}>{t('market.chart.low24h')}</span>
+                <span className="text-sm sm:text-base font-mono font-semibold text-red-400 truncate">
                   {formatPrice(chartStats.low)}
                 </span>
               </div>
 
-              <div className={`flex flex-col gap-1.5 px-4 py-3 ${tc.hover} border ${tc.cardBorder} rounded-lg`}>
-                <div className="flex items-center gap-1.5">
-                  <BarChart3 className={`w-3.5 h-3.5 ${tc.textTertiary}`} />
-                  <span className={`text-xs font-medium ${tc.textTertiary} uppercase tracking-wide`}>{t('market.table.volume')}</span>
+              <div className={`flex flex-col gap-1 sm:gap-1.5 px-3 py-2 sm:px-4 sm:py-3 ${tc.hover} border ${tc.cardBorder} rounded-lg`}>
+                <div className="flex items-center gap-1 sm:gap-1.5">
+                  <BarChart3 className={`w-3 h-3 sm:w-3.5 sm:h-3.5 ${tc.textTertiary}`} />
+                  <span className={`text-[10px] sm:text-xs font-medium ${tc.textTertiary} uppercase tracking-wide`}>{t('market.table.volume')}</span>
                 </div>
-                <span className={`text-base font-mono font-semibold ${tc.textPrimary}`}>
+                <span className={`text-sm sm:text-base font-mono font-semibold ${tc.textPrimary} truncate`}>
                   {formatVolume(chartStats.volume)}
                 </span>
               </div>
 
-              <div className={`flex flex-col gap-1.5 px-4 py-3 ${tc.hover} border ${tc.cardBorder} rounded-lg`}>
-                <span className={`text-xs font-medium ${tc.textTertiary} uppercase tracking-wide`}>{t('market.table.change24h')}</span>
-                <span className={`text-base font-mono font-semibold ${
+              <div className={`flex flex-col gap-1 sm:gap-1.5 px-3 py-2 sm:px-4 sm:py-3 ${tc.hover} border ${tc.cardBorder} rounded-lg`}>
+                <span className={`text-[10px] sm:text-xs font-medium ${tc.textTertiary} uppercase tracking-wide`}>{t('market.table.change24h')}</span>
+                <span className={`text-sm sm:text-base font-mono font-semibold truncate ${
                   chartStats.change >= 0 ? 'text-green-400' : 'text-red-400'
                 }`}>
                   {chartStats.change >= 0 ? '+' : ''}{chartStats.change.toFixed(2)}%
@@ -406,20 +436,20 @@ export default function AssetChartModal({ asset, onClose }: AssetChartModalProps
             </div>
           )}
 
-          <div className={`relative w-full ${tc.cardBg} rounded-xl border ${tc.cardBorder} overflow-hidden`} style={{ height: '480px' }}>
+          <div className={`relative w-full ${tc.cardBg} rounded-xl border ${tc.cardBorder} overflow-hidden`} style={{ height: `${chartHeight}px`, minHeight: '280px' }}>
             {loading && (
               <div className={`absolute inset-0 flex flex-col justify-center items-center ${tc.cardBg} backdrop-blur-sm z-10`}>
-                <Loader2 className={`w-14 h-14 ${tc.textTertiary} animate-spin mb-4`} />
-                <p className={`${tc.textTertiary} text-sm font-medium`}>{t('bot.chart.loading')}</p>
+                <Loader2 className={`w-10 h-10 sm:w-14 sm:h-14 ${tc.textTertiary} animate-spin mb-3 sm:mb-4`} />
+                <p className={`${tc.textTertiary} text-xs sm:text-sm font-medium`}>{t('bot.chart.loading')}</p>
               </div>
             )}
 
             {error && !loading && (
-              <div className="absolute inset-0 flex flex-col justify-center items-center text-center z-10 p-8">
-                <div className="bg-red-500/5 border border-red-500/20 rounded-xl p-8 max-w-md">
-                  <AlertCircle className="w-12 h-12 text-red-400 mx-auto mb-4" />
-                  <h4 className="text-red-400 font-semibold text-base mb-2">{t('market.chart.error.title')}</h4>
-                  <p className="text-red-400/70 text-sm whitespace-pre-line">{error}</p>
+              <div className="absolute inset-0 flex flex-col justify-center items-center text-center z-10 p-4 sm:p-8">
+                <div className="bg-red-500/5 border border-red-500/20 rounded-lg sm:rounded-xl p-4 sm:p-8 max-w-md w-full">
+                  <AlertCircle className="w-10 h-10 sm:w-12 sm:h-12 text-red-400 mx-auto mb-3 sm:mb-4" />
+                  <h4 className="text-red-400 font-semibold text-sm sm:text-base mb-2">{t('market.chart.error.title')}</h4>
+                  <p className="text-red-400/70 text-xs sm:text-sm whitespace-pre-line">{error}</p>
                 </div>
               </div>
             )}
@@ -428,14 +458,14 @@ export default function AssetChartModal({ asset, onClose }: AssetChartModalProps
           </div>
 
           {!loading && !error && (
-            <div className={`flex items-center justify-between text-xs ${tc.textTertiary} px-2`}>
-              <div className="flex items-center gap-4">
-                <div className="flex items-center gap-2">
-                  <div className="w-2.5 h-2.5 bg-green-500 rounded-sm" />
+            <div className={`flex items-center justify-between text-[10px] sm:text-xs ${tc.textTertiary} px-1 sm:px-2 flex-wrap gap-2`}>
+              <div className="flex items-center gap-2 sm:gap-4">
+                <div className="flex items-center gap-1.5 sm:gap-2">
+                  <div className="w-2 h-2 sm:w-2.5 sm:h-2.5 bg-green-500 rounded-sm" />
                   <span>{t('market.chart.bullish')}</span>
                 </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-2.5 h-2.5 bg-red-500 rounded-sm" />
+                <div className="flex items-center gap-1.5 sm:gap-2">
+                  <div className="w-2 h-2 sm:w-2.5 sm:h-2.5 bg-red-500 rounded-sm" />
                   <span>{t('market.chart.bearish')}</span>
                 </div>
               </div>

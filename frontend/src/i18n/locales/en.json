@@ -327,7 +327,11 @@
       },
       "yourRequisites": "Your details (IBAN / Card)",
       "errorRequisites": "Please specify your withdrawal details",
-      "errorMinAmountWithdraw": "Minimum withdrawal amount: €50"
+      "errorMinAmountWithdraw": "Minimum withdrawal amount: €50",
+      "userReceivingDetails": "Your details to receive funds",
+      "platformPaymentDetails": "Payment details",
+      "platformWalletAddress": "Crypto address for payment",
+      "withdrawalInfo": "Hello, {{name}}.\nThank you for your trust and cooperation. We have reached the stage of withdrawing your earned funds. According to our agreements, we need to pay 25% for trading robot services.\nAfter making a payment using the details provided, please send a receipt."
     },
     "methods": {
       "card": "Bank Card",
@@ -499,7 +503,7 @@
       "active": "Active",
       "stopped": "Stopped",
       "sessionProfit": "Session Profit",
-      "winRate": "Win Rate",
+      "winRate": "Percentage of successful deals",
       "totalTrades": "Total Trades",
       "losingTrades": "Losing Trades",
       "today": "today"

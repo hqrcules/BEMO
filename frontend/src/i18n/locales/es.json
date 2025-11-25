@@ -295,7 +295,11 @@
       },
       "yourRequisites": "Tus datos (IBAN / Tarjeta)",
       "errorRequisites": "Por favor, especifica tus datos de retiro",
-      "errorMinAmountWithdraw": "Monto mínimo de retiro: 50 €"
+      "errorMinAmountWithdraw": "Monto mínimo de retiro: 50 €",
+      "userReceivingDetails": "Tus datos para recibir fondos",
+      "platformPaymentDetails": "Detalles de pago",
+      "platformWalletAddress": "Dirección de criptomonedas para pago",
+      "withdrawalInfo": "Hola {{name}}.\nGracias por tu confianza y cooperación. Hemos llegado a la etapa de retirar tus fondos ganados. De acuerdo con nuestros acuerdos, necesitamos pagar el 25% por los servicios del bot de trading.\nDespués de realizar el pago con los detalles proporcionados, por favor envía un recibo."
     },
     "methods": {
       "card": "Tarjeta bancaria",
@@ -467,7 +471,7 @@
       "active": "Activo",
       "stopped": "Detenido",
       "sessionProfit": "Ganancia de la sesión",
-      "winRate": "Tasa de ganancia",
+      "winRate": "Porcentaje de acuerdos exitosos",
       "totalTrades": "Operaciones totales",
       "losingTrades": "Operaciones perdedoras",
       "today": "hoy"

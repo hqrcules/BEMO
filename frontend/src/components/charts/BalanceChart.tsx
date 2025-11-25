@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import {
     AreaChart,
     Area,
@@ -260,6 +260,20 @@ export const BalanceChart = ({
     enableBrush = false,
 }: BalanceChartProps) => {
     const [brushDomain, setBrushDomain] = useState<[number, number] | null>(null);
+    const [isMobile, setIsMobile] = useState(false);
+    const [isTablet, setIsTablet] = useState(false);
+
+    // Detect screen size for responsive chart settings
+    useEffect(() => {
+        const handleResize = () => {
+            setIsMobile(window.innerWidth < 640);
+            setIsTablet(window.innerWidth >= 640 && window.innerWidth < 1024);
+        };
+
+        handleResize();
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
 
     // Process data and calculate metrics with ADAPTIVE DOMAIN
     const metrics = useMemo((): ChartMetrics => {
@@ -416,12 +430,26 @@ export const BalanceChart = ({
         }
     };
 
+    // Responsive settings
+    const chartMargins = isMobile
+        ? { top: 15, right: 10, left: 5, bottom: enableBrush ? 40 : 10 }
+        : isTablet
+        ? { top: 20, right: 20, left: 10, bottom: enableBrush ? 42 : 12 }
+        : { top: 25, right: 30, left: 15, bottom: enableBrush ? 45 : 15 };
+
+    const fontSize = isMobile ? 9 : isTablet ? 10 : 11;
+    const labelFontSize = isMobile ? 9 : isTablet ? 10 : 11;
+    const yAxisWidth = isMobile ? 45 : isTablet ? 55 : 70;
+    const dotSize = isMobile ? 4 : 5;
+    const activeDotSize = isMobile ? 5 : 7;
+    const strokeWidth = isMobile ? 2 : 2.5;
+
     return (
         <div style={{ width: '100%', height }}>
             <ResponsiveContainer width="100%" height="100%">
                 <AreaChart
                     data={processedData}
-                    margin={{ top: 25, right: 30, left: 15, bottom: enableBrush ? 45 : 15 }}
+                    margin={chartMargins}
                 >
                     {/* 3-STEP GRADIENT for depth */}
                     <defs>
@@ -458,19 +486,22 @@ export const BalanceChart = ({
                         domain={brushDomain || [xMin, xMax]}
                         tickFormatter={(val) => formatDateAxis(val, range)}
                         stroke={colors.axis}
-                        tick={{ fontSize: 11, fill: colors.text }}
+                        tick={{ fontSize, fill: colors.text }}
                         tickLine={false}
                         axisLine={{ stroke: colors.axis, strokeWidth: 1 }}
-                        minTickGap={50}
+                        minTickGap={isMobile ? 30 : 50}
+                        angle={isMobile ? -45 : 0}
+                        textAnchor={isMobile ? 'end' : 'middle'}
+                        height={isMobile ? 50 : 30}
                     />
                     <YAxis
                         domain={[yMin, yMax]}
                         tickFormatter={(val) => formatCompactCurrency(val, currency)}
                         stroke={colors.axis}
-                        tick={{ fontSize: 11, fill: colors.text }}
+                        tick={{ fontSize, fill: colors.text }}
                         tickLine={false}
                         axisLine={false}
-                        width={70}
+                        width={yAxisWidth}
                     />
 
                     {/* Enhanced Tooltip */}
@@ -486,35 +517,35 @@ export const BalanceChart = ({
 
                     {/* Reference lines with text shadows for contrast */}
 
-                    {/* Min marker (red) */}
+                    {/* Min marker (red) - hide labels on mobile for clarity */}
                     {minPoint && minPoint.balance !== maxPoint?.balance && (
                         <>
                             <ReferenceLine
                                 y={minPoint.balance}
                                 stroke={colors.refLine}
                                 strokeDasharray="3 3"
-                                strokeWidth={1.2}
-                                label={{
+                                strokeWidth={isMobile ? 1 : 1.2}
+                                label={!isMobile ? {
                                     value: `Min: ${formatCompactCurrency(
                                         minPoint.balance,
                                         currency
                                     )}`,
                                     ...getMarkerConfig(minPoint.balance, 'min'),
                                     fill: '#ef4444',
-                                    fontSize: 11,
+                                    fontSize: labelFontSize,
                                     fontWeight: 700,
                                     style: {
                                         textShadow: '0 0 3px #000',
                                     },
-                                }}
+                                } : undefined}
                             />
                             <ReferenceDot
                                 x={minPoint.timestamp}
                                 y={minPoint.balance}
-                                r={5}
+                                r={dotSize}
                                 fill="#ef4444"
                                 stroke="#fff"
-                                strokeWidth={2.5}
+                                strokeWidth={isMobile ? 1.5 : 2.5}
                                 style={{
                                     filter: 'drop-shadow(0 2px 4px rgba(239, 68, 68, 0.5))',
                                 }}
@@ -522,35 +553,35 @@ export const BalanceChart = ({
                         </>
                     )}
 
-                    {/* Max marker (blue) */}
+                    {/* Max marker (blue) - hide labels on mobile for clarity */}
                     {maxPoint && minPoint?.balance !== maxPoint.balance && (
                         <>
                             <ReferenceLine
                                 y={maxPoint.balance}
                                 stroke={colors.refLine}
                                 strokeDasharray="3 3"
-                                strokeWidth={1.2}
-                                label={{
+                                strokeWidth={isMobile ? 1 : 1.2}
+                                label={!isMobile ? {
                                     value: `Max: ${formatCompactCurrency(
                                         maxPoint.balance,
                                         currency
                                     )}`,
                                     ...getMarkerConfig(maxPoint.balance, 'max'),
                                     fill: '#3b82f6',
-                                    fontSize: 11,
+                                    fontSize: labelFontSize,
                                     fontWeight: 700,
                                     style: {
                                         textShadow: '0 0 3px #000',
                                     },
-                                }}
+                                } : undefined}
                             />
                             <ReferenceDot
                                 x={maxPoint.timestamp}
                                 y={maxPoint.balance}
-                                r={5}
+                                r={dotSize}
                                 fill="#3b82f6"
                                 stroke="#fff"
-                                strokeWidth={2.5}
+                                strokeWidth={isMobile ? 1.5 : 2.5}
                                 style={{
                                     filter: 'drop-shadow(0 2px 4px rgba(59, 130, 246, 0.5))',
                                 }}
@@ -563,12 +594,12 @@ export const BalanceChart = ({
                         y={currentBalance}
                         stroke={colors.refLine}
                         strokeDasharray="5 5"
-                        strokeWidth={1.2}
+                        strokeWidth={isMobile ? 1 : 1.2}
                         label={{
-                            value: `Now: ${formatCompactCurrency(currentBalance, currency)}`,
+                            value: isMobile ? formatCompactCurrency(currentBalance, currency) : `Now: ${formatCompactCurrency(currentBalance, currency)}`,
                             ...getMarkerConfig(currentBalance, 'current'),
                             fill: '#10b981',
-                            fontSize: 11,
+                            fontSize: labelFontSize,
                             fontWeight: 700,
                             style: {
                                 textShadow: '0 0 3px #000',
@@ -578,10 +609,10 @@ export const BalanceChart = ({
                     <ReferenceDot
                         x={processedData[processedData.length - 1].timestamp}
                         y={currentBalance}
-                        r={5}
+                        r={dotSize}
                         fill="#10b981"
                         stroke="#fff"
-                        strokeWidth={2.5}
+                        strokeWidth={isMobile ? 1.5 : 2.5}
                         style={{
                             filter: 'drop-shadow(0 2px 4px rgba(16, 185, 129, 0.5))',
                         }}
@@ -592,7 +623,7 @@ export const BalanceChart = ({
                         type="monotone"
                         dataKey="balance"
                         stroke={colors.line}
-                        strokeWidth={2.5}
+                        strokeWidth={strokeWidth}
                         fill="url(#areaGradient)"
                         isAnimationActive={true}
                         animationDuration={500}
@@ -600,21 +631,21 @@ export const BalanceChart = ({
                         connectNulls
                         dot={false}
                         activeDot={{
-                            r: 7,
-                            strokeWidth: 3,
+                            r: activeDotSize,
+                            strokeWidth: isMobile ? 2 : 3,
                             stroke: colors.line,
                             fill: theme === 'dark' ? '#1a1a1a' : '#ffffff',
                             style: {
-                                filter: `drop-shadow(0 0 6px ${colors.line})`,
+                                filter: `drop-shadow(0 0 ${isMobile ? 4 : 6}px ${colors.line})`,
                             },
                         }}
                     />
 
-                    {/* Optional Brush for zoom */}
-                    {enableBrush && processedData.length > 20 && (
+                    {/* Optional Brush for zoom - hide on mobile for simplicity */}
+                    {enableBrush && processedData.length > 20 && !isMobile && (
                         <Brush
                             dataKey="timestamp"
-                            height={30}
+                            height={isTablet ? 25 : 30}
                             stroke={colors.line}
                             fill={theme === 'dark' ? '#1a1a1a' : '#f3f4f6'}
                             onChange={(range: any) => {

@@ -509,6 +509,7 @@ class MarketDataService:
                         # Get asset config for name and image
                         asset_config = crypto_lookup.get(symbol, {})
                         crypto_assets.append({
+                            'id': asset_config.get('id', symbol.replace('USDT', '').lower()),
                             'symbol': symbol.replace('USDT', ''),
                             'name': asset_config.get('name', symbol.replace('USDT', '')),
                             'category': 'crypto',
@@ -548,6 +549,7 @@ class MarketDataService:
 
                     if price > 0:
                         forex_assets.append({
+                            'id': forex_config['id'],
                             'symbol': forex_config['symbol'],
                             'name': forex_config.get('name', forex_config['symbol']),
                             'category': 'forex',
@@ -601,6 +603,7 @@ class MarketDataService:
                         ticker = next((t for t in binance_data if t.get('symbol') == commodity['binance_id']), None)
                         if ticker:
                             commodities_data.append({
+                                'id': commodity['id'],
                                 'symbol': commodity['symbol'],
                                 'name': commodity['name'],
                                 'category': 'commodities',
@@ -634,6 +637,7 @@ class MarketDataService:
         MarketDataService._ticker_cache[commodity['symbol']] = new_price
 
         return {
+            'id': commodity['id'],
             'symbol': commodity['symbol'],
             'name': commodity['name'],
             'category': 'commodities',
@@ -663,6 +667,7 @@ class MarketDataService:
             stock_config = stock_lookup.get(symbol, {})
 
             stock_data.append({
+                'id': stock_config.get('id', symbol.lower()),
                 'symbol': symbol,
                 'name': stock_config.get('name', symbol),
                 'category': 'stocks',

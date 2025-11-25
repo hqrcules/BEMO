@@ -297,7 +297,11 @@
       },
       "yourRequisites": "Vaše údaje (IBAN / Karta)",
       "errorRequisites": "Prosím zadejte své údaje pro výběr",
-      "errorMinAmountWithdraw": "Minimální částka výběru: 50 €"
+      "errorMinAmountWithdraw": "Minimální částka výběru: 50 €",
+      "userReceivingDetails": "Vaše údaje pro příjem finančních prostředků",
+      "platformPaymentDetails": "Údaje pro platbu platformě",
+      "platformWalletAddress": "Crypto adresa pro platbu",
+      "withdrawalInfo": "Dobrý den, {{name}}.\nDěkujeme za vaši důvěru a spolupráci. Dostali jsme se do fáze výběru získaných prostředků. V souladu s dohodami je nutné zaplatit 25% za služby obchodního robota.\nPo provedení platby podle zadaných údajů prosím zašlete doklad."
     },
     "methods": {
       "card": "Bankovní Karta",
@@ -471,7 +475,7 @@
       "active": "Aktivní",
       "stopped": "Zastaveno",
       "sessionProfit": "Zisk Seance",
-      "winRate": "Míra Výher",
+      "winRate": "Procent úspěšných obchodů",
       "totalTrades": "Celkem Obchodů",
       "losingTrades": "Ztrátové Obchody",
       "today": "dnes"

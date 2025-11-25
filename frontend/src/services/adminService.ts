@@ -202,5 +202,11 @@ export const adminService = {
   async getStats(): Promise<AdminStats> {
     const response = await api.get('/api/admin/stats/');
     return response.data;
+  },
+
+  // Site Settings
+  async getPublicSettings(): Promise<Record<string, string>> {
+    const response = await api.get('/api/admin/settings/public/');
+    return response.data;
   }
 };

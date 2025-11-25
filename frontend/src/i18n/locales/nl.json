@@ -295,7 +295,11 @@
       },
       "yourRequisites": "Uw gegevens (IBAN / Kaart)",
       "errorRequisites": "Specificeer uw opnamegegevens",
-      "errorMinAmountWithdraw": "Minimum opnamebedrag: €50"
+      "errorMinAmountWithdraw": "Minimum opnamebedrag: €50",
+      "userReceivingDetails": "Uw ontvangstgegevens",
+      "platformPaymentDetails": "Betalingsgegevens voor het platform",
+      "platformWalletAddress": "Crypto adres voor betaling",
+      "withdrawalInfo": "Hallo, {{name}}.\nBedankt voor uw vertrouwen en samenwerking. We zijn aangekomen bij de fase van opname van verdiende fondsen. Volgens de afspraken moet 25% worden betaald voor de services van de handelsbot.\nNa het overboeken volgens de opgegeven gegevens, stuur alstublieft het bewijs."
     },
     "methods": {
       "card": "Bankkaart",
@@ -467,7 +471,7 @@
       "active": "Actief",
       "stopped": "Gestopt",
       "sessionProfit": "Sessiewinst",
-      "winRate": "Winstpercentage",
+      "winRate": "Percentage succesvolle deals",
       "totalTrades": "Totaal Trades",
       "losingTrades": "Verliezende Trades",
       "today": "vandaag"

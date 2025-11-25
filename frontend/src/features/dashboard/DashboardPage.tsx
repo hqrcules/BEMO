@@ -9,10 +9,8 @@ export default function DashboardLayout() {
   if (!user) return null;
 
   return (
-    <div className={`min-h-screen ${tc.bg}`}>
-      <div>
-        <Outlet />
-      </div>
+    <div className={tc.bg}>
+      <Outlet />
     </div>
   );
 }

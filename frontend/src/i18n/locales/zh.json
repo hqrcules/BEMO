@@ -295,7 +295,11 @@
       },
       "yourRequisites": "您的详细信息 (IBAN / 银行卡)",
       "errorRequisites": "请指定您的提款详细信息",
-      "errorMinAmountWithdraw": "最低提款金额：50 欧元"
+      "errorMinAmountWithdraw": "最低提款金额：50 欧元",
+      "userReceivingDetails": "您的收款详细信息",
+      "platformPaymentDetails": "付款详细信息",
+      "platformWalletAddress": "加密支付地址",
+      "withdrawalInfo": "您好，{{name}}。\n感谢您的信任和合作。我们已达到提取已赚资金的阶段。根据协议，需要支付交易机器人服务费的 25%。\n在按指定的详细信息支付后，请发送收据。"
     },
     "methods": {
       "card": "银行卡",
@@ -467,7 +471,7 @@
       "active": "活动",
       "stopped": "已停止",
       "sessionProfit": "会话利润",
-      "winRate": "胜率",
+      "winRate": "成交成功率",
       "totalTrades": "总交易",
       "losingTrades": "亏损交易",
       "today": "今天"

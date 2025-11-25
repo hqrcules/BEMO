@@ -295,7 +295,11 @@
       },
       "yourRequisites": "あなたの詳細 (IBAN / カード)",
       "errorRequisites": "出金の詳細を指定してください",
-      "errorMinAmountWithdraw": "最低出金額: €50"
+      "errorMinAmountWithdraw": "最低出金額: €50",
+      "userReceivingDetails": "資金を受け取るための詳細情報",
+      "platformPaymentDetails": "支払いの詳細情報",
+      "platformWalletAddress": "支払い用の暗号アドレス",
+      "withdrawalInfo": "こんにちは、{{name}}さん。\nご信頼とご協力をいただきありがとうございます。運用益の出金段階に達しました。合意に基づき、取引ボットサービスの手数料 25% をお支払いいただく必要があります。\n指定された詳細情報に従ってお支払いいただいた後、領収書を送信してください。"
     },
     "methods": {
       "card": "銀行カード",
@@ -467,7 +471,7 @@
       "active": "アクティブ",
       "stopped": "停止",
       "sessionProfit": "セッション利益",
-      "winRate": "勝率",
+      "winRate": "成功取引の割合",
       "totalTrades": "総取引数",
       "losingTrades": "損失取引数",
       "today": "今日"
